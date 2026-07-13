@@ -1,0 +1,46 @@
+<section class="panel" aria-labelledby="active-run-title">
+  @if (pipeline(); as pipeline) {
+    <div class="panel-header">
+      <div>
+        <span class="section-label">Active pipeline</span>
+        <h2 id="active-run-title">
+          {{ pipeline.service }} <span>{{ pipeline.id }}</span>
+        </h2>
+        <p>{{ pipeline.commitMessage }}</p>
+      </div>
+      <div class="run-meta">
+        <vp-status-badge [status]="pipeline.status" />
+        <strong>{{ pipeline.duration }}</strong>
+      </div>
+    </div>
+
+    <ol class="pipeline-track" aria-label="Pipeline progress">
+      @for (stage of pipeline.stages; track stage.name; let index = $index) {
+        <li [class]="'stage stage--' + stage.status">
+          <span class="stage-node" aria-hidden="true">{{ index + 1 }}</span>
+          <span class="stage-copy"
+            ><strong>{{ stage.name }}</strong
+            ><small>{{ stage.detail }}</small></span
+          >
+        </li>
+      }
+    </ol>
+
+    <div class="run-footer">
+      <div class="commit-meta">
+        <span class="commit-avatar" aria-hidden="true">{{ pipeline.authorInitials }}</span>
+        <span>
+          <strong>{{ pipeline.author }}</strong>
+          <small>Commit {{ pipeline.commit }} / {{ pipeline.branch }}</small>
+        </span>
+      </div>
+      <a href="#recent-runs">View run details</a>
+    </div>
+  } @else {
+    <div class="empty-pipeline">
+      <span class="section-label">Active pipeline</span>
+      <h2 id="active-run-title">No pipeline is running</h2>
+      <p>Connect a repository and register an agent to start collecting delivery activity.</p>
+    </div>
+  }
+</section>

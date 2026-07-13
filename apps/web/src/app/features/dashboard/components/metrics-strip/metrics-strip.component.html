@@ -1,0 +1,9 @@
+<section class="metrics-strip" aria-label="Delivery metrics">
+  @for (metric of metrics(); track metric.label) {
+    <div class="metric">
+      <span>{{ metric.label }}</span>
+      <strong>{{ metric.value }}</strong>
+      <small [class]="metric.trend">{{ metric.detail }}</small>
+    </div>
+  }
+</section>

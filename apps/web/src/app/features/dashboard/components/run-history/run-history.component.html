@@ -1,0 +1,60 @@
+<section class="panel" aria-labelledby="run-history-title">
+  <div class="panel-header">
+    <div>
+      <span class="section-label">Pipeline history</span>
+      <h2 id="run-history-title">Recent runs</h2>
+    </div>
+    <label class="search-field">
+      <span class="visually-hidden">Search pipeline runs</span>
+      <input
+        type="search"
+        placeholder="Search runs or services"
+        [value]="query()"
+        (input)="updateQuery($event)"
+      />
+    </label>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Run</th>
+          <th scope="col">Service</th>
+          <th scope="col">Commit</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (run of runs(); track run.id) {
+          <tr>
+            <td>
+              <strong>{{ run.id }}</strong
+              ><small>{{ run.started }}</small>
+            </td>
+            <td>
+              <strong>{{ run.service }}</strong
+              ><small>{{ run.author }}</small>
+            </td>
+            <td>
+              <code>{{ run.branch }}</code>
+            </td>
+            <td>{{ run.duration }}</td>
+            <td><vp-status-badge [status]="run.status" /></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td class="empty-state" colspan="5">
+              @if (query()) {
+                No runs match &quot;{{ query() }}&quot;.
+              } @else {
+                No pipeline runs yet.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

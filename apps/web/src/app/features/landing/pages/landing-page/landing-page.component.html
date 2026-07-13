@@ -1,0 +1,155 @@
+<header class="landing-header">
+  <vp-brand [inverted]="true" />
+  <nav aria-label="Landing page">
+    <a href="#workflow">How it works</a>
+    <a href="#outcomes">Outcomes</a>
+    <a href="#early-access">Early access</a>
+  </nav>
+  <div class="header-actions">
+    <button type="button" (click)="theme.toggle()">
+      {{ theme.current() === 'dark' ? 'Light' : 'Dark' }}
+    </button>
+    <a class="header-cta" routerLink="/app">Open live demo</a>
+  </div>
+</header>
+
+<main class="landing-main">
+  <section class="hero" aria-labelledby="hero-title">
+    <img
+      class="hero-media"
+      src="/images/img01.webp"
+      alt="Software engineers reviewing a visual delivery pipeline together"
+    />
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-content">
+      <span class="hero-kicker">Delivery health, shared by the whole team</span>
+      <h1 id="hero-title">Visual Pipeline for engineering teams</h1>
+      <p>
+        Make every release understandable. See pipeline health, deployment risk, and agent capacity
+        in one calm workspace built for daily decisions.
+      </p>
+      <div class="hero-actions">
+        <a class="primary-action" href="#early-access">Join early access</a>
+        <a class="secondary-action" routerLink="/app">Explore the dashboard</a>
+      </div>
+      <div class="hero-proof" aria-label="Product highlights">
+        <span><strong>5</strong> test scenarios</span>
+        <span><strong>1 view</strong> from commit to production</span>
+        <span><strong>0</strong> hidden deployment states</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="signal-strip" aria-label="Platform focus">
+    <span>Pipeline health</span><span>Release readiness</span><span>Agent capacity</span>
+    <span>Team ownership</span>
+  </section>
+
+  <section id="workflow" class="workflow-section" aria-labelledby="workflow-title">
+    <div class="section-heading">
+      <span>One shared delivery story</span>
+      <h2 id="workflow-title">From change to production, without losing context</h2>
+      <p>Keep technical signals close to the people and decisions they affect.</p>
+    </div>
+
+    <ol class="workflow-track" aria-label="Visual Pipeline workflow">
+      <li class="complete">
+        <span>01</span><strong>Validate</strong><small>Policy and ownership</small>
+      </li>
+      <li class="complete">
+        <span>02</span><strong>Build</strong><small>Quality and security</small>
+      </li>
+      <li class="active">
+        <span>03</span><strong>Verify</strong><small>Risk and readiness</small>
+      </li>
+      <li><span>04</span><strong>Release</strong><small>Approval and rollout</small></li>
+      <li><span>05</span><strong>Learn</strong><small>Health and outcomes</small></li>
+    </ol>
+  </section>
+
+  <section id="outcomes" class="outcomes-section" aria-labelledby="outcomes-title">
+    <div class="section-heading compact">
+      <span>Designed for responsible delivery</span>
+      <h2 id="outcomes-title">Healthy projects need visible decisions</h2>
+    </div>
+    <div class="outcome-grid">
+      <article>
+        <span class="outcome-number">01</span>
+        <h3>Find risk before release day</h3>
+        <p>Bring warnings, blockers, and change risk into the same view as pipeline progress.</p>
+      </article>
+      <article>
+        <span class="outcome-number">02</span>
+        <h3>Give teams shared context</h3>
+        <p>Replace fragmented status updates with an operational view everyone can read.</p>
+      </article>
+      <article>
+        <span class="outcome-number">03</span>
+        <h3>Build calmer delivery habits</h3>
+        <p>
+          Track lead time, reliability, capacity, and ownership without another noisy dashboard.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="early-access" class="lead-section" aria-labelledby="lead-title">
+    <div class="lead-copy">
+      <span>Early access</span>
+      <h2 id="lead-title">Help shape a healthier way to ship software</h2>
+      <p>
+        We are speaking with platform and product engineering teams who want delivery health to be
+        easier to understand and act on.
+      </p>
+      <ul>
+        <li>Influence the first integration priorities</li>
+        <li>Test team-level delivery scenarios</li>
+        <li>Get direct access to the product roadmap</li>
+      </ul>
+    </div>
+
+    <form class="lead-form" [formGroup]="leadForm" (ngSubmit)="submitLead()">
+      <div>
+        <label for="lead-name">Name</label>
+        <input id="lead-name" type="text" formControlName="name" autocomplete="name" />
+        @if (leadForm.controls.name.touched && leadForm.controls.name.invalid) {
+          <small class="field-error">Enter at least two characters.</small>
+        }
+      </div>
+      <div>
+        <label for="lead-email">Work email</label>
+        <input id="lead-email" type="email" formControlName="email" autocomplete="email" />
+        @if (leadForm.controls.email.touched && leadForm.controls.email.invalid) {
+          <small class="field-error">Enter a valid email address.</small>
+        }
+      </div>
+      <div>
+        <label for="team-size">Engineering team size</label>
+        <select id="team-size" formControlName="teamSize">
+          <option value="1-5">1-5 people</option>
+          <option value="6-20">6-20 people</option>
+          <option value="21-50">21-50 people</option>
+          <option value="51+">51+ people</option>
+        </select>
+      </div>
+      <button type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Sending...' : 'Request early access' }}
+      </button>
+      <small class="privacy-note">We will only use your details to discuss Visual Pipeline.</small>
+
+      @if (submissionState() === 'success') {
+        <p class="form-message success" role="status">
+          You are on the list. Mock receipt: {{ receiptId() }}
+        </p>
+      } @else if (submissionState() === 'error') {
+        <p class="form-message error" role="alert">We could not record your request. Try again.</p>
+      }
+    </form>
+  </section>
+</main>
+
+<footer class="landing-footer">
+  <vp-brand />
+  <p>Built for teams who treat delivery health as a shared responsibility.</p>
+  <a routerLink="/app">Product demo</a>
+</footer>

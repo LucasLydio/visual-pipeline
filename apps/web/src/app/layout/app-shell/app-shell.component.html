@@ -1,0 +1,82 @@
+<a class="skip-link" href="#workspace-content">Skip to workspace</a>
+
+<div class="app-shell" [class.sidebar-open]="sidebarOpen()">
+  <button
+    class="sidebar-scrim"
+    type="button"
+    aria-label="Close navigation"
+    (click)="toggleSidebar()"
+  ></button>
+
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <div class="brand-row"><vp-brand [inverted]="true" /></div>
+
+    <div class="workspace-switcher">
+      <span class="workspace-avatar" aria-hidden="true">AC</span>
+      <span><strong>Acme Platform</strong><small>Engineering</small></span>
+    </div>
+
+    <nav class="primary-nav" aria-label="Primary">
+      <span class="nav-label">Workspace</span>
+      @for (item of navigation; track item.label) {
+        <a
+          routerLink="/app"
+          [fragment]="item.fragment"
+          [class.active]="activeNavigation() === item.label"
+          [attr.aria-current]="activeNavigation() === item.label ? 'page' : null"
+          (click)="selectNavigation(item)"
+        >
+          <span class="nav-indicator" aria-hidden="true"></span>{{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="agent-summary">
+        <span class="presence-dot" aria-hidden="true"></span>
+        <span><strong>Agent network</strong><small>Mock environment</small></span>
+      </div>
+      <div class="profile-row">
+        <span class="profile-avatar" aria-hidden="true">MC</span>
+        <span><strong>Maya Chen</strong><small>Platform engineer</small></span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="topbar-start">
+        <button
+          class="menu-button secondary-button"
+          type="button"
+          aria-label="Open navigation"
+          [attr.aria-expanded]="sidebarOpen()"
+          (click)="toggleSidebar()"
+        >
+          Menu
+        </button>
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <span>Acme Platform</span><span aria-hidden="true">/</span>
+          <strong>{{ activeNavigation() }}</strong>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <a class="secondary-action" routerLink="/">Landing page</a>
+        <button class="secondary-button" type="button" (click)="theme.toggle()">
+          {{ theme.current() === 'dark' ? 'Light mode' : 'Dark mode' }}
+        </button>
+        <a
+          class="alert-button secondary-action"
+          routerLink="/app"
+          fragment="deployments"
+          (click)="activeNavigation.set('Deployments')"
+        >
+          Alerts <span>2</span>
+        </a>
+      </div>
+    </header>
+
+    <router-outlet />
+  </div>
+</div>

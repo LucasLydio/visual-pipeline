@@ -1,0 +1,83 @@
+<aside class="dashboard-side" aria-label="Deployment status">
+  <section id="deployments" class="side-section readiness" aria-labelledby="readiness-title">
+    <div class="panel-header">
+      <div>
+        <span class="section-label">Release readiness</span>
+        <h2 id="readiness-title">{{ readiness().environment }}</h2>
+      </div>
+      <div class="readiness-actions">
+        <vp-status-badge [status]="environmentStatus()" />
+        <span
+          class="readiness-score"
+          [attr.aria-label]="'Readiness score ' + readiness().score + ' percent'"
+        >
+          {{ readiness().score }}
+        </span>
+      </div>
+    </div>
+    <div class="readiness-bar" aria-hidden="true">
+      <span [style.width.%]="readiness().score"></span>
+    </div>
+    <dl class="check-list">
+      <div>
+        <dt>Required checks</dt>
+        <dd>{{ readiness().requiredChecks }}</dd>
+      </div>
+      <div>
+        <dt>Open warnings</dt>
+        <dd class="warning-text">{{ readiness().openWarnings }}</dd>
+      </div>
+      <div>
+        <dt>Change risk</dt>
+        <dd>{{ readiness().changeRisk }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="side-section queue" aria-labelledby="queue-title">
+    <div class="panel-header">
+      <div>
+        <span class="section-label">Deployment queue</span>
+        <h2 id="queue-title">Next up</h2>
+      </div>
+      <span class="queue-count">{{ queue().length }}</span>
+    </div>
+    <ol class="queue-list">
+      @for (item of queue(); track item.service; let index = $index) {
+        <li>
+          <span class="queue-order">{{ index + 1 }}</span>
+          <span
+            ><strong>{{ item.service }}</strong
+            ><small>{{ item.environment }} / {{ item.state }}</small></span
+          >
+          <time>{{ item.estimate }}</time>
+        </li>
+      } @empty {
+        <li class="queue-empty">No deployments queued.</li>
+      }
+    </ol>
+  </section>
+
+  <section id="agents" class="side-section fleet" aria-labelledby="fleet-title">
+    <div class="panel-header">
+      <div>
+        <span class="section-label">Agent fleet</span>
+        <h2 id="fleet-title">Online capacity</h2>
+      </div>
+      <vp-status-badge [status]="fleetStatus()" />
+    </div>
+    @for (region of regions(); track region.region) {
+      <div class="capacity-row">
+        <span>{{ region.region }}</span>
+        <span class="capacity" aria-hidden="true">
+          @for (segment of [25, 50, 75, 100]; track segment) {
+            <i [class.active]="region.utilization >= segment"></i>
+          }
+        </span>
+        <strong>{{ region.utilization }}%</strong>
+      </div>
+    } @empty {
+      <p class="fleet-empty">No deployment agents registered.</p>
+    }
+  </section>
+</aside>

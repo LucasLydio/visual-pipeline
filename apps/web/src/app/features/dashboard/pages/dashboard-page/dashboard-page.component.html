@@ -1,0 +1,62 @@
+<main id="workspace-content" class="workspace-content">
+  <section id="overview" class="page-heading" aria-labelledby="overview-title">
+    <div>
+      @if (facade.state().snapshot; as snapshot) {
+        <div [class]="'eyebrow-row environment--' + snapshot.environmentStatus">
+          <span class="environment-dot" aria-hidden="true"></span>
+          {{ snapshot.environmentLabel }}<span aria-hidden="true">/</span>{{ snapshot.branch }}
+        </div>
+      }
+      <h1 id="overview-title">Delivery overview</h1>
+      <p>Track delivery health across services, environments, and deployment agents.</p>
+    </div>
+    <div class="page-actions">
+      @if (facade.state().snapshot; as snapshot) {
+        <span class="updated-at" aria-live="polite">{{ snapshot.updatedLabel }}</span>
+      }
+      <label class="scenario-control">
+        <span>Mock scenario</span>
+        <select [value]="facade.scenario()" (change)="selectScenario($event)">
+          @for (scenario of facade.scenarios; track scenario.id) {
+            <option [value]="scenario.id">{{ scenario.label }}</option>
+          }
+        </select>
+      </label>
+      <button class="secondary-button" type="button" (click)="facade.refresh()">Refresh</button>
+    </div>
+  </section>
+
+  @if (facade.state().loading) {
+    <section class="loading-state" aria-live="polite" aria-label="Loading dashboard">
+      <span></span><span></span><span></span>
+    </section>
+  } @else if (facade.state().error; as error) {
+    <section class="error-state" role="alert">
+      <span class="section-label">Connection state</span>
+      <h2>Pipeline data is unavailable</h2>
+      <p>{{ error }}</p>
+      <button type="button" (click)="facade.refresh()">Try again</button>
+    </section>
+  } @else if (facade.state().snapshot; as snapshot) {
+    <vp-metrics-strip [metrics]="snapshot.metrics" />
+
+    <div class="dashboard-grid">
+      <div class="dashboard-main">
+        <div id="pipelines"><vp-active-pipeline [pipeline]="snapshot.activePipeline" /></div>
+        <div id="recent-runs">
+          <vp-run-history
+            [runs]="facade.filteredRuns()"
+            [query]="facade.searchQuery()"
+            (queryChange)="facade.searchQuery.set($event)"
+          />
+        </div>
+      </div>
+      <vp-deployment-status
+        [readiness]="snapshot.readiness"
+        [queue]="snapshot.deploymentQueue"
+        [regions]="snapshot.agentRegions"
+        [environmentStatus]="snapshot.environmentStatus"
+      />
+    </div>
+  }
+</main>

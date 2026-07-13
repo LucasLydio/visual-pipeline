@@ -1,0 +1,64 @@
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric {
+  display: grid;
+  gap: 0.15rem;
+  padding: 1rem 1.2rem;
+}
+
+.metric + .metric {
+  border-left: 1px solid var(--color-border);
+}
+
+.metric > span,
+.metric small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.metric strong {
+  font-size: 1.35rem;
+}
+
+.metric small.positive {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.metric small.negative {
+  color: color-mix(in srgb, var(--color-accent) 78%, var(--graphite));
+  font-weight: 600;
+}
+
+@media (max-width: 58rem) {
+  .metrics-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric:nth-child(3) {
+    border-left: 0;
+  }
+
+  .metric:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+@media (max-width: 28rem) {
+  .metrics-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .metric + .metric {
+    border-top: 1px solid var(--color-border);
+    border-left: 0;
+  }
+}

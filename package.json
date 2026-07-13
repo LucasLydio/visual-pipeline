@@ -1,0 +1,17 @@
+{
+  "name": "visual-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run start --workspace=apps/web",
+    "dev:api": "npm run start:dev --workspace=apps/api",
+    "dev:agent": "npm run start:dev --workspace=apps/deploy-agent",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  }
+}

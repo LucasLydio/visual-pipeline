@@ -1,0 +1,9 @@
+body {
+  overflow-x: hidden;
+}
+
+button,
+input,
+a {
+  letter-spacing: 0;
+}
