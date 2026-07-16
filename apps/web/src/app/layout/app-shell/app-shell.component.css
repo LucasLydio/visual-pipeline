@@ -290,6 +290,23 @@
     transition: background-color 1.2s ease-in;
   }
 }
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+
+  .sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-open .sidebar-scrim,
+  .menu-button {
+    display: inline-flex;
+  }
+
+  .workspace {
+    margin-left: 0;
+  }
 
 @media (max-width: 64rem) {
   .sidebar {

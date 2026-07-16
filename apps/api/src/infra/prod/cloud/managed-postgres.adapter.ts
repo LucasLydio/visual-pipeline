@@ -6,9 +6,7 @@ import {
 } from '../../database/database-connection.adapter.js';
 import { createDatabaseConnectionOptions } from '../../database/database-connection.config.js';
 
-export abstract class ManagedPostgresAdapter
-  implements DatabaseConnectionAdapter
-{
+export abstract class ManagedPostgresAdapter implements DatabaseConnectionAdapter {
   abstract readonly source: DatabaseConnectionSource;
   protected abstract readonly providerUrlKey: string;
 

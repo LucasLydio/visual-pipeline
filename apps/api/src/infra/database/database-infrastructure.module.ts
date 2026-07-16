@@ -23,7 +23,11 @@ import { GcpCloudSqlAdapter } from '../prod/cloud/gcp-cloud-sql.adapter.js';
     CloudDatabaseAdapterFactory,
     {
       provide: DATABASE_CONNECTION_ADAPTER,
-      inject: [ConfigService, LocalPostgresAdapter, CloudDatabaseAdapterFactory],
+      inject: [
+        ConfigService,
+        LocalPostgresAdapter,
+        CloudDatabaseAdapterFactory,
+      ],
       useFactory: (
         config: ConfigService,
         local: LocalPostgresAdapter,

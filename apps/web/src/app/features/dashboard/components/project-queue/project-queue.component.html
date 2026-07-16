@@ -44,9 +44,9 @@
         <ol class="steps" [attr.aria-label]="project.name + ' pipeline steps'">
           @for (step of project.steps; track step.name; let index = $index) {
             <li [class]="'step step--' + step.status">
-              <span class="step-node" aria-hidden="true">{{ index + 1 }}</span>
+              <span class="step-node"  aria-hidden="true">{{ index + 1 }}</span>
               <span
-                ><strong>{{ step.name }}</strong
+                ><strong >{{ step.name }}</strong
                 ><small>{{ step.detail }}</small></span
               >
             </li>

@@ -20,13 +20,13 @@
   --white: #ffffffff;
   --cotton-rose: #f3babdff;
   --graphite: #484349ff;
-  --snow: #f7f0f0ff;
-  --seagrass: #61988eff;
+  --snow: rgb(246, 246, 246);
+  --seagrass: rgb(75, 183, 164);
 
   /* Semantic colors */
   --color-background: var(--snow);
   --color-surface: var(--white);
-  --color-surface-soft: #fcf8f8;
+  --color-surface-soft: #f3f3f3;
   --color-text: var(--graphite);
   --color-text-muted: #6f6870;
   --color-primary: var(--seagrass);

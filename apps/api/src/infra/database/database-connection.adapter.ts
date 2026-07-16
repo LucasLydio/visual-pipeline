@@ -3,10 +3,7 @@ export const DATABASE_CONNECTION_ADAPTER = Symbol(
 );
 
 export type DatabaseConnectionSource =
-  | 'local-postgres'
-  | 'aws-rds'
-  | 'gcp-cloud-sql'
-  | 'azure-postgres';
+  'local-postgres' | 'aws-rds' | 'gcp-cloud-sql' | 'azure-postgres';
 
 export interface DatabaseConnectionOptions {
   connectionString: string;

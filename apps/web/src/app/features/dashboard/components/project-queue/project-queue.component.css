@@ -57,7 +57,7 @@ h2 {
 .project-row {
   margin: 0;
   padding: 1rem;
-  background: var(--color-surface-soft);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 0.45rem;
   box-shadow: none;
@@ -168,7 +168,7 @@ h2 {
 .step::before {
   position: absolute;
   z-index: 0;
-  top: 0.72rem;
+  top: 0.92rem;
   right: calc(100% - 0.1rem);
   width: calc(100% - 1.4rem);
   height: 2px;
