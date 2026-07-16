@@ -1,0 +1,52 @@
+@if (project(); as project) {
+  <div class="dialog-backdrop" (click)="closeFromBackdrop($event)">
+    <section
+      class="members-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="members-dialog-title"
+    >
+      <header class="dialog-header">
+        <div>
+          <span class="section-label">Project team</span>
+          <h2 id="members-dialog-title">{{ project.name }}</h2>
+          <p>
+            <ng-icon name="lucideUsers" aria-hidden="true" />{{ project.members.length }} members
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-label="Close member details"
+          title="Close"
+          (click)="closed.emit()"
+        >
+          <ng-icon name="lucideX" aria-hidden="true" />
+        </button>
+      </header>
+
+      <div class="role-summary" aria-label="Role quantities">
+        @for (item of roleCounts(); track item.role) {
+          <span
+            ><strong>{{ item.count }}</strong
+            >{{ item.role }}</span
+          >
+        }
+      </div>
+
+      <ul class="member-list">
+        @for (member of project.members; track member.id) {
+          <li>
+            <span class="avatar" aria-hidden="true">{{ member.initials }}</span>
+            <span
+              ><strong>{{ member.name }}</strong
+              ><small>{{ member.role }}</small></span
+            >
+            @if (member.id === project.responsible.id) {
+              <span class="owner-label">Responsible</span>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+}

@@ -1,0 +1,364 @@
+:host {
+  display: block;
+}
+
+.queue-panel {
+  margin: 0;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-heading,
+.project-summary,
+.project-context,
+.responsible,
+.members-button {
+  display: flex;
+  align-items: center;
+}
+
+.panel-heading {
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-label,
+.project-name small,
+.project-context,
+.responsible small {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+}
+
+.section-label {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.15rem;
+}
+
+.project-total {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.project-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.project-row {
+  margin: 0;
+  padding: 1rem;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 0.45rem;
+  box-shadow: none;
+}
+
+.project-summary {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  gap: 0.7rem;
+}
+
+.queue-position,
+.provider-mark,
+.avatar,
+.empty-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.queue-position {
+  width: 2.35rem;
+  height: 1.65rem;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.queue-position.is-running {
+  background: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface));
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+
+.provider-mark {
+  width: 1.9rem;
+  height: 1.9rem;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.project-name {
+  display: grid;
+  min-width: 0;
+}
+
+.project-name strong,
+.project-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-name strong {
+  font-size: var(--font-size-sm);
+}
+
+.members-button {
+  width: 2.8rem;
+  min-height: 2rem;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+  box-shadow: none;
+  font-size: 0.68rem;
+}
+
+.project-context {
+  gap: 1rem;
+  margin: 0.8rem 0 1rem 5.65rem;
+}
+
+.project-context span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.project-context strong {
+  margin-left: auto;
+  font-size: 0.7rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0.9rem 0 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.step::before {
+  position: absolute;
+  z-index: 0;
+  top: 0.72rem;
+  right: calc(100% - 0.1rem);
+  width: calc(100% - 1.4rem);
+  height: 2px;
+  background: var(--color-border-strong);
+  content: '';
+}
+
+.step:first-child::before {
+  display: none;
+}
+
+.step--success::before,
+.step--running::before {
+  background: var(--color-primary);
+}
+
+.step-node {
+  z-index: 1;
+  display: grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-border-strong);
+  border-radius: 50%;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.step--success .step-node,
+.step--running .step-node {
+  background: var(--color-primary);
+  color: var(--white);
+  border-color: var(--color-primary);
+}
+
+.step--warning .step-node,
+.step--failed .step-node {
+  background: var(--color-accent);
+  color: var(--graphite);
+  border-color: var(--color-accent);
+}
+
+.step > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.step strong,
+.step small {
+  overflow: hidden;
+  font-size: 0.65rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.step small {
+  color: var(--color-text-muted);
+}
+
+.responsible {
+  gap: 0.55rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.avatar {
+  width: 1.85rem;
+  height: 1.85rem;
+  background: var(--color-accent);
+  color: var(--graphite);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.responsible > span:nth-child(2) {
+  display: grid;
+}
+
+.responsible strong,
+.role {
+  font-size: 0.68rem;
+}
+
+.role {
+  margin-left: auto;
+  color: var(--color-text-muted);
+}
+
+.empty-state {
+  display: grid;
+  min-height: 15rem;
+  place-content: center;
+  justify-items: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+}
+
+.empty-state h3 {
+  margin: 0.75rem 0 0.2rem;
+  font-size: 1rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+@media (max-width: 44rem) {
+  .queue-panel {
+    padding-inline: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .panel-heading {
+    padding-inline: 1rem;
+  }
+
+  .project-list {
+    gap: 0.5rem;
+  }
+
+  .project-row {
+    padding: 1rem;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .project-summary {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+
+  .project-summary vp-status-badge {
+    grid-column: 3;
+    width: max-content;
+  }
+
+  .members-button {
+    grid-column: 4;
+    grid-row: 1 / span 2;
+  }
+
+  .project-context {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.3rem 0.75rem;
+    margin: 0.8rem 0 1rem;
+  }
+
+  .project-context strong {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .step {
+    min-height: 2.8rem;
+  }
+
+  .step::before {
+    top: -0.7rem;
+    right: auto;
+    left: 0.68rem;
+    width: 2px;
+    height: 1.4rem;
+  }
+
+  .step strong,
+  .step small {
+    white-space: normal;
+  }
+}

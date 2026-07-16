@@ -1,0 +1,73 @@
+<section class="queue-panel" aria-labelledby="project-queue-title">
+  <div class="panel-heading">
+    <div>
+      <span class="section-label">Pipeline steps</span>
+      <h2 id="project-queue-title">Project queue</h2>
+    </div>
+    <span class="project-total">{{ projects().length }} active</span>
+  </div>
+
+  <div class="project-list">
+    @for (project of projects(); track project.id) {
+      <article class="project-row">
+        <div class="project-summary">
+          <span class="queue-position" [class.is-running]="project.queuePosition === null">
+            {{ project.queuePosition === null ? 'Live' : '#' + project.queuePosition }}
+          </span>
+          <span class="provider-mark" [attr.title]="project.provider" aria-hidden="true">
+            <ng-icon [name]="providerIcon(project.provider)" />
+          </span>
+          <span class="project-name">
+            <strong>{{ project.name }}</strong>
+            <small>{{ project.repository }}</small>
+          </span>
+          <vp-status-badge [status]="project.status" />
+          <button
+            class="members-button"
+            type="button"
+            [attr.aria-label]="'View ' + project.members.length + ' members for ' + project.name"
+            [attr.title]="'View team members'"
+            (click)="membersSelected.emit(project)"
+          >
+            <ng-icon name="lucideUsers" aria-hidden="true" />
+            <span>{{ project.members.length }}</span>
+          </button>
+        </div>
+
+        <div class="project-context">
+          <span><ng-icon name="lucideGitBranch" aria-hidden="true" />{{ project.branch }}</span>
+          <span>{{ project.environment }}</span>
+          <span><ng-icon name="lucideClock3" aria-hidden="true" />{{ project.queuedAt }}</span>
+          <strong>{{ project.estimate }}</strong>
+        </div>
+
+        <ol class="steps" [attr.aria-label]="project.name + ' pipeline steps'">
+          @for (step of project.steps; track step.name; let index = $index) {
+            <li [class]="'step step--' + step.status">
+              <span class="step-node" aria-hidden="true">{{ index + 1 }}</span>
+              <span
+                ><strong>{{ step.name }}</strong
+                ><small>{{ step.detail }}</small></span
+              >
+            </li>
+          }
+        </ol>
+
+        <div class="responsible">
+          <span class="avatar" aria-hidden="true">{{ project.responsible.initials }}</span>
+          <span>
+            <small>Responsible</small>
+            <strong>{{ project.responsible.name }}</strong>
+          </span>
+          <span class="role">{{ project.responsible.role }}</span>
+        </div>
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true"><ng-icon name="lucideGitBranch" /></span>
+        <h3>No projects in the queue</h3>
+        <p>Connected projects will appear here when a pipeline starts.</p>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  DISABLED
+}
+
+enum AuthProvider {
+  GITHUB
+}
+
+model User {
+  id                String        @id @default(uuid()) @db.Uuid
+  email             String        @unique @db.VarChar(320)
+  displayName       String        @db.VarChar(120)
+  passwordHash      String?       @db.VarChar(255)
+  emailVerifiedAt   DateTime?     @db.Timestamptz(3)
+  status            UserStatus    @default(ACTIVE)
+  lastLoginAt       DateTime?     @db.Timestamptz(3)
+  passwordChangedAt DateTime?     @db.Timestamptz(3)
+  createdAt         DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime      @updatedAt @db.Timestamptz(3)
+  authAccounts      AuthAccount[]
+
+  @@index([status])
+}
+
+model AuthAccount {
+  id                String       @id @default(uuid()) @db.Uuid
+  userId            String       @db.Uuid
+  provider          AuthProvider
+  providerAccountId String       @db.VarChar(255)
+  username          String?      @db.VarChar(255)
+  avatarUrl         String?      @db.Text
+  createdAt         DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime     @updatedAt @db.Timestamptz(3)
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}

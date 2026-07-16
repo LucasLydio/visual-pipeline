@@ -3,7 +3,11 @@ import { BehaviorSubject, catchError, map, of, startWith, switchMap } from 'rxjs
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { PipelineApi } from '../../../core/api/pipeline-api';
-import { DashboardSnapshot, MockScenario, PipelineRun } from '../../../core/models/pipeline.models';
+import {
+  DashboardSnapshot,
+  DeploymentRecord,
+  MockScenario,
+} from '../../../core/models/pipeline.models';
 import { MOCK_SCENARIOS } from '../../../core/testing/mock-dashboard.data';
 
 interface DashboardState {
@@ -40,18 +44,24 @@ export class DashboardFacade {
     { initialValue: { loading: true, snapshot: null, error: null } },
   );
 
-  readonly filteredRuns = computed<readonly PipelineRun[]>(() => {
-    const runs = this.state().snapshot?.runs ?? [];
+  readonly filteredDeployments = computed<readonly DeploymentRecord[]>(() => {
+    const deployments = this.state().snapshot?.deployments ?? [];
     const query = this.searchQuery().trim().toLowerCase();
 
     if (!query) {
-      return runs;
+      return deployments;
     }
 
-    return runs.filter((run) =>
-      [run.id, run.service, run.branch, run.author, run.status].some((value) =>
-        value.toLowerCase().includes(query),
-      ),
+    return deployments.filter((deployment) =>
+      [
+        deployment.id,
+        deployment.project,
+        deployment.environment,
+        deployment.version,
+        deployment.branch,
+        deployment.responsible,
+        deployment.status,
+      ].some((value) => value.toLowerCase().includes(query)),
     );
   });
 

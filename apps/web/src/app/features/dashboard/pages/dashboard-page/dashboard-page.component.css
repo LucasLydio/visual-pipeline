@@ -1,7 +1,8 @@
 main.workspace-content {
-  width: min(100% - 3rem, 92rem);
+  width: 100%;
+  max-width: 92rem;
   margin-inline: auto;
-  padding-block: 1.75rem 3rem;
+  padding: 1.5rem clamp(1rem, 2.5vw, 2rem) 3rem;
 }
 
 .page-heading,
@@ -14,29 +15,30 @@ main.workspace-content {
 .page-heading {
   justify-content: space-between;
   gap: 1.5rem;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.25rem;
 }
 
 .page-heading h1 {
-  margin: 0.35rem 0 0.3rem;
-  font-size: 1.8rem;
+  margin: 0.25rem 0 0.2rem;
+  font-size: 1.65rem;
 }
 
 .page-heading p {
   margin: 0;
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
 
 .eyebrow-row {
-  gap: 0.55rem;
+  gap: 0.5rem;
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
   font-weight: 600;
 }
 
 .environment-dot {
-  width: 0.55rem;
-  height: 0.55rem;
+  width: 0.5rem;
+  height: 0.5rem;
   flex: 0 0 auto;
   background: currentColor;
   border-radius: 50%;
@@ -54,10 +56,11 @@ main.workspace-content {
 }
 
 .page-actions {
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
-.updated-at {
+.updated-at,
+.scenario-control > span {
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
 }
@@ -65,63 +68,54 @@ main.workspace-content {
 .scenario-control {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   margin: 0;
 }
 
-.scenario-control > span {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-}
-
 .scenario-control select,
-.secondary-button {
-  min-height: 2.5rem;
-  padding: 0.55rem 0.75rem;
-  font-size: var(--font-size-sm);
+.refresh-button {
+  min-height: 2.4rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+  box-shadow: none;
 }
 
 .scenario-control select {
   width: auto;
-  background: var(--color-surface);
+  padding: 0.5rem 0.7rem;
+  font-size: var(--font-size-xs);
 }
 
-.secondary-button {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  box-shadow: none;
-}
-
-.dashboard-grid {
+.refresh-button {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
-  gap: 1.25rem;
+  width: 2.4rem;
+  place-items: center;
+  padding: 0;
 }
 
-.dashboard-main {
+.dashboard-content {
   display: grid;
-  align-content: start;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .loading-state {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  gap: 1rem;
   margin: 0;
 }
 
 .loading-state span {
-  min-height: 12rem;
+  min-height: 18rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-lg);
+  border-radius: 0.5rem;
   animation: pulse 1.2s ease-in-out infinite alternate;
 }
 
-.loading-state span:first-child {
-  grid-column: span 2;
+.loading-state span:last-child {
+  min-height: 12rem;
 }
 
 .error-state {
@@ -133,7 +127,7 @@ main.workspace-content {
   padding: 2rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-lg);
+  border-radius: 0.5rem;
 }
 
 .error-state h2 {
@@ -157,21 +151,16 @@ main.workspace-content {
   }
 }
 
-@media (max-width: 70rem) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 48rem) {
   main.workspace-content {
-    width: min(100% - 1rem, 92rem);
-    padding-top: 1.25rem;
+    padding-inline: 0;
+    padding-top: 1rem;
   }
 
   .page-heading {
     align-items: flex-start;
     flex-direction: column;
+    padding-inline: 1rem;
   }
 
   .page-actions {
@@ -184,11 +173,19 @@ main.workspace-content {
   }
 
   .scenario-control {
+    min-width: 0;
     flex: 1;
   }
 
   .scenario-control select {
+    min-width: 0;
     flex: 1;
+  }
+
+  .error-state {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
   }
 }
 

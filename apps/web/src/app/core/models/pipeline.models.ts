@@ -15,6 +15,42 @@ export interface PipelineStage {
   readonly status: PipelineStatus;
 }
 
+export type SourceProvider = 'GitHub' | 'GitLab' | 'Bitbucket';
+
+export interface TeamMember {
+  readonly id: string;
+  readonly name: string;
+  readonly initials: string;
+  readonly role: string;
+}
+
+export interface QueuedProject {
+  readonly id: string;
+  readonly name: string;
+  readonly repository: string;
+  readonly provider: SourceProvider;
+  readonly branch: string;
+  readonly environment: string;
+  readonly status: PipelineStatus;
+  readonly queuePosition: number | null;
+  readonly queuedAt: string;
+  readonly estimate: string;
+  readonly responsible: TeamMember;
+  readonly members: readonly TeamMember[];
+  readonly steps: readonly PipelineStage[];
+}
+
+export interface DeploymentRecord {
+  readonly id: string;
+  readonly project: string;
+  readonly environment: string;
+  readonly version: string;
+  readonly branch: string;
+  readonly deployedAt: string;
+  readonly responsible: string;
+  readonly status: PipelineStatus;
+}
+
 export interface PipelineRun {
   readonly id: string;
   readonly service: string;
@@ -59,16 +95,12 @@ export interface AgentRegion {
 }
 
 export interface DashboardSnapshot {
-  readonly environmentLabel: string;
-  readonly environmentStatus: PipelineStatus;
-  readonly branch: string;
+  readonly workspaceName: string;
+  readonly workspaceStatus: PipelineStatus;
+  readonly summary: string;
   readonly updatedLabel: string;
-  readonly metrics: readonly Metric[];
-  readonly activePipeline: ActivePipeline | null;
-  readonly runs: readonly PipelineRun[];
-  readonly readiness: ReleaseReadiness;
-  readonly deploymentQueue: readonly DeploymentQueueItem[];
-  readonly agentRegions: readonly AgentRegion[];
+  readonly projects: readonly QueuedProject[];
+  readonly deployments: readonly DeploymentRecord[];
 }
 
 export interface MockScenarioOption {

@@ -1,242 +1,231 @@
 import {
   DashboardSnapshot,
+  DeploymentRecord,
   MockScenario,
   MockScenarioOption,
-  PipelineRun,
   PipelineStage,
+  QueuedProject,
+  TeamMember,
 } from '../models/pipeline.models';
 
 export const MOCK_SCENARIOS: readonly MockScenarioOption[] = [
-  { id: 'healthy', label: 'Healthy', description: 'Normal delivery flow' },
-  { id: 'degraded', label: 'Degraded', description: 'Warnings and slower checks' },
-  { id: 'incident', label: 'Incident', description: 'Failed production pipeline' },
-  { id: 'empty', label: 'Empty', description: 'New workspace without runs' },
+  { id: 'healthy', label: 'Team flow', description: 'Projects moving normally' },
+  { id: 'degraded', label: 'Busy queue', description: 'A warning and longer waits' },
+  { id: 'incident', label: 'Blocked deploy', description: 'A failed production step' },
+  { id: 'empty', label: 'New team', description: 'No connected projects yet' },
   { id: 'offline', label: 'API offline', description: 'Network error state' },
 ];
 
-const healthyStages: readonly PipelineStage[] = [
+const maya: TeamMember = {
+  id: 'member-maya',
+  name: 'Maya Chen',
+  initials: 'MC',
+  role: 'Tech lead',
+};
+const andre: TeamMember = {
+  id: 'member-andre',
+  name: 'Andre Costa',
+  initials: 'AC',
+  role: 'Backend developer',
+};
+const priya: TeamMember = {
+  id: 'member-priya',
+  name: 'Priya Shah',
+  initials: 'PS',
+  role: 'Frontend developer',
+};
+const jon: TeamMember = {
+  id: 'member-jon',
+  name: 'Jon Bell',
+  initials: 'JB',
+  role: 'DevOps engineer',
+};
+const sofia: TeamMember = {
+  id: 'member-sofia',
+  name: 'Sofia Reyes',
+  initials: 'SR',
+  role: 'QA engineer',
+};
+
+const checkoutSteps: readonly PipelineStage[] = [
   { name: 'Validate', detail: '32s', status: 'success' },
-  { name: 'Unit checks', detail: '1m 18s', status: 'success' },
+  { name: 'Tests', detail: '1m 18s', status: 'success' },
   { name: 'Build', detail: '2m 46s', status: 'success' },
-  { name: 'Security scan', detail: '1 warning', status: 'warning' },
-  { name: 'Staging', detail: 'Running', status: 'running' },
-  { name: 'Production', detail: 'Waiting', status: 'queued' },
+  { name: 'Security', detail: 'Running', status: 'running' },
+  { name: 'Deploy', detail: 'Waiting', status: 'queued' },
 ];
 
-const healthyRuns: readonly PipelineRun[] = [
+const webSteps: readonly PipelineStage[] = [
+  { name: 'Validate', detail: '28s', status: 'success' },
+  { name: 'Tests', detail: 'Passed', status: 'success' },
+  { name: 'Build', detail: 'Queued', status: 'queued' },
+  { name: 'Preview', detail: 'Waiting', status: 'queued' },
+  { name: 'Deploy', detail: 'Waiting', status: 'queued' },
+];
+
+const workerSteps: readonly PipelineStage[] = [
+  { name: 'Validate', detail: 'Passed', status: 'success' },
+  { name: 'Tests', detail: '2 warnings', status: 'warning' },
+  { name: 'Build', detail: 'Waiting', status: 'queued' },
+  { name: 'Security', detail: 'Waiting', status: 'queued' },
+  { name: 'Deploy', detail: 'Waiting', status: 'queued' },
+];
+
+const projects: readonly QueuedProject[] = [
   {
-    id: '#8421',
-    service: 'checkout-service',
+    id: 'project-checkout',
+    name: 'Checkout service',
+    repository: 'acme/checkout-service',
+    provider: 'GitHub',
     branch: 'main',
-    author: 'Maya Chen',
-    duration: '6m 12s',
-    started: '4 min ago',
+    environment: 'Production',
     status: 'running',
+    queuePosition: null,
+    queuedAt: 'Started 4 min ago',
+    estimate: '~3 min left',
+    responsible: maya,
+    members: [maya, andre, jon, sofia],
+    steps: checkoutSteps,
   },
   {
-    id: '#8420',
-    service: 'identity-api',
+    id: 'project-web',
+    name: 'Team console',
+    repository: 'acme/visual-console',
+    provider: 'GitLab',
+    branch: 'feat/project-queue',
+    environment: 'Preview',
+    status: 'queued',
+    queuePosition: 1,
+    queuedAt: 'Queued 2 min ago',
+    estimate: '~8 min',
+    responsible: priya,
+    members: [priya, maya, sofia],
+    steps: webSteps,
+  },
+  {
+    id: 'project-worker',
+    name: 'Billing worker',
+    repository: 'acme/billing-worker',
+    provider: 'Bitbucket',
+    branch: 'fix/retry-window',
+    environment: 'Staging',
+    status: 'warning',
+    queuePosition: 2,
+    queuedAt: 'Queued 7 min ago',
+    estimate: '~14 min',
+    responsible: andre,
+    members: [andre, jon, sofia],
+    steps: workerSteps,
+  },
+];
+
+const deployments: readonly DeploymentRecord[] = [
+  {
+    id: 'deploy-2048',
+    project: 'Checkout service',
+    environment: 'Production',
+    version: 'v2.18.4',
     branch: 'main',
-    author: 'Andre Costa',
-    duration: '7m 04s',
-    started: '22 min ago',
+    deployedAt: 'Today, 10:42',
+    responsible: 'Maya Chen',
     status: 'success',
   },
   {
-    id: '#8419',
-    service: 'web-console',
-    branch: 'feature/usage-view',
-    author: 'Priya Shah',
-    duration: '5m 48s',
-    started: '41 min ago',
+    id: 'deploy-2047',
+    project: 'Identity API',
+    environment: 'Production',
+    version: 'v4.9.1',
+    branch: 'main',
+    deployedAt: 'Today, 09:18',
+    responsible: 'Andre Costa',
+    status: 'success',
+  },
+  {
+    id: 'deploy-2046',
+    project: 'Team console',
+    environment: 'Preview',
+    version: 'pr-184',
+    branch: 'feat/member-modal',
+    deployedAt: 'Yesterday, 17:06',
+    responsible: 'Priya Shah',
     status: 'warning',
   },
   {
-    id: '#8418',
-    service: 'billing-worker',
+    id: 'deploy-2045',
+    project: 'Billing worker',
+    environment: 'Staging',
+    version: 'v1.32.0',
     branch: 'main',
-    author: 'Jon Bell',
-    duration: '3m 21s',
-    started: '1 hr ago',
+    deployedAt: 'Yesterday, 15:51',
+    responsible: 'Jon Bell',
     status: 'failed',
   },
 ];
 
 const healthy: DashboardSnapshot = {
-  environmentLabel: 'Production healthy',
-  environmentStatus: 'success',
-  branch: 'main',
+  workspaceName: 'Acme delivery queue',
+  workspaceStatus: 'success',
+  summary: 'One project is running and two are ready for the team.',
   updatedLabel: 'Updated 2 minutes ago',
-  metrics: [
-    { label: 'Success rate', value: '96.4%', detail: '+2.1% this month', trend: 'positive' },
-    { label: 'Lead time', value: '8m 24s', detail: '41s faster', trend: 'positive' },
-    { label: 'Deploy frequency', value: '18/day', detail: 'Across 6 services', trend: 'neutral' },
-    { label: 'Active agents', value: '3 / 3', detail: 'All systems healthy', trend: 'positive' },
-  ],
-  activePipeline: {
-    id: '#8421',
-    service: 'checkout-service',
-    commitMessage: 'feat: validate cart totals before authorization',
-    duration: '6m 12s',
-    status: 'running',
-    author: 'Maya Chen',
-    authorInitials: 'MC',
-    commit: 'e41b7a2',
-    branch: 'main',
-    stages: healthyStages,
-  },
-  runs: healthyRuns,
-  readiness: {
-    environment: 'Production',
-    score: 92,
-    requiredChecks: '12 / 12',
-    openWarnings: '1 review',
-    changeRisk: 'Low',
-  },
-  deploymentQueue: [
-    {
-      service: 'checkout-service',
-      environment: 'Production',
-      state: 'Awaiting scan',
-      estimate: '~8m',
-    },
-    {
-      service: 'web-console',
-      environment: 'Staging',
-      state: 'Approved',
-      estimate: '~14m',
-    },
-  ],
-  agentRegions: [
-    { region: 'us-east-1', utilization: 42 },
-    { region: 'eu-west-1', utilization: 28 },
-    { region: 'sa-east-1', utilization: 61 },
-  ],
+  projects,
+  deployments,
 };
 
 const degraded: DashboardSnapshot = {
   ...healthy,
-  environmentLabel: 'Production degraded',
-  environmentStatus: 'warning',
-  updatedLabel: 'Updated 1 minute ago',
-  metrics: [
-    { label: 'Success rate', value: '82.7%', detail: '-8.4% this week', trend: 'negative' },
-    { label: 'Lead time', value: '17m 09s', detail: '6m slower', trend: 'negative' },
-    { label: 'Deploy frequency', value: '9/day', detail: 'Across 6 services', trend: 'neutral' },
-    { label: 'Active agents', value: '2 / 3', detail: 'One agent constrained', trend: 'negative' },
-  ],
-  activePipeline: {
-    ...healthy.activePipeline!,
-    id: '#8427',
-    duration: '14m 33s',
-    stages: [
-      { name: 'Validate', detail: '44s', status: 'success' },
-      { name: 'Unit checks', detail: '2m 52s', status: 'success' },
-      { name: 'Build', detail: '7m 10s', status: 'warning' },
-      { name: 'Security scan', detail: '3 warnings', status: 'warning' },
-      { name: 'Staging', detail: 'Running', status: 'running' },
-      { name: 'Production', detail: 'Waiting', status: 'queued' },
-    ],
-  },
-  readiness: { ...healthy.readiness, score: 68, openWarnings: '3 reviews', changeRisk: 'Medium' },
-  agentRegions: [
-    { region: 'us-east-1', utilization: 78 },
-    { region: 'eu-west-1', utilization: 91 },
-    { region: 'sa-east-1', utilization: 67 },
-  ],
+  workspaceStatus: 'warning',
+  summary: 'The queue is moving slowly while one project needs attention.',
+  updatedLabel: 'Updated just now',
+  projects: projects.map((project, index) =>
+    index === 0
+      ? {
+          ...project,
+          status: 'warning' as const,
+          estimate: '~12 min left',
+          steps: project.steps.map((step) =>
+            step.name === 'Security'
+              ? { ...step, detail: '2 warnings', status: 'warning' as const }
+              : step,
+          ),
+        }
+      : { ...project, queuePosition: index + 2, estimate: `~${18 + index * 6} min` },
+  ),
 };
 
 const incident: DashboardSnapshot = {
   ...healthy,
-  environmentLabel: 'Production incident',
-  environmentStatus: 'failed',
-  branch: 'hotfix/payment-timeout',
+  workspaceStatus: 'failed',
+  summary: 'Production is blocked. The responsible team has been notified.',
   updatedLabel: 'Updated just now',
-  metrics: [
-    { label: 'Success rate', value: '61.2%', detail: '-24.8% today', trend: 'negative' },
-    { label: 'Lead time', value: '31m 40s', detail: 'Critical regression', trend: 'negative' },
+  projects: [
     {
-      label: 'Deploy frequency',
-      value: '3/day',
-      detail: 'Release freeze active',
-      trend: 'negative',
-    },
-    { label: 'Active agents', value: '2 / 3', detail: 'One agent offline', trend: 'negative' },
-  ],
-  activePipeline: {
-    ...healthy.activePipeline!,
-    id: '#8432',
-    service: 'billing-worker',
-    commitMessage: 'hotfix: retry payment provider timeouts',
-    duration: '4m 08s',
-    status: 'failed',
-    branch: 'hotfix/payment-timeout',
-    stages: [
-      { name: 'Validate', detail: '29s', status: 'success' },
-      { name: 'Unit checks', detail: '1m 05s', status: 'success' },
-      { name: 'Build', detail: '2m 12s', status: 'success' },
-      { name: 'Security scan', detail: 'Failed', status: 'failed' },
-      { name: 'Staging', detail: 'Blocked', status: 'queued' },
-      { name: 'Production', detail: 'Blocked', status: 'queued' },
-    ],
-  },
-  runs: [
-    {
-      id: '#8432',
-      service: 'billing-worker',
-      branch: 'hotfix/payment-timeout',
-      author: 'Maya Chen',
-      duration: '4m 08s',
-      started: 'Just now',
+      ...projects[0],
+      name: 'Payment gateway',
+      repository: 'acme/payment-gateway',
+      branch: 'hotfix/provider-timeout',
       status: 'failed',
+      estimate: 'Blocked',
+      steps: [
+        { name: 'Validate', detail: 'Passed', status: 'success' },
+        { name: 'Tests', detail: 'Passed', status: 'success' },
+        { name: 'Build', detail: 'Passed', status: 'success' },
+        { name: 'Security', detail: 'Failed', status: 'failed' },
+        { name: 'Deploy', detail: 'Blocked', status: 'queued' },
+      ],
     },
-    ...healthyRuns.slice(1),
-  ],
-  readiness: {
-    environment: 'Production',
-    score: 38,
-    requiredChecks: '8 / 12',
-    openWarnings: '4 blockers',
-    changeRisk: 'High',
-  },
-  deploymentQueue: [],
-  agentRegions: [
-    { region: 'us-east-1', utilization: 96 },
-    { region: 'eu-west-1', utilization: 88 },
-    { region: 'sa-east-1', utilization: 0 },
+    ...projects.slice(1),
   ],
 };
 
 const empty: DashboardSnapshot = {
-  ...healthy,
-  environmentLabel: 'Workspace ready',
-  environmentStatus: 'queued',
-  branch: 'No repository connected',
-  updatedLabel: 'No pipeline activity yet',
-  metrics: [
-    { label: 'Success rate', value: '--', detail: 'No data yet', trend: 'neutral' },
-    { label: 'Lead time', value: '--', detail: 'No data yet', trend: 'neutral' },
-    { label: 'Deploy frequency', value: '0', detail: 'No services connected', trend: 'neutral' },
-    { label: 'Active agents', value: '0 / 0', detail: 'No agents registered', trend: 'neutral' },
-  ],
-  activePipeline: null,
-  runs: [],
-  readiness: {
-    environment: 'Production',
-    score: 0,
-    requiredChecks: '0 / 0',
-    openWarnings: 'None',
-    changeRisk: 'Unknown',
-  },
-  deploymentQueue: [],
-  agentRegions: [],
+  workspaceName: 'Your delivery queue',
+  workspaceStatus: 'queued',
+  summary: 'Connect a repository to queue the first project.',
+  updatedLabel: 'No activity yet',
+  projects: [],
+  deployments: [],
 };
 
 export const MOCK_DASHBOARDS: Readonly<
   Record<Exclude<MockScenario, 'offline'>, DashboardSnapshot>
-> = {
-  healthy,
-  degraded,
-  incident,
-  empty,
-};
+> = { healthy, degraded, incident, empty };

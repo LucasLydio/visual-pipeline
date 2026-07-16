@@ -2,13 +2,15 @@
   <section id="overview" class="page-heading" aria-labelledby="overview-title">
     <div>
       @if (facade.state().snapshot; as snapshot) {
-        <div [class]="'eyebrow-row environment--' + snapshot.environmentStatus">
+        <div [class]="'eyebrow-row environment--' + snapshot.workspaceStatus">
           <span class="environment-dot" aria-hidden="true"></span>
-          {{ snapshot.environmentLabel }}<span aria-hidden="true">/</span>{{ snapshot.branch }}
+          {{ snapshot.workspaceName }}
         </div>
       }
-      <h1 id="overview-title">Delivery overview</h1>
-      <p>Track delivery health across services, environments, and deployment agents.</p>
+      <h1 id="overview-title">Team delivery</h1>
+      @if (facade.state().snapshot; as snapshot) {
+        <p>{{ snapshot.summary }}</p>
+      }
     </div>
     <div class="page-actions">
       @if (facade.state().snapshot; as snapshot) {
@@ -22,13 +24,21 @@
           }
         </select>
       </label>
-      <button class="secondary-button" type="button" (click)="facade.refresh()">Refresh</button>
+      <button
+        class="refresh-button"
+        type="button"
+        aria-label="Refresh dashboard"
+        title="Refresh dashboard"
+        (click)="facade.refresh()"
+      >
+        <ng-icon name="lucideRefreshCw" aria-hidden="true" />
+      </button>
     </div>
   </section>
 
   @if (facade.state().loading) {
     <section class="loading-state" aria-live="polite" aria-label="Loading dashboard">
-      <span></span><span></span><span></span>
+      <span></span><span></span>
     </section>
   } @else if (facade.state().error; as error) {
     <section class="error-state" role="alert">
@@ -38,25 +48,22 @@
       <button type="button" (click)="facade.refresh()">Try again</button>
     </section>
   } @else if (facade.state().snapshot; as snapshot) {
-    <vp-metrics-strip [metrics]="snapshot.metrics" />
-
-    <div class="dashboard-grid">
-      <div class="dashboard-main">
-        <div id="pipelines"><vp-active-pipeline [pipeline]="snapshot.activePipeline" /></div>
-        <div id="recent-runs">
-          <vp-run-history
-            [runs]="facade.filteredRuns()"
-            [query]="facade.searchQuery()"
-            (queryChange)="facade.searchQuery.set($event)"
-          />
-        </div>
+    <div class="dashboard-content">
+      <div id="pipelines">
+        <vp-project-queue
+          [projects]="snapshot.projects"
+          (membersSelected)="selectedProject.set($event)"
+        />
       </div>
-      <vp-deployment-status
-        [readiness]="snapshot.readiness"
-        [queue]="snapshot.deploymentQueue"
-        [regions]="snapshot.agentRegions"
-        [environmentStatus]="snapshot.environmentStatus"
-      />
+      <div id="deployments">
+        <vp-deployment-history
+          [deployments]="facade.filteredDeployments()"
+          [query]="facade.searchQuery()"
+          (queryChange)="facade.searchQuery.set($event)"
+        />
+      </div>
     </div>
   }
 </main>
+
+<vp-team-members-dialog [project]="selectedProject()" (closed)="selectedProject.set(null)" />

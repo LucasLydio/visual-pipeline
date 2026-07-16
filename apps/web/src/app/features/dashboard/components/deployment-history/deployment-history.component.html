@@ -1,0 +1,64 @@
+<section class="history-panel" aria-labelledby="deployment-history-title">
+  <div class="panel-heading">
+    <div>
+      <span class="section-label">Deployments</span>
+      <h2 id="deployment-history-title">History</h2>
+    </div>
+    <label class="search-field">
+      <span class="visually-hidden">Search deployment history</span>
+      <ng-icon name="lucideSearch" aria-hidden="true" />
+      <input
+        type="search"
+        placeholder="Search project, version or owner"
+        [value]="query()"
+        (input)="updateQuery($event)"
+      />
+    </label>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Project</th>
+          <th scope="col">Release</th>
+          <th scope="col">Environment</th>
+          <th scope="col">Deployed</th>
+          <th scope="col">Responsible</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (deployment of deployments(); track deployment.id) {
+          <tr>
+            <td data-label="Project">
+              <strong>{{ deployment.project }}</strong>
+              <small>{{ deployment.id }}</small>
+            </td>
+            <td data-label="Release">
+              <strong>{{ deployment.version }}</strong>
+              <small
+                ><ng-icon name="lucideGitBranch" aria-hidden="true" />{{ deployment.branch }}</small
+              >
+            </td>
+            <td data-label="Environment">{{ deployment.environment }}</td>
+            <td data-label="Deployed">{{ deployment.deployedAt }}</td>
+            <td data-label="Responsible">{{ deployment.responsible }}</td>
+            <td data-label="Status"><vp-status-badge [status]="deployment.status" /></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td class="empty-state" colspan="6">
+              <ng-icon name="lucideHistory" aria-hidden="true" />
+              @if (query()) {
+                No deployment matches &quot;{{ query() }}&quot;.
+              } @else {
+                Deployment history will appear here.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
