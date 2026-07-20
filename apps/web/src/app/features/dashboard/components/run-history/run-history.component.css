@@ -78,7 +78,7 @@ code {
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
   border-radius: var(--border-sm);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 .empty-state {

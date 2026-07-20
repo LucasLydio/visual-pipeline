@@ -91,8 +91,8 @@ p {
 .stage-node {
   z-index: 1;
   display: grid;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2.15rem;
+  height: 2.15rem;
   place-items: center;
   background: var(--color-surface);
   color: var(--color-text-muted);

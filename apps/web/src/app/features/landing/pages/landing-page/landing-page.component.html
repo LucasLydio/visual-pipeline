@@ -37,8 +37,7 @@
         <div class="login-group" aria-label="Log in to Visual Pipeline">
           <a
             class="provider-login github-login"
-            routerLink="/app"
-            [queryParams]="{ provider: 'github' }"
+            href="http://localhost:3000/auth/github?redirectTo=/app"
           >
             <ng-icon name="simpleGithub" aria-hidden="true" />
             <span>Log in with GitHub</span>

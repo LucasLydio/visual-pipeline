@@ -79,7 +79,7 @@ table {
 th,
 td {
   padding: 0.75rem 1.25rem;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 td > strong,
@@ -90,7 +90,7 @@ td > small {
 td small {
   gap: 0.25rem;
   color: var(--color-text-muted);
-  font-size: 0.65rem;
+  font-size: 0.8rem;
 }
 
 .empty-state {
@@ -157,7 +157,7 @@ td small {
   td::before {
     color: var(--color-text-muted);
     content: attr(data-label);
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     text-align: left;
   }
 

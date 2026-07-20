@@ -31,7 +31,7 @@
 .project-context,
 .responsible small {
   color: var(--color-text-muted);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 .section-label {
@@ -84,7 +84,7 @@ h2 {
   color: var(--color-text-muted);
   border: 1px solid var(--color-border-strong);
   border-radius: 0.35rem;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -98,7 +98,7 @@ h2 {
   width: 1.9rem;
   height: 1.9rem;
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 
 .project-name {
@@ -128,7 +128,11 @@ h2 {
   border: 1px solid var(--color-border);
   border-radius: 0.4rem;
   box-shadow: none;
-  font-size: 0.68rem;
+  font-size: 0.8rem;
+  transition: ease 0.2s;
+  &:hover {
+    color: var(--white);
+  }
 }
 
 .project-context {
@@ -145,7 +149,7 @@ h2 {
 
 .project-context strong {
   margin-left: auto;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 .steps {
@@ -168,7 +172,7 @@ h2 {
 .step::before {
   position: absolute;
   z-index: 0;
-  top: 0.92rem;
+  top: 1.2rem;
   right: calc(100% - 0.1rem);
   width: calc(100% - 1.4rem);
   height: 2px;
@@ -188,14 +192,14 @@ h2 {
 .step-node {
   z-index: 1;
   display: grid;
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 1.95rem;
+  height: 1.95rem;
   place-items: center;
   background: var(--color-surface);
   color: var(--color-text-muted);
   border: 2px solid var(--color-border-strong);
   border-radius: 50%;
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -221,7 +225,7 @@ h2 {
 .step strong,
 .step small {
   overflow: hidden;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -243,7 +247,7 @@ h2 {
   background: var(--color-accent);
   color: var(--graphite);
   border-radius: 50%;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -352,7 +356,7 @@ h2 {
   .step::before {
     top: -0.7rem;
     right: auto;
-    left: 0.68rem;
+    left: 0.88rem;
     width: 2px;
     height: 1.4rem;
   }

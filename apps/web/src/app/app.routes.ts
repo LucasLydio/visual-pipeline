@@ -10,6 +10,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'auth/callback',
+    title: 'Completing login | Visual Pipeline',
+    loadComponent: () =>
+      import('./features/auth/pages/auth-callback/auth-callback.component').then(
+        (module) => module.AuthCallbackComponent,
+      ),
+  },
+  {
     path: 'app',
     loadComponent: () =>
       import('./layout/app-shell/app-shell.component').then((module) => module.AppShellComponent),

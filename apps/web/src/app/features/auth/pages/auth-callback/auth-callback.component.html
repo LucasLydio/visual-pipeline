@@ -1,0 +1,12 @@
+<main class="auth-callback">
+  @if (isSuccess()) {
+    <ng-icon name="lucideLoaderCircle" aria-hidden="true" />
+    <h1>Finishing login</h1>
+    <p>Taking you to your workspace.</p>
+  } @else {
+    <ng-icon name="lucideAlertCircle" aria-hidden="true" />
+    <h1>GitHub login failed</h1>
+    <p>{{ error }}</p>
+    <a routerLink="/">Back to login</a>
+  }
+</main>
