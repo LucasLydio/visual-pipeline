@@ -1,0 +1,39 @@
+<section class="panel">
+  <header>
+    <div>
+      <span class="section-label">Projects</span>
+      <h2>Synced repositories</h2>
+    </div>
+    <label>
+      <ng-icon name="lucideSearch" aria-hidden="true" />
+      <input
+        type="search"
+        placeholder="Search"
+        [value]="query"
+        (input)="queryChange.emit($any($event.target).value)"
+      />
+    </label>
+  </header>
+
+  <div class="project-grid">
+    @for (project of projects; track project.id) {
+      <article [class.is-selected]="selectedProject?.id === project.id">
+        <button type="button" class="project-main" (click)="projectSelected.emit(project)">
+          <span>{{ project.provider }}</span>
+          <strong>{{ project.name }}</strong>
+          <small>{{ project.defaultBranch }} - {{ project.status }}</small>
+        </button>
+        <button
+          type="button"
+          class="archive"
+          title="Archive project"
+          (click)="archiveProject.emit(project)"
+        >
+          <ng-icon name="lucideArchive" aria-hidden="true" />
+        </button>
+      </article>
+    } @empty {
+      <p class="empty-copy">Sync a project to start building your queue.</p>
+    }
+  </div>
+</section>

@@ -6,15 +6,18 @@ This README is the live onboarding document for the repository. Update it whenev
 
 ## Current status
 
-Step 1 establishes the monorepo foundation:
+The repository currently includes the monorepo foundation plus the first live product flow:
 
 - Angular web application
 - NestJS API
 - NestJS deployment agent
 - Shared TypeScript contracts
 - npm workspaces and root development commands
+- Postgres + Prisma persistence for users, teams, projects, sessions, and audit-ready records
+- GitHub OAuth login
+- Live dashboard API for teams, members, roles, titles, and connected projects
 
-The current scope intentionally contains no database, Redis, GitHub App, or deployment logic. Those capabilities belong in later documented steps.
+Deployment execution is still outside the current scope. The dashboard can connect projects and organize ownership, but pipeline execution should be added in a later documented step.
 
 ## Requirements
 
@@ -50,18 +53,35 @@ npm run dev:agent
 
 Set `PORT` to override a NestJS service port when needed.
 
-## Web routes and mock APIs
+## Web Routes And Live APIs
 
-The Angular workspace currently exposes two routes:
+The Angular workspace currently exposes these main routes:
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Public landing page and mock early-access form |
-| `/app` | Visual Pipeline delivery dashboard |
+| `/` | Public landing page with GitHub, GitLab, and Bitbucket entry points |
+| `/auth/callback` | Stores the API session returned after GitHub OAuth |
+| `/app` | Live dashboard for teams, members, roles, titles, and connected projects |
 
-UI features depend on the abstract `PipelineApi` and `LeadApi` contracts under `apps/web/src/app/core/api`. The application configuration currently injects mock adapters from `core/testing`; replace those providers with HTTP adapters when the backend contracts are ready.
+The dashboard uses `TeamApi` from `apps/web/src/app/core/api` and the `HttpTeamApiService` adapter. It calls the NestJS API directly; mock dashboard adapters have been removed.
 
-The dashboard's **Mock scenario** selector can load healthy, degraded, incident, empty, and API-offline states. Every mock request includes a short delay so loading and error handling can be exercised in the browser.
+Set the frontend API base URL in `apps/web/src/environments/environment.ts`. The local default is `http://localhost:3000`.
+
+The API exposes a frontend-optimized `GET /workspace/dashboard` endpoint so the dashboard can load the current user, active team, members, and projects with one request instead of reaching repeatedly into team and project routes.
+
+## Local Auth Setup
+
+For GitHub login, configure `apps/api/.env`:
+
+```bash
+GITHUB_CLIENT_ID=your_client_id
+GITHUB_CLIENT_SECRET=your_client_secret
+GITHUB_CALLBACK_URL=http://localhost:3000/auth/github/callback
+FRONTEND_ORIGIN=http://localhost:4200
+FRONTEND_AUTH_CALLBACK_URL=http://localhost:4200/auth/callback
+```
+
+After changing API environment values, restart `npm run dev:api`.
 
 ## Workspace commands
 
@@ -109,9 +129,9 @@ visual-pipeline/
 ```bash
 npm install
 npm run build
-npm run start --workspace=apps/web
-npm run start:dev --workspace=apps/api
-npm run start:dev --workspace=apps/deploy-agent
+npm run dev:web
+npm run dev:api
+npm run dev:agent
 npm run build --workspace=@visual-pipeline/contracts
 ```
 

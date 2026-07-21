@@ -7,9 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:web": "npm run start --workspace=apps/web",
-    "dev:api": "npm run start:dev --workspace=apps/api",
-    "dev:agent": "npm run start:dev --workspace=apps/deploy-agent",
+    "dev:web": "npm --prefix apps/web run start",
+    "dev:api": "npm --prefix apps/api run start:dev",
+    "dev:agent": "npm --prefix apps/deploy-agent run start:dev",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"

@@ -1,0 +1,99 @@
+.panel {
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+header,
+article,
+.member-actions {
+  display: flex;
+  align-items: center;
+}
+
+header {
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1rem;
+}
+
+header > span,
+small,
+.empty-copy {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.member-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+article {
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.7rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.45rem;
+}
+
+article > div:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 0.15rem;
+}
+
+.avatar {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--color-background);
+  background: var(--color-primary);
+  border-radius: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.member-actions {
+  gap: 0.25rem;
+}
+
+button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+}
+
+button:hover {
+  border-color: var(--color-border);
+}
+
+button:disabled {
+  opacity: 0.35;
+}
+
+@media (max-width: 48rem) {
+  .panel {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+}

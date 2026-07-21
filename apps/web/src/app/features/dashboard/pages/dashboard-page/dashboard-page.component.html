@@ -1,69 +1,102 @@
 <main id="workspace-content" class="workspace-content">
-  <section id="overview" class="page-heading" aria-labelledby="overview-title">
-    <div>
-      @if (facade.state().snapshot; as snapshot) {
-        <div [class]="'eyebrow-row environment--' + snapshot.workspaceStatus">
-          <span class="environment-dot" aria-hidden="true"></span>
-          {{ snapshot.workspaceName }}
-        </div>
-      }
-      <h1 id="overview-title">Team delivery</h1>
-      @if (facade.state().snapshot; as snapshot) {
-        <p>{{ snapshot.summary }}</p>
-      }
-    </div>
-    <div class="page-actions">
-      @if (facade.state().snapshot; as snapshot) {
-        <span class="updated-at" aria-live="polite">{{ snapshot.updatedLabel }}</span>
-      }
-      <label class="scenario-control">
-        <span>Mock scenario</span>
-        <select [value]="facade.scenario()" (change)="selectScenario($event)">
-          @for (scenario of facade.scenarios; track scenario.id) {
-            <option [value]="scenario.id">{{ scenario.label }}</option>
-          }
-        </select>
-      </label>
-      <button
-        class="refresh-button"
-        type="button"
-        aria-label="Refresh dashboard"
-        title="Refresh dashboard"
-        (click)="facade.refresh()"
-      >
-        <ng-icon name="lucideRefreshCw" aria-hidden="true" />
-      </button>
-    </div>
-  </section>
-
-  @if (facade.state().loading) {
-    <section class="loading-state" aria-live="polite" aria-label="Loading dashboard">
-      <span></span><span></span>
+  @if (!facade.isAuthenticated()) {
+    <vp-login-guide />
+  } @else if (facade.state().loading) {
+    <section class="loading-state" aria-live="polite">
+      <span></span>
+      <span></span>
     </section>
   } @else if (facade.state().error; as error) {
     <section class="error-state" role="alert">
-      <span class="section-label">Connection state</span>
-      <h2>Pipeline data is unavailable</h2>
+      <span class="section-label">Workspace</span>
+      <h1>Could not load your dashboard</h1>
       <p>{{ error }}</p>
       <button type="button" (click)="facade.refresh()">Try again</button>
     </section>
-  } @else if (facade.state().snapshot; as snapshot) {
-    <div class="dashboard-content">
-      <div id="pipelines">
-        <vp-project-queue
-          [projects]="snapshot.projects"
-          (membersSelected)="selectedProject.set($event)"
+  } @else if (facade.state().overview; as overview) {
+    <vp-workspace-toolbar
+      [overview]="overview"
+      [loading]="facade.state().loading"
+      (teamSelected)="facade.selectTeam($event)"
+      (createTeam)="showTeamDialog.set(true)"
+      (syncProject)="showProjectDialog.set(true)"
+      (addMember)="openMemberDialog()"
+      (refresh)="facade.refresh()"
+    />
+
+    @if (facade.actionError(); as actionError) {
+      <p class="action-error" role="alert">{{ actionError }}</p>
+    }
+
+    @if (!overview.activeTeam) {
+      <section class="setup-steps">
+        <span class="section-label">Next steps</span>
+        <h2>Build the workspace foundation</h2>
+        <ol>
+          <li>Create a team.</li>
+          <li>Add teammates by email and assign their access role.</li>
+          <li>Give each member a visible title like Tech lead or Frontend.</li>
+          <li>Sync one or more source repositories.</li>
+        </ol>
+      </section>
+    } @else {
+      <section class="dashboard-grid">
+        <vp-member-roster
+          [members]="overview.members"
+          (editMember)="openMemberDialog($event)"
+          (removeMember)="memberToRemove.set($event)"
         />
-      </div>
-      <div id="deployments">
-        <vp-deployment-history
-          [deployments]="facade.filteredDeployments()"
-          [query]="facade.searchQuery()"
-          (queryChange)="facade.searchQuery.set($event)"
+
+        <vp-connected-projects
+          [projects]="facade.filteredProjects()"
+          [query]="facade.projectSearch()"
+          [selectedProject]="facade.selectedProject()"
+          (queryChange)="facade.projectSearch.set($event)"
+          (projectSelected)="facade.selectedProject.set($event)"
+          (archiveProject)="projectToArchive.set($event)"
         />
-      </div>
-    </div>
+      </section>
+    }
   }
 </main>
 
-<vp-team-members-dialog [project]="selectedProject()" (closed)="selectedProject.set(null)" />
+@if (showTeamDialog()) {
+  <vp-team-dialog (saved)="createTeam($event)" (closed)="showTeamDialog.set(false)" />
+}
+
+@if (showProjectDialog()) {
+  <vp-project-dialog (saved)="createProject($event)" (closed)="showProjectDialog.set(false)" />
+}
+
+@if (showMemberDialog()) {
+  <vp-member-dialog
+    [member]="editingMember()"
+    (saved)="saveMember($event)"
+    (closed)="closeMemberDialog()"
+  />
+}
+
+<vp-project-detail-dialog
+  [project]="facade.selectedProject()"
+  (closed)="facade.selectedProject.set(null)"
+/>
+
+@if (memberToRemove(); as member) {
+  <vp-confirm-dialog
+    title="Remove member"
+    [message]="'Remove ' + member.name + ' from this team?'"
+    confirmLabel="Remove"
+    (confirmed)="confirmRemoveMember()"
+    (closed)="memberToRemove.set(null)"
+  />
+}
+
+@if (projectToArchive(); as project) {
+  <vp-confirm-dialog
+    title="Archive project"
+    [message]="'Archive ' + project.name + ' from the active queue?'"
+    confirmLabel="Archive"
+    (confirmed)="confirmArchiveProject()"
+    (closed)="projectToArchive.set(null)"
+  />
+}

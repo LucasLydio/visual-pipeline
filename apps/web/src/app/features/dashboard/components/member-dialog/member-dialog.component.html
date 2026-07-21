@@ -1,0 +1,28 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="member-dialog-title">
+  <h2 id="member-dialog-title">{{ editing ? 'Edit member' : 'Add member' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    @if (!editing) {
+      <label>
+        <span>Email</span>
+        <input formControlName="email" placeholder="teammate@example.com" />
+      </label>
+    }
+    <label>
+      <span>Access role</span>
+      <select formControlName="role">
+        @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>Team title</span>
+      <input formControlName="title" placeholder="Tech lead, Frontend, QA" />
+    </label>
+    <div class="dialog-actions">
+      <button type="button" (click)="closed.emit()">Cancel</button>
+      <button type="submit">{{ editing ? 'Save' : 'Add' }}</button>
+    </div>
+  </form>
+</section>

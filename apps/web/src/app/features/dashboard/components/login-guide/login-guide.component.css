@@ -1,0 +1,40 @@
+.login-guide {
+  display: grid;
+  min-height: 28rem;
+  place-content: center;
+  justify-items: center;
+  gap: 0.8rem;
+  padding: 2rem;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.login-guide > ng-icon {
+  width: 2.8rem;
+  height: 2.8rem;
+  color: var(--color-primary);
+}
+
+.login-guide h1,
+.login-guide p {
+  margin: 0;
+}
+
+.login-guide p {
+  max-width: 32rem;
+  color: var(--color-text-muted);
+}
+
+.login-guide a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.7rem;
+  padding: 0 0.9rem;
+  color: var(--color-background);
+  background: var(--color-primary);
+  border-radius: 0.45rem;
+  font-weight: 800;
+}

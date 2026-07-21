@@ -7,8 +7,7 @@
   padding: 2rem;
   text-align: center;
   background:
-    radial-gradient(circle at 20% 20%, rgba(79, 209, 197, 0.2), transparent 32rem),
-    #080b12;
+    radial-gradient(circle at 20% 20%, rgba(79, 209, 197, 0.2), transparent 32rem), #080b12;
   color: #f8fafc;
 }
 

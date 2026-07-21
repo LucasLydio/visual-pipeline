@@ -20,6 +20,7 @@ import {
 } from '@ng-icons/simple-icons';
 
 import { BrandComponent } from '../../../../shared/ui/brand/brand.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'vp-landing-page',
@@ -45,4 +46,6 @@ import { BrandComponent } from '../../../../shared/ui/brand/brand.component';
   styleUrl: './landing-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingPageComponent {}
+export class LandingPageComponent {
+  protected readonly githubLoginUrl = `${environment.apiBaseUrl}/auth/github?redirectTo=/app`;
+}

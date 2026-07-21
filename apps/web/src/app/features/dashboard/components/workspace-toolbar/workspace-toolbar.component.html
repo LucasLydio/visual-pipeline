@@ -1,0 +1,57 @@
+<section class="workspace-toolbar">
+  <div>
+    <span class="section-label">Workspace</span>
+    <h1>{{ overview.activeTeam?.name ?? 'Create your first team' }}</h1>
+    <p>
+      {{ overview.activeTeam?.description ?? 'Start with a team, then sync project repositories.' }}
+    </p>
+  </div>
+
+  <div class="toolbar-actions">
+    @if (overview.teams.length > 0) {
+      <label>
+        <span>Team</span>
+        <select
+          [value]="overview.activeTeam?.id"
+          (change)="teamSelected.emit($any($event.target).value)"
+        >
+          @for (team of overview.teams; track team.id) {
+            <option [value]="team.id">{{ team.name }}</option>
+          }
+        </select>
+      </label>
+    }
+
+    <button type="button" title="Create team" (click)="createTeam.emit()">
+      <ng-icon name="lucidePlus" aria-hidden="true" />
+      Team
+    </button>
+    <button
+      type="button"
+      title="Add member"
+      [disabled]="!overview.activeTeam"
+      (click)="addMember.emit()"
+    >
+      <ng-icon name="lucideUserPlus" aria-hidden="true" />
+      Member
+    </button>
+    <button
+      type="button"
+      title="Sync project"
+      [disabled]="!overview.activeTeam"
+      (click)="syncProject.emit()"
+    >
+      <ng-icon name="lucidePlus" aria-hidden="true" />
+      Project
+    </button>
+    <button
+      class="icon-button"
+      type="button"
+      title="Refresh"
+      [disabled]="loading"
+      (click)="refresh.emit()"
+    >
+      <ng-icon name="lucideRefreshCw" aria-hidden="true" />
+    </button>
+  </div>
+</section>

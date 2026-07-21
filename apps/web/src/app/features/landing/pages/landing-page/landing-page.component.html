@@ -35,10 +35,7 @@
         </p>
 
         <div class="login-group" aria-label="Log in to Visual Pipeline">
-          <a
-            class="provider-login github-login"
-            href="http://localhost:3000/auth/github?redirectTo=/app"
-          >
+          <a class="provider-login github-login" [href]="githubLoginUrl">
             <ng-icon name="simpleGithub" aria-hidden="true" />
             <span>Log in with GitHub</span>
             <ng-icon name="lucideArrowRight" aria-hidden="true" />
@@ -64,7 +61,7 @@
         </div>
 
         <a class="demo-link" routerLink="/app">
-          Explore the mock workspace <ng-icon name="lucideArrowRight" aria-hidden="true" />
+          Open dashboard <ng-icon name="lucideArrowRight" aria-hidden="true" />
         </a>
       </div>
     </section>

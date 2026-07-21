@@ -1,0 +1,22 @@
+@if (project; as selectedProject) {
+  <div class="dialog-backdrop" (click)="closed.emit()"></div>
+  <section class="dialog" role="dialog" aria-modal="true">
+    <span>{{ selectedProject.provider }}</span>
+    <h2>{{ selectedProject.name }}</h2>
+    <dl>
+      <div>
+        <dt>Repository</dt>
+        <dd>{{ selectedProject.repositoryUrl }}</dd>
+      </div>
+      <div>
+        <dt>Default branch</dt>
+        <dd>{{ selectedProject.defaultBranch }}</dd>
+      </div>
+      <div>
+        <dt>Status</dt>
+        <dd>{{ selectedProject.status }}</dd>
+      </div>
+    </dl>
+    <button type="button" (click)="closed.emit()">Close</button>
+  </section>
+}

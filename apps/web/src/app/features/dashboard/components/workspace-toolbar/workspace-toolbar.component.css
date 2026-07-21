@@ -1,0 +1,78 @@
+.workspace-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.workspace-toolbar h1,
+.workspace-toolbar p {
+  margin: 0;
+}
+
+.workspace-toolbar h1 {
+  margin-top: 0.2rem;
+  font-size: 1.7rem;
+}
+
+.workspace-toolbar p,
+.toolbar-actions label span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: last baseline;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.toolbar-actions label {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.toolbar-actions select,
+.toolbar-actions button {
+  min-height: 2.45rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+}
+
+.toolbar-actions select {
+  padding-inline: 0.55rem;
+}
+
+.toolbar-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-inline: 0.7rem;
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+.toolbar-actions button:disabled {
+  opacity: 0.45;
+}
+
+.icon-button {
+  width: 2.45rem;
+  justify-content: center;
+  padding-inline: 0;
+}
+
+@media (max-width: 48rem) {
+  .workspace-toolbar {
+    flex-direction: column;
+    padding-inline: 1rem;
+  }
+
+  .toolbar-actions {
+    justify-content: flex-start;
+  }
+}

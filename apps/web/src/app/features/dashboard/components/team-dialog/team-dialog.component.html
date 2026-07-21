@@ -1,0 +1,22 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="team-dialog-title">
+  <h2 id="team-dialog-title">Create team</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Name</span>
+      <input formControlName="name" placeholder="Platform Team" />
+    </label>
+    <label>
+      <span>Slug</span>
+      <input formControlName="slug" placeholder="platform-team" />
+    </label>
+    <label>
+      <span>Description</span>
+      <textarea formControlName="description" rows="3"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button type="button" (click)="closed.emit()">Cancel</button>
+      <button type="submit">Create</button>
+    </div>
+  </form>
+</section>

@@ -165,6 +165,7 @@ model TeamMember {
   teamId    String   @db.Uuid
   userId    String   @db.Uuid
   role      TeamRole @default(DEVELOPER)
+  title     String?  @db.VarChar(80)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)

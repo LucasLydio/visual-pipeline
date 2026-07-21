@@ -1,0 +1,50 @@
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(4, 7, 12, 0.62);
+}
+
+.dialog {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  width: min(calc(100vw - 2rem), 28rem);
+  transform: translate(-50%, -50%);
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+}
+
+form,
+label {
+  display: grid;
+  gap: 0.5rem;
+}
+
+label span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+}
+
+input,
+select {
+  width: 100%;
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

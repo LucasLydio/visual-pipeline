@@ -1,77 +1,130 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { BehaviorSubject, catchError, map, of, startWith, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, startWith, switchMap, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { PipelineApi } from '../../../core/api/pipeline-api';
+import { TeamApi } from '../../../core/api/team-api';
 import {
-  DashboardSnapshot,
-  DeploymentRecord,
-  MockScenario,
-} from '../../../core/models/pipeline.models';
-import { MOCK_SCENARIOS } from '../../../core/testing/mock-dashboard.data';
+  AddTeamMemberRequest,
+  CreateProjectRequest,
+  CreateTeamRequest,
+  UpdateTeamMemberRequest,
+  WorkspaceOverview,
+  WorkspaceProject,
+} from '../../../core/models/team.models';
+import { AuthSessionService } from '../../../core/services/auth-session.service';
 
 interface DashboardState {
   readonly loading: boolean;
-  readonly snapshot: DashboardSnapshot | null;
+  readonly overview: WorkspaceOverview | null;
   readonly error: string | null;
 }
 
 @Injectable()
 export class DashboardFacade {
-  private readonly api = inject(PipelineApi);
-  private readonly request$ = new BehaviorSubject<MockScenario>('healthy');
+  private readonly api = inject(TeamApi);
+  private readonly authSession = inject(AuthSessionService);
+  private readonly selectedTeam$ = new BehaviorSubject<string | undefined>(undefined);
 
-  readonly scenario = signal<MockScenario>('healthy');
-  readonly searchQuery = signal('');
-  readonly scenarios = MOCK_SCENARIOS;
+  readonly selectedProject = signal<WorkspaceProject | null>(null);
+  readonly projectSearch = signal('');
+  readonly actionError = signal<string | null>(null);
+  readonly isAuthenticated = computed(() => Boolean(this.authSession.session()));
 
   readonly state = toSignal(
-    this.request$.pipe(
-      switchMap((scenario) =>
-        this.api.getDashboard(scenario).pipe(
-          map((snapshot): DashboardState => ({ loading: false, snapshot, error: null })),
-          startWith({ loading: true, snapshot: null, error: null } satisfies DashboardState),
+    this.selectedTeam$.pipe(
+      switchMap((teamId) =>
+        this.api.getWorkspaceOverview(teamId).pipe(
+          map((overview): DashboardState => ({ loading: false, overview, error: null })),
+          startWith({ loading: true, overview: null, error: null } satisfies DashboardState),
           catchError((error: unknown) =>
             of({
               loading: false,
-              snapshot: null,
-              error: error instanceof Error ? error.message : 'Unable to load pipeline data.',
+              overview: null,
+              error: this.errorMessage(error, 'Unable to load workspace.'),
             } satisfies DashboardState),
           ),
         ),
       ),
     ),
-    { initialValue: { loading: true, snapshot: null, error: null } },
+    { initialValue: { loading: true, overview: null, error: null } },
   );
 
-  readonly filteredDeployments = computed<readonly DeploymentRecord[]>(() => {
-    const deployments = this.state().snapshot?.deployments ?? [];
-    const query = this.searchQuery().trim().toLowerCase();
+  readonly filteredProjects = computed(() => {
+    const projects = this.state().overview?.projects ?? [];
+    const query = this.projectSearch().trim().toLowerCase();
 
-    if (!query) {
-      return deployments;
-    }
+    if (!query) return projects;
 
-    return deployments.filter((deployment) =>
-      [
-        deployment.id,
-        deployment.project,
-        deployment.environment,
-        deployment.version,
-        deployment.branch,
-        deployment.responsible,
-        deployment.status,
-      ].some((value) => value.toLowerCase().includes(query)),
+    return projects.filter((project) =>
+      [project.name, project.provider, project.repositoryUrl, project.defaultBranch, project.status]
+        .join(' ')
+        .toLowerCase()
+        .includes(query),
     );
   });
 
-  selectScenario(scenario: MockScenario): void {
-    this.scenario.set(scenario);
-    this.searchQuery.set('');
-    this.request$.next(scenario);
+  selectTeam(teamId: string): void {
+    this.selectedProject.set(null);
+    this.selectedTeam$.next(teamId);
   }
 
   refresh(): void {
-    this.request$.next(this.scenario());
+    this.selectedTeam$.next(this.state().overview?.activeTeam?.id);
+  }
+
+  createTeam(dto: CreateTeamRequest): Observable<unknown> {
+    return this.run(this.api.createTeam(dto).pipe(tap((team) => this.selectTeam(team.id))));
+  }
+
+  addMember(dto: AddTeamMemberRequest): Observable<unknown> {
+    return this.runForActiveTeam((teamId) => this.api.addMember(teamId, dto));
+  }
+
+  updateMember(memberId: string, dto: UpdateTeamMemberRequest): Observable<unknown> {
+    return this.runForActiveTeam((teamId) => this.api.updateMember(teamId, memberId, dto));
+  }
+
+  removeMember(memberId: string): Observable<unknown> {
+    return this.runForActiveTeam((teamId) => this.api.removeMember(teamId, memberId));
+  }
+
+  createProject(dto: CreateProjectRequest): Observable<unknown> {
+    return this.runForActiveTeam((teamId) => this.api.createProject(teamId, dto));
+  }
+
+  archiveProject(projectId: string): Observable<unknown> {
+    return this.run(this.api.archiveProject(projectId).pipe(tap(() => this.refresh())));
+  }
+
+  private runForActiveTeam(action: (teamId: string) => Observable<unknown>): Observable<unknown> {
+    const teamId = this.state().overview?.activeTeam?.id;
+
+    if (!teamId) {
+      this.actionError.set('Create or select a team first.');
+      return of(null);
+    }
+
+    return this.run(action(teamId).pipe(tap(() => this.refresh())));
+  }
+
+  private run(action$: Observable<unknown>): Observable<unknown> {
+    this.actionError.set(null);
+
+    return action$.pipe(
+      catchError((error: unknown) => {
+        this.actionError.set(this.errorMessage(error, 'Action failed.'));
+        return of(null);
+      }),
+    );
+  }
+
+  private errorMessage(error: unknown, fallback: string): string {
+    if (error instanceof Error) return error.message;
+    if (typeof error === 'object' && error && 'error' in error) {
+      const apiError = error as { error?: { message?: string } };
+      return apiError.error?.message ?? fallback;
+    }
+
+    return fallback;
   }
 }

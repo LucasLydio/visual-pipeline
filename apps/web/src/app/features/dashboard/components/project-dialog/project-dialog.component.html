@@ -1,0 +1,30 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="project-dialog-title">
+  <h2 id="project-dialog-title">Sync project</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Name</span>
+      <input formControlName="name" placeholder="Checkout service" />
+    </label>
+    <label>
+      <span>Provider</span>
+      <select formControlName="provider">
+        @for (provider of providers; track provider) {
+          <option [value]="provider">{{ provider }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>Repository URL</span>
+      <input formControlName="repositoryUrl" placeholder="https://github.com/acme/checkout" />
+    </label>
+    <label>
+      <span>Default branch</span>
+      <input formControlName="defaultBranch" />
+    </label>
+    <div class="dialog-actions">
+      <button type="button" (click)="closed.emit()">Cancel</button>
+      <button type="submit">Sync</button>
+    </div>
+  </form>
+</section>

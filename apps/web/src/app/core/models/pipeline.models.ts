@@ -1,7 +1,5 @@
 export type PipelineStatus = 'success' | 'running' | 'warning' | 'queued' | 'failed';
 
-export type MockScenario = 'healthy' | 'degraded' | 'incident' | 'empty' | 'offline';
-
 export interface Metric {
   readonly label: string;
   readonly value: string;
@@ -101,10 +99,4 @@ export interface DashboardSnapshot {
   readonly updatedLabel: string;
   readonly projects: readonly QueuedProject[];
   readonly deployments: readonly DeploymentRecord[];
-}
-
-export interface MockScenarioOption {
-  readonly id: MockScenario;
-  readonly label: string;
-  readonly description: string;
 }

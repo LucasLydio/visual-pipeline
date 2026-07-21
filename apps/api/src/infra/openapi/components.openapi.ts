@@ -25,6 +25,34 @@ export const openApiComponents: OpenApiComponents = {
       schema: { type: 'string' },
       example: 'dev.team',
     },
+    TeamId: {
+      name: 'teamId',
+      in: 'path',
+      required: true,
+      description: 'Team identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    MemberId: {
+      name: 'memberId',
+      in: 'path',
+      required: true,
+      description: 'Team member identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    ProjectId: {
+      name: 'projectId',
+      in: 'path',
+      required: true,
+      description: 'Project identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    Search: {
+      name: 'search',
+      in: 'query',
+      required: false,
+      description: 'Optional case-insensitive search.',
+      schema: { type: 'string' },
+    },
   },
   responses: {
     BadRequest: {

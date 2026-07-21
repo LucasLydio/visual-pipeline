@@ -103,7 +103,7 @@
   --color-surface-soft: #39343a;
   --color-text: #f7f0f0;
   --color-text-muted: #c9c1c3;
-  --color-primary: #70c7a1;
+  --color-primary: #5ea687;
   --color-primary-hover: #98c9c0;
   --color-accent: #e3aeb2;
   --color-accent-hover: #efc3c6;
@@ -488,12 +488,11 @@ option {
 
 button {
   min-height: var(--control-height);
-  padding: 0.7rem 1rem;
+  padding: var(--padding-sm);
   background: var(--color-primary);
   color: var(--white);
   border: var(--border-width-light) solid transparent;
-  border-radius: var(--border-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-sm);
   cursor: pointer;
   font-weight: 700;
   transition:
@@ -503,8 +502,6 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
@@ -602,10 +599,7 @@ button:focus-visible {
 }
 
 .border-xlg {
-  border-radius: var(--border-xlg);
-}
-
-.border-light {
+  border-radius: var(--border-xlg) transparent;
   border: var(--border-width-light) solid var(--color-border);
 }
 
