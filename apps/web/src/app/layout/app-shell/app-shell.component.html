@@ -12,8 +12,11 @@
     <div class="brand-row"><vp-brand [inverted]="true" /></div>
 
     <div class="workspace-switcher">
-      <span class="workspace-avatar" aria-hidden="true">AC</span>
-      <span><strong>Acme Platform</strong><small>Engineering</small></span>
+      <span class="workspace-avatar" aria-hidden="true">{{ workspaceInitials() }}</span>
+      <span
+        ><strong>{{ workspaceName() }}</strong
+        ><small>{{ workspaceSubtitle() }}</small></span
+      >
     </div>
 
     <nav class="primary-nav" aria-label="Primary">
@@ -34,11 +37,16 @@
     <div class="sidebar-footer">
       <div class="agent-summary">
         <span class="presence-dot" aria-hidden="true"></span>
-        <span><strong>Agent network</strong><small>Live API workspace</small></span>
+        <span
+          ><strong>Workspace sync</strong><small>{{ agentSummary() }}</small></span
+        >
       </div>
       <div class="profile-row">
-        <span class="profile-avatar" aria-hidden="true">MC</span>
-        <span><strong>Maya Chen</strong><small>Platform engineer</small></span>
+        <span class="profile-avatar" aria-hidden="true">{{ profileInitials() }}</span>
+        <span
+          ><strong>{{ profileName() }}</strong
+          ><small>{{ profileSubtitle() }}</small></span
+        >
       </div>
     </div>
   </aside>
@@ -57,7 +65,8 @@
           <span class="visually-hidden">Menu</span>
         </button>
         <div class="breadcrumb" aria-label="Breadcrumb">
-          <span>Acme Platform</span><span aria-hidden="true">/</span>
+          <span>{{ workspaceName() }}</span
+          ><span aria-hidden="true">/</span>
           <strong>{{ activeNavigation() }}</strong>
         </div>
       </div>
@@ -82,12 +91,14 @@
         <a
           class="alert-button icon-action"
           routerLink="/app"
-          fragment="deployments"
-          aria-label="2 deployment alerts"
-          title="Deployment alerts"
-          (click)="activeNavigation.set('Deployments')"
+          fragment="repositories"
+          [attr.aria-label]="archivedRepositoryCount() + ' archived repositories'"
+          title="Archived repositories"
+          (click)="activeNavigation.set('Repositories')"
         >
-          <ng-icon name="lucideBell" aria-hidden="true" /><span>2</span>
+          <ng-icon name="lucideBell" aria-hidden="true" /><span>{{
+            archivedRepositoryCount()
+          }}</span>
         </a>
       </div>
     </header>

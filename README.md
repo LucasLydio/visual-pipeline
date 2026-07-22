@@ -61,9 +61,11 @@ The Angular workspace currently exposes these main routes:
 | --- | --- |
 | `/` | Public landing page with GitHub, GitLab, and Bitbucket entry points |
 | `/auth/callback` | Stores the API session returned after GitHub OAuth |
-| `/app` | Live dashboard for teams, members, roles, titles, and connected projects |
+| `/app` | Live dashboard for teams, members, roles, titles, and synced repositories |
 
 The dashboard uses `TeamApi` from `apps/web/src/app/core/api` and the `HttpTeamApiService` adapter. It calls the NestJS API directly; mock dashboard adapters have been removed.
+
+Synced repositories can be managed from the dashboard modal: update metadata, archive, unarchive, or unsync. Archive is a reversible project status change; unsync deletes the local project record and should stay behind a confirmation dialog.
 
 Set the frontend API base URL in `apps/web/src/environments/environment.ts`. The local default is `http://localhost:3000`.
 

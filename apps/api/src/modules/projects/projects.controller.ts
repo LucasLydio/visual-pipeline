@@ -56,11 +56,27 @@ export class ProjectsController {
     return this.projectsService.update(projectId, request.user!.id, dto);
   }
 
-  @Delete('projects/:projectId')
+  @Patch('projects/:projectId/archive')
   archive(
     @Param('projectId') projectId: string,
     @Req() request: RequestWithUser,
   ) {
     return this.projectsService.archive(projectId, request.user!.id);
+  }
+
+  @Patch('projects/:projectId/unarchive')
+  unarchive(
+    @Param('projectId') projectId: string,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.projectsService.unarchive(projectId, request.user!.id);
+  }
+
+  @Delete('projects/:projectId')
+  unsync(
+    @Param('projectId') projectId: string,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.projectsService.unsync(projectId, request.user!.id);
   }
 }

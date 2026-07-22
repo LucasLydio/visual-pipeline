@@ -130,6 +130,20 @@ export class ProjectsService {
     return this.projectsRepository.archive(projectId);
   }
 
+  async unarchive(projectId: string, userId: string): Promise<PublicProject> {
+    const project = await this.getProjectOrThrow(projectId);
+    await this.teamsService.assertTeamManager(project.teamId, userId);
+
+    return this.projectsRepository.unarchive(projectId);
+  }
+
+  async unsync(projectId: string, userId: string): Promise<PublicProject> {
+    const project = await this.getProjectOrThrow(projectId);
+    await this.teamsService.assertTeamManager(project.teamId, userId);
+
+    return this.projectsRepository.delete(projectId);
+  }
+
   private async getProjectOrThrow(projectId: string) {
     const project = await this.projectsRepository.findById(projectId);
 

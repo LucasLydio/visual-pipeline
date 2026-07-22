@@ -86,4 +86,17 @@ export class ProjectsRepository {
       data: { status: 'ARCHIVED' },
     });
   }
+
+  async unarchive(projectId: string) {
+    return this.prisma.project.update({
+      where: { id: projectId },
+      data: { status: 'ACTIVE' },
+    });
+  }
+
+  async delete(projectId: string) {
+    return this.prisma.project.delete({
+      where: { id: projectId },
+    });
+  }
 }

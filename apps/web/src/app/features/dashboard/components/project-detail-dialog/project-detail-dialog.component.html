@@ -1,22 +1,70 @@
-@if (project; as selectedProject) {
+@if (selectedProject) {
   <div class="dialog-backdrop" (click)="closed.emit()"></div>
   <section class="dialog" role="dialog" aria-modal="true">
-    <span>{{ selectedProject.provider }}</span>
-    <h2>{{ selectedProject.name }}</h2>
-    <dl>
+    <header>
       <div>
-        <dt>Repository</dt>
-        <dd>{{ selectedProject.repositoryUrl }}</dd>
+        <span>{{ selectedProject.provider }}</span>
+        <h2>Manage repository</h2>
       </div>
-      <div>
-        <dt>Default branch</dt>
-        <dd>{{ selectedProject.defaultBranch }}</dd>
+      <strong [class.is-archived]="selectedProject.status === 'ARCHIVED'">
+        {{ selectedProject.status }}
+      </strong>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>
+        Project name
+        <input type="text" formControlName="name" />
+      </label>
+
+      <label>
+        Slug
+        <input type="text" formControlName="slug" />
+      </label>
+
+      <label>
+        Provider
+        <select formControlName="provider">
+          @for (provider of providers; track provider) {
+            <option [value]="provider">{{ provider }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="full">
+        Repository URL
+        <input type="url" formControlName="repositoryUrl" />
+      </label>
+
+      <label>
+        Repository ID
+        <input type="text" formControlName="repositoryId" />
+      </label>
+
+      <label>
+        Default branch
+        <input type="text" formControlName="defaultBranch" />
+      </label>
+
+      <div class="actions">
+        <button type="button" class="neutral" (click)="closed.emit()">Close</button>
+        <button type="submit" class="primary" [disabled]="form.invalid">Save changes</button>
       </div>
-      <div>
-        <dt>Status</dt>
-        <dd>{{ selectedProject.status }}</dd>
-      </div>
-    </dl>
-    <button type="button" (click)="closed.emit()">Close</button>
+    </form>
+
+    <footer>
+      @if (selectedProject.status === 'ARCHIVED') {
+        <button type="button" class="neutral" (click)="unarchiveProject.emit(selectedProject)">
+          Unarchive
+        </button>
+      } @else {
+        <button type="button" class="neutral" (click)="archiveProject.emit(selectedProject)">
+          Archive
+        </button>
+      }
+      <button type="button" class="danger" (click)="unsyncProject.emit(selectedProject)">
+        Unsync
+      </button>
+    </footer>
   </section>
 }

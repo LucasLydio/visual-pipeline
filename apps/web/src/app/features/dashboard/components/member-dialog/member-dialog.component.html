@@ -21,7 +21,7 @@
       <input formControlName="title" placeholder="Tech lead, Frontend, QA" />
     </label>
     <div class="dialog-actions">
-      <button type="button" (click)="closed.emit()">Cancel</button>
+      <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
       <button type="submit">{{ editing ? 'Save' : 'Add' }}</button>
     </div>
   </form>

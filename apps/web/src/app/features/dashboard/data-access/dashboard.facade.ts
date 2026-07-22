@@ -1,53 +1,27 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, map, of, startWith, switchMap, tap } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Observable, catchError, of, tap } from 'rxjs';
 
 import { TeamApi } from '../../../core/api/team-api';
 import {
   AddTeamMemberRequest,
   CreateProjectRequest,
   CreateTeamRequest,
+  UpdateProjectRequest,
   UpdateTeamMemberRequest,
-  WorkspaceOverview,
   WorkspaceProject,
 } from '../../../core/models/team.models';
-import { AuthSessionService } from '../../../core/services/auth-session.service';
-
-interface DashboardState {
-  readonly loading: boolean;
-  readonly overview: WorkspaceOverview | null;
-  readonly error: string | null;
-}
+import { WorkspaceContextService } from '../../../core/services/workspace-context.service';
 
 @Injectable()
 export class DashboardFacade {
   private readonly api = inject(TeamApi);
-  private readonly authSession = inject(AuthSessionService);
-  private readonly selectedTeam$ = new BehaviorSubject<string | undefined>(undefined);
+  private readonly workspaceContext = inject(WorkspaceContextService);
 
   readonly selectedProject = signal<WorkspaceProject | null>(null);
   readonly projectSearch = signal('');
   readonly actionError = signal<string | null>(null);
-  readonly isAuthenticated = computed(() => Boolean(this.authSession.session()));
-
-  readonly state = toSignal(
-    this.selectedTeam$.pipe(
-      switchMap((teamId) =>
-        this.api.getWorkspaceOverview(teamId).pipe(
-          map((overview): DashboardState => ({ loading: false, overview, error: null })),
-          startWith({ loading: true, overview: null, error: null } satisfies DashboardState),
-          catchError((error: unknown) =>
-            of({
-              loading: false,
-              overview: null,
-              error: this.errorMessage(error, 'Unable to load workspace.'),
-            } satisfies DashboardState),
-          ),
-        ),
-      ),
-    ),
-    { initialValue: { loading: true, overview: null, error: null } },
-  );
+  readonly isAuthenticated = computed(() => this.workspaceContext.isAuthenticated());
+  readonly state = this.workspaceContext.state;
 
   readonly filteredProjects = computed(() => {
     const projects = this.state().overview?.projects ?? [];
@@ -65,11 +39,11 @@ export class DashboardFacade {
 
   selectTeam(teamId: string): void {
     this.selectedProject.set(null);
-    this.selectedTeam$.next(teamId);
+    this.workspaceContext.selectTeam(teamId);
   }
 
   refresh(): void {
-    this.selectedTeam$.next(this.state().overview?.activeTeam?.id);
+    this.workspaceContext.refresh();
   }
 
   createTeam(dto: CreateTeamRequest): Observable<unknown> {
@@ -92,8 +66,48 @@ export class DashboardFacade {
     return this.runForActiveTeam((teamId) => this.api.createProject(teamId, dto));
   }
 
+  updateProject(projectId: string, dto: UpdateProjectRequest): Observable<unknown> {
+    return this.run(
+      this.api.updateProject(projectId, dto).pipe(
+        tap((project) => {
+          this.selectedProject.set(project);
+          this.refresh();
+        }),
+      ),
+    );
+  }
+
   archiveProject(projectId: string): Observable<unknown> {
-    return this.run(this.api.archiveProject(projectId).pipe(tap(() => this.refresh())));
+    return this.run(
+      this.api.archiveProject(projectId).pipe(
+        tap((project) => {
+          this.selectedProject.set(project);
+          this.refresh();
+        }),
+      ),
+    );
+  }
+
+  unarchiveProject(projectId: string): Observable<unknown> {
+    return this.run(
+      this.api.unarchiveProject(projectId).pipe(
+        tap((project) => {
+          this.selectedProject.set(project);
+          this.refresh();
+        }),
+      ),
+    );
+  }
+
+  unsyncProject(projectId: string): Observable<unknown> {
+    return this.run(
+      this.api.unsyncProject(projectId).pipe(
+        tap(() => {
+          this.selectedProject.set(null);
+          this.refresh();
+        }),
+      ),
+    );
   }
 
   private runForActiveTeam(action: (teamId: string) => Observable<unknown>): Observable<unknown> {

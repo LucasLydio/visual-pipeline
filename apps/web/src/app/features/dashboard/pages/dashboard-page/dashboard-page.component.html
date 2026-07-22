@@ -42,18 +42,19 @@
     } @else {
       <section class="dashboard-grid">
         <vp-member-roster
+          id="team"
           [members]="overview.members"
           (editMember)="openMemberDialog($event)"
           (removeMember)="memberToRemove.set($event)"
         />
 
         <vp-connected-projects
+          id="repositories"
           [projects]="facade.filteredProjects()"
           [query]="facade.projectSearch()"
           [selectedProject]="facade.selectedProject()"
           (queryChange)="facade.projectSearch.set($event)"
           (projectSelected)="facade.selectedProject.set($event)"
-          (archiveProject)="projectToArchive.set($event)"
         />
       </section>
     }
@@ -78,6 +79,10 @@
 
 <vp-project-detail-dialog
   [project]="facade.selectedProject()"
+  (saved)="updateProject($event)"
+  (archiveProject)="projectToArchive.set($event)"
+  (unarchiveProject)="projectToUnarchive.set($event)"
+  (unsyncProject)="projectToUnsync.set($event)"
   (closed)="facade.selectedProject.set(null)"
 />
 
@@ -88,6 +93,28 @@
     confirmLabel="Remove"
     (confirmed)="confirmRemoveMember()"
     (closed)="memberToRemove.set(null)"
+  />
+}
+
+@if (projectToUnarchive(); as project) {
+  <vp-confirm-dialog
+    title="Unarchive project"
+    [message]="'Return ' + project.name + ' to the active queue?'"
+    confirmLabel="Unarchive"
+    (confirmed)="confirmUnarchiveProject()"
+    (closed)="projectToUnarchive.set(null)"
+  />
+}
+
+@if (projectToUnsync(); as project) {
+  <vp-confirm-dialog
+    title="Unsync repository"
+    [message]="
+      'Unsync ' + project.name + ' from this workspace? This removes its local project record.'
+    "
+    confirmLabel="Unsync"
+    (confirmed)="confirmUnsyncProject()"
+    (closed)="projectToUnsync.set(null)"
   />
 }
 

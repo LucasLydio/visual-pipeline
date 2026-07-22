@@ -32,7 +32,6 @@ export class WorkspaceRepository {
                   orderBy: [{ role: 'asc' }, { createdAt: 'asc' }],
                 },
                 projects: {
-                  where: { status: { not: 'ARCHIVED' } },
                   orderBy: { createdAt: 'desc' },
                 },
                 _count: { select: { members: true } },

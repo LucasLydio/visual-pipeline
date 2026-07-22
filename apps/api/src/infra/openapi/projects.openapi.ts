@@ -66,11 +66,31 @@ export const projectPaths: OpenApiPaths = {
     },
     delete: {
       tags: ['Projects'],
+      summary: 'Unsync a project repository.',
+      operationId: 'unsyncProject',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }],
+      responses: { '200': projectResponse('Project unsynced.') },
+    },
+  },
+  '/projects/{projectId}/archive': {
+    patch: {
+      tags: ['Projects'],
       summary: 'Archive a project.',
       operationId: 'archiveProject',
       security: [{ bearerAuth: [] }],
       parameters: [{ $ref: '#/components/parameters/ProjectId' }],
       responses: { '200': projectResponse('Project archived.') },
+    },
+  },
+  '/projects/{projectId}/unarchive': {
+    patch: {
+      tags: ['Projects'],
+      summary: 'Unarchive a project.',
+      operationId: 'unarchiveProject',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }],
+      responses: { '200': projectResponse('Project unarchived.') },
     },
   },
 };

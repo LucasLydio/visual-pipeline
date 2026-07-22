@@ -4,6 +4,7 @@ import {
   AddTeamMemberRequest,
   CreateProjectRequest,
   CreateTeamRequest,
+  UpdateProjectRequest,
   UpdateTeamMemberRequest,
   WorkspaceMember,
   WorkspaceOverview,
@@ -22,5 +23,11 @@ export abstract class TeamApi {
   ): Observable<WorkspaceMember>;
   abstract removeMember(teamId: string, memberId: string): Observable<void>;
   abstract createProject(teamId: string, dto: CreateProjectRequest): Observable<WorkspaceProject>;
+  abstract updateProject(
+    projectId: string,
+    dto: UpdateProjectRequest,
+  ): Observable<WorkspaceProject>;
   abstract archiveProject(projectId: string): Observable<WorkspaceProject>;
+  abstract unarchiveProject(projectId: string): Observable<WorkspaceProject>;
+  abstract unsyncProject(projectId: string): Observable<WorkspaceProject>;
 }

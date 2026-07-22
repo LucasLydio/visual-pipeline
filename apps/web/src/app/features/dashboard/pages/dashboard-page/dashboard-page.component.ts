@@ -3,6 +3,7 @@ import {
   AddTeamMemberRequest,
   CreateProjectRequest,
   CreateTeamRequest,
+  UpdateProjectRequest,
   UpdateTeamMemberRequest,
   WorkspaceMember,
   WorkspaceProject,
@@ -44,6 +45,8 @@ export class DashboardPageComponent {
   protected readonly showMemberDialog = signal(false);
   protected readonly memberToRemove = signal<WorkspaceMember | null>(null);
   protected readonly projectToArchive = signal<WorkspaceProject | null>(null);
+  protected readonly projectToUnarchive = signal<WorkspaceProject | null>(null);
+  protected readonly projectToUnsync = signal<WorkspaceProject | null>(null);
 
   protected createTeam(dto: CreateTeamRequest): void {
     this.facade.createTeam(dto).subscribe(() => this.showTeamDialog.set(false));
@@ -63,6 +66,13 @@ export class DashboardPageComponent {
 
   protected createProject(dto: CreateProjectRequest): void {
     this.facade.createProject(dto).subscribe(() => this.showProjectDialog.set(false));
+  }
+
+  protected updateProject(dto: UpdateProjectRequest): void {
+    const project = this.facade.selectedProject();
+    if (!project) return;
+
+    this.facade.updateProject(project.id, dto).subscribe();
   }
 
   protected openMemberDialog(member?: WorkspaceMember): void {
@@ -87,5 +97,19 @@ export class DashboardPageComponent {
     if (!project) return;
 
     this.facade.archiveProject(project.id).subscribe(() => this.projectToArchive.set(null));
+  }
+
+  protected confirmUnarchiveProject(): void {
+    const project = this.projectToUnarchive();
+    if (!project) return;
+
+    this.facade.unarchiveProject(project.id).subscribe(() => this.projectToUnarchive.set(null));
+  }
+
+  protected confirmUnsyncProject(): void {
+    const project = this.projectToUnsync();
+    if (!project) return;
+
+    this.facade.unsyncProject(project.id).subscribe(() => this.projectToUnsync.set(null));
   }
 }

@@ -62,6 +62,10 @@ article:hover {
   border-color: color-mix(in srgb, var(--color-primary) 65%, var(--color-border));
 }
 
+article.is-archived {
+  opacity: 0.72;
+}
+
 .project-main {
   display: grid;
   width: 100%;
@@ -80,7 +84,7 @@ article:hover {
   font-size: var(--font-size-xs);
 }
 
-.archive {
+.manage {
   position: absolute;
   top: 0.45rem;
   right: 0.45rem;
@@ -94,7 +98,7 @@ article:hover {
   border-radius: 0.35rem;
 }
 
-.archive:hover {
+.manage:hover {
   color: var(--color-text);
   border-color: var(--color-border);
 }

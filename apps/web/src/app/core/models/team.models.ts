@@ -64,7 +64,19 @@ export interface UpdateTeamMemberRequest {
 
 export interface CreateProjectRequest {
   readonly name: string;
+  readonly slug?: string;
   readonly provider: SourceProvider;
   readonly repositoryUrl: string;
+  readonly repositoryId?: string | null;
   readonly defaultBranch?: string;
+}
+
+export interface UpdateProjectRequest {
+  readonly name?: string;
+  readonly slug?: string;
+  readonly provider?: SourceProvider;
+  readonly repositoryUrl?: string;
+  readonly repositoryId?: string | null;
+  readonly defaultBranch?: string;
+  readonly status?: ProjectStatus;
 }

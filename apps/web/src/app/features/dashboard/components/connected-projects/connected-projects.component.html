@@ -17,7 +17,10 @@
 
   <div class="project-grid">
     @for (project of projects; track project.id) {
-      <article [class.is-selected]="selectedProject?.id === project.id">
+      <article
+        [class.is-selected]="selectedProject?.id === project.id"
+        [class.is-archived]="project.status === 'ARCHIVED'"
+      >
         <button type="button" class="project-main" (click)="projectSelected.emit(project)">
           <span>{{ project.provider }}</span>
           <strong>{{ project.name }}</strong>
@@ -25,11 +28,11 @@
         </button>
         <button
           type="button"
-          class="archive"
-          title="Archive project"
-          (click)="archiveProject.emit(project)"
+          class="manage"
+          title="Manage repository"
+          (click)="projectSelected.emit(project)"
         >
-          <ng-icon name="lucideArchive" aria-hidden="true" />
+          <ng-icon name="lucideSettings" aria-hidden="true" />
         </button>
       </article>
     } @empty {

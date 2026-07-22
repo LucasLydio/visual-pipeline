@@ -6,6 +6,7 @@ import {
   AddTeamMemberRequest,
   CreateProjectRequest,
   CreateTeamRequest,
+  UpdateProjectRequest,
   UpdateTeamMemberRequest,
   WorkspaceMember,
   WorkspaceOverview,
@@ -83,7 +84,31 @@ export class HttpTeamApiService implements TeamApi {
     });
   }
 
+  updateProject(projectId: string, dto: UpdateProjectRequest): Observable<WorkspaceProject> {
+    return this.http.patch<WorkspaceProject>(`${this.baseUrl}/projects/${projectId}`, dto, {
+      headers: this.authHeaders(),
+    });
+  }
+
   archiveProject(projectId: string): Observable<WorkspaceProject> {
+    return this.http.patch<WorkspaceProject>(
+      `${this.baseUrl}/projects/${projectId}/archive`,
+      null,
+      {
+        headers: this.authHeaders(),
+      },
+    );
+  }
+
+  unarchiveProject(projectId: string): Observable<WorkspaceProject> {
+    return this.http.patch<WorkspaceProject>(
+      `${this.baseUrl}/projects/${projectId}/unarchive`,
+      null,
+      { headers: this.authHeaders() },
+    );
+  }
+
+  unsyncProject(projectId: string): Observable<WorkspaceProject> {
     return this.http.delete<WorkspaceProject>(`${this.baseUrl}/projects/${projectId}`, {
       headers: this.authHeaders(),
     });
