@@ -90,6 +90,8 @@ model User {
   sessions          Session[]
   passwordResets    PasswordResetToken[]
   teamMemberships   TeamMember[]
+  ownedProjects     Project[]            @relation("ProjectOwner")
+  pipelineTemplates PipelineTemplate[]   @relation("PipelineTemplateCreatedBy")
   deployments       Deployment[]         @relation("DeploymentTriggeredBy")
   auditLogs         AuditLog[]
 
@@ -155,6 +157,7 @@ model Team {
   updatedAt   DateTime     @updatedAt @db.Timestamptz(3)
   members     TeamMember[]
   projects    Project[]
+  templates   PipelineTemplate[]
   auditLogs   AuditLog[]
 
   @@index([name])
@@ -179,6 +182,7 @@ model TeamMember {
 model Project {
   id            String         @id @default(uuid()) @db.Uuid
   teamId        String         @db.Uuid
+  ownerId       String?        @db.Uuid
   name          String         @db.VarChar(140)
   slug          String         @db.VarChar(100)
   provider      SourceProvider
@@ -189,29 +193,71 @@ model Project {
   createdAt     DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime       @updatedAt @db.Timestamptz(3)
   team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  owner         User?          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   pipelines     Pipeline[]
   deployments   Deployment[]
 
   @@unique([teamId, slug])
   @@unique([provider, repositoryId])
   @@index([teamId])
+  @@index([ownerId])
   @@index([provider])
   @@index([status])
+}
+
+model PipelineTemplate {
+  id          String                 @id @default(uuid()) @db.Uuid
+  teamId      String                 @db.Uuid
+  createdById String                 @db.Uuid
+  name        String                 @db.VarChar(140)
+  description String?                @db.VarChar(240)
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
+  team        Team                   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdBy   User                   @relation("PipelineTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  steps       PipelineTemplateStep[]
+  pipelines   Pipeline[]
+
+  @@unique([teamId, name])
+  @@index([teamId])
+  @@index([createdById])
+  @@index([isActive])
+}
+
+model PipelineTemplateStep {
+  id          String           @id @default(uuid()) @db.Uuid
+  templateId  String           @db.Uuid
+  name        String           @db.VarChar(120)
+  description String?          @db.VarChar(240)
+  order       Int
+  command     String?          @db.Text
+  isRequired  Boolean          @default(true)
+  isEnabled   Boolean          @default(true)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime         @updatedAt @db.Timestamptz(3)
+  template    PipelineTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, order])
+  @@index([templateId])
 }
 
 model Pipeline {
   id          String         @id @default(uuid()) @db.Uuid
   projectId   String         @db.Uuid
+  templateId  String?        @db.Uuid
   name        String         @db.VarChar(140)
   description String?        @db.VarChar(240)
   status      PipelineStatus @default(ACTIVE)
   createdAt   DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime       @updatedAt @db.Timestamptz(3)
   project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  template    PipelineTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
   steps       PipelineStep[]
   deployments Deployment[]
 
   @@index([projectId])
+  @@index([templateId])
   @@index([status])
 }
 
@@ -222,6 +268,7 @@ model PipelineStep {
   order      Int
   command    String?  @db.Text
   isRequired Boolean  @default(true)
+  isEnabled  Boolean  @default(true)
   createdAt  DateTime @default(now()) @db.Timestamptz(3)
   updatedAt  DateTime @updatedAt @db.Timestamptz(3)
   pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)

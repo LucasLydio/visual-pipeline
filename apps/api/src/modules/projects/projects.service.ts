@@ -47,6 +47,7 @@ export class ProjectsService {
 
     return this.projectsRepository.create({
       teamId,
+      ownerId: userId,
       name: this.normalizeName(dto.name),
       slug,
       provider,

@@ -7,6 +7,7 @@ import type {
 
 export interface ProjectCreateRecord {
   teamId: string;
+  ownerId: string;
   name: string;
   slug: string;
   provider: SourceProviderValue;

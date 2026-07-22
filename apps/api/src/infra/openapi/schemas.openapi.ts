@@ -254,6 +254,7 @@ export const openApiSchemas: Record<string, OpenApiSchema> = {
     properties: {
       id: { type: 'string', format: 'uuid' },
       teamId: { type: 'string', format: 'uuid' },
+      ownerId: { type: 'string', format: 'uuid', nullable: true },
       name: { type: 'string', example: 'Deploy Agent' },
       slug: { type: 'string', example: 'deploy-agent' },
       provider: { $ref: '#/components/schemas/SourceProvider' },

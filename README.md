@@ -16,8 +16,9 @@ The repository currently includes the monorepo foundation plus the first live pr
 - Postgres + Prisma persistence for users, teams, projects, sessions, and audit-ready records
 - GitHub OAuth login
 - Live dashboard API for teams, members, roles, titles, and connected projects
+- API foundation for reusable pipeline templates and project pipeline steps
 
-Deployment execution is still outside the current scope. The dashboard can connect projects and organize ownership, but pipeline execution should be added in a later documented step.
+Deployment execution is still outside the current scope. The dashboard can connect projects, organize ownership, and define pipeline maps, but real execution/webhook ingestion should be added in a later documented step.
 
 ## Requirements
 

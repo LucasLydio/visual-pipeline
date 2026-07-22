@@ -46,6 +46,27 @@ export const openApiComponents: OpenApiComponents = {
       description: 'Project identifier.',
       schema: { type: 'string', format: 'uuid' },
     },
+    PipelineTemplateId: {
+      name: 'templateId',
+      in: 'path',
+      required: true,
+      description: 'Pipeline template identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    PipelineId: {
+      name: 'pipelineId',
+      in: 'path',
+      required: true,
+      description: 'Pipeline identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    PipelineStepId: {
+      name: 'stepId',
+      in: 'path',
+      required: true,
+      description: 'Pipeline or template step identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
     Search: {
       name: 'search',
       in: 'query',

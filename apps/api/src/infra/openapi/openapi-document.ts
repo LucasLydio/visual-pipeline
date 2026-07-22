@@ -3,6 +3,8 @@ import { authPaths } from './auth.openapi.js';
 import { openApiComponents } from './components.openapi.js';
 import { healthPaths } from './health.openapi.js';
 import type { OpenApiDocument } from './openapi.types.js';
+import { pipelineSchemas } from './pipeline-schemas.openapi.js';
+import { pipelinePaths } from './pipelines.openapi.js';
 import { projectPaths } from './projects.openapi.js';
 import { openApiSchemas } from './schemas.openapi.js';
 import { teamPaths } from './teams.openapi.js';
@@ -33,6 +35,10 @@ export const openApiDocument: OpenApiDocument = {
     { name: 'Teams', description: 'Team workspace management.' },
     { name: 'Team members', description: 'Team membership and roles.' },
     { name: 'Projects', description: 'Connected source repositories.' },
+    {
+      name: 'Pipelines',
+      description: 'Reusable templates and project pipeline steps.',
+    },
     { name: 'Workspace', description: 'Frontend-optimized workspace data.' },
   ],
   paths: {
@@ -42,10 +48,11 @@ export const openApiDocument: OpenApiDocument = {
     ...usersPaths,
     ...teamPaths,
     ...projectPaths,
+    ...pipelinePaths,
     ...workspacePaths,
   },
   components: {
     ...openApiComponents,
-    schemas: openApiSchemas,
+    schemas: { ...openApiSchemas, ...pipelineSchemas },
   },
 };
