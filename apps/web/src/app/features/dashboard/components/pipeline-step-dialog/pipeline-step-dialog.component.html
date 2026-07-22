@@ -1,0 +1,32 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="step-dialog-title">
+  <h2 id="step-dialog-title">{{ editing ? 'Edit step' : 'Add step' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Name</span>
+      <input formControlName="name" placeholder="Run tests" />
+    </label>
+    @if (includeDescription) {
+      <label>
+        <span>Description</span>
+        <textarea formControlName="description" rows="2"></textarea>
+      </label>
+    }
+    <label>
+      <span>Order</span>
+      <input type="number" min="1" formControlName="order" />
+    </label>
+    <label>
+      <span>Command</span>
+      <input formControlName="command" placeholder="npm test" />
+    </label>
+    <div class="toggle-grid">
+      <label><input type="checkbox" formControlName="isRequired" />Required</label>
+      <label><input type="checkbox" formControlName="isEnabled" />Enabled</label>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
+      <button type="submit" [disabled]="form.invalid">{{ editing ? 'Save' : 'Add' }}</button>
+    </div>
+  </form>
+</section>

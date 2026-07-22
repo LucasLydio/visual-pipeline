@@ -1,0 +1,54 @@
+.toast-stack {
+  position: fixed;
+  z-index: 60;
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  width: min(calc(100vw - 2rem), 24rem);
+  gap: 0.55rem;
+}
+
+article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 2.5rem rgba(4, 7, 12, 0.18);
+  animation: rise 0.18s ease;
+}
+
+article.success {
+  border-color: rgba(22, 163, 74, 0.42);
+}
+
+article.error {
+  border-color: rgba(180, 35, 24, 0.42);
+}
+
+article.info {
+  border-color: color-mix(in srgb, var(--color-primary) 42%, var(--color-border));
+}
+
+span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-sm);
+}
+
+button {
+  min-height: 2rem;
+  padding-inline: 0.6rem;
+  border-radius: 0.35rem;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+}

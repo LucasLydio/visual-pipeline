@@ -1,0 +1,39 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="pipeline-dialog-title">
+  <h2 id="pipeline-dialog-title">{{ editing ? 'Edit pipeline' : 'Create pipeline' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    @if (!editing) {
+      <label>
+        <span>Template</span>
+        <select formControlName="templateId">
+          <option value="">Start from scratch</option>
+          @for (template of templates; track template.id) {
+            <option [value]="template.id">{{ template.name }}</option>
+          }
+        </select>
+      </label>
+    }
+    <label>
+      <span>Name</span>
+      <input formControlName="name" placeholder="Production deploy" />
+    </label>
+    <label>
+      <span>Description</span>
+      <textarea formControlName="description" rows="3"></textarea>
+    </label>
+    @if (editing) {
+      <label>
+        <span>Status</span>
+        <select formControlName="status">
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </label>
+    }
+    <div class="dialog-actions">
+      <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
+      <button type="submit" [disabled]="form.invalid">{{ editing ? 'Save' : 'Create' }}</button>
+    </div>
+  </form>
+</section>

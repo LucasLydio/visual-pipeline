@@ -16,5 +16,6 @@ export class ConnectedProjectsComponent {
   @Input() query = '';
   @Input() selectedProject: WorkspaceProject | null = null;
   @Output() queryChange = new EventEmitter<string>();
-  @Output() projectSelected = new EventEmitter<WorkspaceProject>();
+  @Output() projectFocused = new EventEmitter<WorkspaceProject>();
+  @Output() projectManaged = new EventEmitter<WorkspaceProject>();
 }

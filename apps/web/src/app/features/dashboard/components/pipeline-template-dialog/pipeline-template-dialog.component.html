@@ -1,0 +1,24 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="template-dialog-title">
+  <h2 id="template-dialog-title">{{ editing ? 'Edit template' : 'Create template' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Name</span>
+      <input formControlName="name" placeholder="Node.js API" />
+    </label>
+    <label>
+      <span>Description</span>
+      <textarea formControlName="description" rows="3"></textarea>
+    </label>
+    @if (editing) {
+      <label class="check-row">
+        <input type="checkbox" formControlName="isActive" />
+        <span>Active template</span>
+      </label>
+    }
+    <div class="dialog-actions">
+      <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
+      <button type="submit" [disabled]="form.invalid">{{ editing ? 'Save' : 'Create' }}</button>
+    </div>
+  </form>
+</section>

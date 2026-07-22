@@ -21,7 +21,7 @@
         [class.is-selected]="selectedProject?.id === project.id"
         [class.is-archived]="project.status === 'ARCHIVED'"
       >
-        <button type="button" class="project-main" (click)="projectSelected.emit(project)">
+        <button type="button" class="project-main" (click)="projectFocused.emit(project)">
           <span>{{ project.provider }}</span>
           <strong>{{ project.name }}</strong>
           <small>{{ project.defaultBranch }} - {{ project.status }}</small>
@@ -30,7 +30,7 @@
           type="button"
           class="manage"
           title="Manage repository"
-          (click)="projectSelected.emit(project)"
+          (click)="projectManaged.emit(project)"
         >
           <ng-icon name="lucideSettings" aria-hidden="true" />
         </button>

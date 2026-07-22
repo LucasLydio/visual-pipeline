@@ -52,11 +52,40 @@
           id="repositories"
           [projects]="facade.filteredProjects()"
           [query]="facade.projectSearch()"
-          [selectedProject]="facade.selectedProject()"
+          [selectedProject]="pipelineFacade.focusedProject()"
           (queryChange)="facade.projectSearch.set($event)"
-          (projectSelected)="facade.selectedProject.set($event)"
+          (projectFocused)="focusProject($event)"
+          (projectManaged)="openProjectManagement($event)"
         />
       </section>
+
+      <vp-pipeline-manager
+        [project]="pipelineFacade.focusedProject()"
+        [loading]="pipelineFacade.state().loading"
+        [templates]="pipelineFacade.state().templates"
+        [pipelines]="pipelineFacade.state().pipelines"
+        [error]="pipelineFacade.state().error"
+        [selectedPipeline]="pipelineFacade.selectedPipeline()"
+        [selectedTemplate]="pipelineFacade.selectedTemplate()"
+        (createTemplate)="openTemplateDialog()"
+        (editTemplate)="openTemplateDialog($event)"
+        (archiveTemplate)="templateToArchive.set($event)"
+        (addTemplateStep)="addTemplateStep($event)"
+        (editTemplateStep)="editTemplateStep($event)"
+        (deleteTemplateStep)="
+          stepToDelete.set({ type: 'template', templateId: $event.templateId, step: $event })
+        "
+        (createPipeline)="openPipelineDialog()"
+        (editPipeline)="openPipelineDialog($event)"
+        (archivePipeline)="pipelineToArchive.set($event)"
+        (addPipelineStep)="addPipelineStep($event)"
+        (editPipelineStep)="editPipelineStep($event)"
+        (deletePipelineStep)="
+          stepToDelete.set({ type: 'pipeline', pipelineId: $event.pipelineId, step: $event })
+        "
+        (pipelineSelected)="pipelineFacade.selectedPipeline.set($event)"
+        (templateSelected)="pipelineFacade.selectedTemplate.set($event)"
+      />
     }
   }
 </main>
@@ -85,6 +114,32 @@
   (unsyncProject)="projectToUnsync.set($event)"
   (closed)="facade.selectedProject.set(null)"
 />
+
+@if (showTemplateDialog()) {
+  <vp-pipeline-template-dialog
+    [template]="editingTemplate()"
+    (saved)="saveTemplate($event)"
+    (closed)="showTemplateDialog.set(false); editingTemplate.set(null)"
+  />
+}
+
+@if (showPipelineDialog()) {
+  <vp-pipeline-dialog
+    [pipeline]="editingPipeline()"
+    [templates]="pipelineFacade.activeTemplates()"
+    (saved)="savePipeline($event)"
+    (closed)="showPipelineDialog.set(false); editingPipeline.set(null)"
+  />
+}
+
+@if (stepTarget(); as target) {
+  <vp-pipeline-step-dialog
+    [step]="target.step ?? null"
+    [includeDescription]="target.type === 'template'"
+    (saved)="saveStep($event)"
+    (closed)="stepTarget.set(null)"
+  />
+}
 
 @if (memberToRemove(); as member) {
   <vp-confirm-dialog
@@ -127,3 +182,35 @@
     (closed)="projectToArchive.set(null)"
   />
 }
+
+@if (templateToArchive(); as template) {
+  <vp-confirm-dialog
+    title="Archive template"
+    [message]="'Archive reusable template ' + template.name + '?'"
+    confirmLabel="Archive"
+    (confirmed)="confirmArchiveTemplate()"
+    (closed)="templateToArchive.set(null)"
+  />
+}
+
+@if (pipelineToArchive(); as pipeline) {
+  <vp-confirm-dialog
+    title="Archive pipeline"
+    [message]="'Archive pipeline ' + pipeline.name + ' from this project?'"
+    confirmLabel="Archive"
+    (confirmed)="confirmArchivePipeline()"
+    (closed)="pipelineToArchive.set(null)"
+  />
+}
+
+@if (stepToDelete(); as target) {
+  <vp-confirm-dialog
+    title="Delete step"
+    [message]="'Delete step ' + (target.step?.name ?? '') + '?'"
+    confirmLabel="Delete"
+    (confirmed)="confirmDeleteStep()"
+    (closed)="stepToDelete.set(null)"
+  />
+}
+
+<vp-toast-viewport />

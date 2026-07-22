@@ -1,0 +1,147 @@
+<section id="pipelines" class="pipeline-panel">
+  <header class="panel-header">
+    <div>
+      <span class="section-label">Pipelines</span>
+      <h2>{{ project ? project.name : 'Select a repository' }}</h2>
+    </div>
+    @if (project) {
+      <div class="header-actions">
+        <button type="button" class="neutral" (click)="createTemplate.emit()">
+          <ng-icon name="lucideFilePlus2" aria-hidden="true" />Template
+        </button>
+        <button type="button" (click)="createPipeline.emit()">
+          <ng-icon name="lucidePlus" aria-hidden="true" />Pipeline
+        </button>
+      </div>
+    }
+  </header>
+
+  @if (!project) {
+    <p class="empty-copy">Choose a synced repository to manage templates and steps.</p>
+  } @else if (loading) {
+    <div class="loading-lines" aria-live="polite"><span></span><span></span></div>
+  } @else if (error) {
+    <p class="panel-error" role="alert">{{ error }}</p>
+  } @else {
+    <div class="pipeline-grid">
+      <section>
+        <div class="section-heading">
+          <h3>Reusable templates</h3>
+          <span>{{ templates.length }}</span>
+        </div>
+        <div class="stack">
+          @for (template of templates; track template.id) {
+            <article [class.is-muted]="!template.isActive">
+              <button type="button" class="item-main" (click)="templateSelected.emit(template)">
+                <strong>{{ template.name }}</strong>
+                <small
+                  >{{ template.steps.length }} steps -
+                  {{ template.isActive ? 'active' : 'archived' }}</small
+                >
+              </button>
+              <div class="item-actions">
+                <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
+                  <ng-icon name="lucidePencil" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  title="Add template step"
+                  (click)="addTemplateStep.emit(template)"
+                >
+                  <ng-icon name="lucideListPlus" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  title="Archive template"
+                  (click)="archiveTemplate.emit(template)"
+                >
+                  <ng-icon name="lucideArchive" aria-hidden="true" />
+                </button>
+              </div>
+              @if (selectedTemplate?.id === template.id) {
+                <ol class="step-list">
+                  @for (step of orderedTemplateSteps(template); track step.id) {
+                    <li [class.is-disabled]="!step.isEnabled">
+                      <span>{{ step.order }}</span>
+                      <button type="button" (click)="editTemplateStep.emit(step)">
+                        {{ step.name }}
+                      </button>
+                      <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
+                      <button
+                        type="button"
+                        title="Delete step"
+                        (click)="deleteTemplateStep.emit(step)"
+                      >
+                        <ng-icon name="lucideTrash2" aria-hidden="true" />
+                      </button>
+                    </li>
+                  }
+                </ol>
+              }
+            </article>
+          } @empty {
+            <p class="empty-copy">Create a reusable template for this team.</p>
+          }
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">
+          <h3>Project pipelines</h3>
+          <span>{{ pipelines.length }}</span>
+        </div>
+        <div class="stack">
+          @for (pipeline of pipelines; track pipeline.id) {
+            <article [class.is-muted]="pipeline.status === 'ARCHIVED'">
+              <button type="button" class="item-main" (click)="pipelineSelected.emit(pipeline)">
+                <strong>{{ pipeline.name }}</strong>
+                <small>{{ pipeline.steps.length }} steps - {{ pipeline.status }}</small>
+              </button>
+              <div class="item-actions">
+                <button type="button" title="Edit pipeline" (click)="editPipeline.emit(pipeline)">
+                  <ng-icon name="lucidePencil" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  title="Add pipeline step"
+                  (click)="addPipelineStep.emit(pipeline)"
+                >
+                  <ng-icon name="lucideListPlus" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  title="Archive pipeline"
+                  (click)="archivePipeline.emit(pipeline)"
+                >
+                  <ng-icon name="lucideArchive" aria-hidden="true" />
+                </button>
+              </div>
+              @if (selectedPipeline?.id === pipeline.id) {
+                <ol class="step-list">
+                  @for (step of orderedPipelineSteps(pipeline); track step.id) {
+                    <li [class.is-disabled]="!step.isEnabled">
+                      <span>{{ step.order }}</span>
+                      <button type="button" (click)="editPipelineStep.emit(step)">
+                        {{ step.name }}
+                      </button>
+                      <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
+                      <button
+                        type="button"
+                        title="Delete step"
+                        (click)="deletePipelineStep.emit(step)"
+                      >
+                        <ng-icon name="lucideTrash2" aria-hidden="true" />
+                      </button>
+                    </li>
+                  }
+                </ol>
+              }
+            </article>
+          } @empty {
+            <p class="empty-copy">Create a pipeline from a template or from scratch.</p>
+          }
+        </div>
+      </section>
+    </div>
+  }
+</section>

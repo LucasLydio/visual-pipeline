@@ -24,6 +24,7 @@ export interface WorkspaceMember {
 export interface WorkspaceProject {
   readonly id: string;
   readonly teamId: string;
+  readonly ownerId: string | null;
   readonly name: string;
   readonly slug: string;
   readonly provider: SourceProvider;
