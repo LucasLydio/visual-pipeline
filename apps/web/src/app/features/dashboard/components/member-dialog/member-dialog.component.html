@@ -18,7 +18,15 @@
     </label>
     <label>
       <span>Team title</span>
-      <input formControlName="title" placeholder="Tech lead, Frontend, QA" />
+      <select formControlName="title">
+        <option value="">No title assigned</option>
+        @if (customTitle) {
+          <option [value]="customTitle">{{ customTitle }}</option>
+        }
+        @for (title of titles; track title) {
+          <option [value]="title">{{ title }}</option>
+        }
+      </select>
     </label>
     <div class="dialog-actions">
       <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
