@@ -59,16 +59,22 @@
                 </button>
               </div>
               @if (selectedTemplate?.id === template.id) {
-                <ol class="step-list">
+                <ol class="step-flow" aria-label="Template steps">
                   @for (step of orderedTemplateSteps(template); track step.id) {
                     <li [class.is-disabled]="!step.isEnabled">
-                      <span>{{ step.order }}</span>
-                      <button type="button" (click)="editTemplateStep.emit(step)">
-                        {{ step.name }}
-                      </button>
-                      <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
                       <button
                         type="button"
+                        class="step-node"
+                        [title]="'Edit ' + step.name"
+                        (click)="editTemplateStep.emit(step)"
+                      >
+                        <span class="step-index">{{ step.order }}</span>
+                        <strong>{{ step.name }}</strong>
+                        <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
+                      </button>
+                      <button
+                        type="button"
+                        class="step-delete"
                         title="Delete step"
                         (click)="deleteTemplateStep.emit(step)"
                       >
@@ -117,16 +123,22 @@
                 </button>
               </div>
               @if (selectedPipeline?.id === pipeline.id) {
-                <ol class="step-list">
+                <ol class="step-flow" aria-label="Pipeline steps">
                   @for (step of orderedPipelineSteps(pipeline); track step.id) {
                     <li [class.is-disabled]="!step.isEnabled">
-                      <span>{{ step.order }}</span>
-                      <button type="button" (click)="editPipelineStep.emit(step)">
-                        {{ step.name }}
-                      </button>
-                      <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
                       <button
                         type="button"
+                        class="step-node"
+                        [title]="'Edit ' + step.name"
+                        (click)="editPipelineStep.emit(step)"
+                      >
+                        <span class="step-index">{{ step.order }}</span>
+                        <strong>{{ step.name }}</strong>
+                        <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
+                      </button>
+                      <button
+                        type="button"
+                        class="step-delete"
                         title="Delete step"
                         (click)="deletePipelineStep.emit(step)"
                       >
