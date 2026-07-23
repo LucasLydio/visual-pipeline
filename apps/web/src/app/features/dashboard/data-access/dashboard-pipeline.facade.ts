@@ -13,6 +13,7 @@ import {
 } from 'rxjs';
 
 import { PipelineApi } from '../../../core/api/pipeline-api';
+import { SessionRefreshRequiredError } from '../../../core/errors/session-refresh-required.error';
 import {
   CreatePipelineRequest,
   CreatePipelineTemplateRequest,
@@ -72,6 +73,10 @@ export class DashboardPipelineFacade {
           })),
           startWith(this.emptyState(true)),
           catchError((error: unknown) => {
+            if (error instanceof SessionRefreshRequiredError) {
+              return of(this.emptyState(false));
+            }
+
             const message = this.errorMessage(error, 'Unable to load pipelines.');
             this.toast.error(message);
             return of({
@@ -159,6 +164,10 @@ export class DashboardPipelineFacade {
       }),
       map(() => true),
       catchError((error: unknown) => {
+        if (error instanceof SessionRefreshRequiredError) {
+          return of(false);
+        }
+
         this.toast.error(this.errorMessage(error, 'Action failed.'));
         return of(false);
       }),

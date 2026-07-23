@@ -1,0 +1,31 @@
+@if (sessionRefresh.state().visible) {
+  <div class="dialog-backdrop" aria-hidden="true"></div>
+  <section class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="session-title">
+    <span class="dialog-icon" aria-hidden="true">
+      <ng-icon name="lucideShieldAlert" />
+    </span>
+    <h2 id="session-title">Session needs attention</h2>
+    <p>
+      Your secure session expired while you were working. Refresh it to continue without losing
+      context.
+    </p>
+
+    @if (sessionRefresh.state().error; as error) {
+      <p class="error-message" role="alert">{{ error }}</p>
+    }
+
+    <div class="dialog-actions">
+      <button type="button" class="neutral" (click)="sessionRefresh.signInAgain()">
+        Back to login
+      </button>
+      <button
+        type="button"
+        [disabled]="sessionRefresh.state().refreshing"
+        (click)="sessionRefresh.refreshNow()"
+      >
+        <ng-icon name="lucideRefreshCw" aria-hidden="true" />
+        {{ sessionRefresh.state().refreshing ? 'Refreshing' : 'Refresh session' }}
+      </button>
+    </div>
+  </section>
+}

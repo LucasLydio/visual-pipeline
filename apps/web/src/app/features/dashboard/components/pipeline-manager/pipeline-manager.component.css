@@ -196,11 +196,6 @@ article.is-muted {
   white-space: nowrap;
 }
 
-.step-delete {
-  width: 1.8rem;
-  height: 1.8rem;
-  min-height: 1.8rem;
-}
 
 .loading-lines {
   display: grid;

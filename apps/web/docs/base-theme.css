@@ -194,7 +194,7 @@ section {
 
 article,
 aside {
-  padding: var(--padding-lg);
+  padding: var(--padding-sm);
   background: var(--color-surface);
   border: var(--border-width-light) solid var(--color-border);
   border-radius: var(--border-lg);

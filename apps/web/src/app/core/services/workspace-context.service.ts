@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, catchError, map, of, startWith, switchMap } from 'rxjs';
 
 import { TeamApi } from '../api/team-api';
+import { SessionRefreshRequiredError } from '../errors/session-refresh-required.error';
 import { WorkspaceOverview } from '../models/team.models';
 import { AuthSessionService } from './auth-session.service';
 
@@ -38,7 +39,10 @@ export class WorkspaceContextService {
             of({
               loading: false,
               overview: null,
-              error: this.errorMessage(error, 'Unable to load workspace.'),
+              error:
+                error instanceof SessionRefreshRequiredError
+                  ? null
+                  : this.errorMessage(error, 'Unable to load workspace.'),
             } satisfies WorkspaceContextState),
           ),
         );

@@ -41,8 +41,9 @@ input {
 }
 
 .project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.65rem;
 }
 
@@ -75,9 +76,11 @@ article.is-archived {
   text-align: left;
   background: transparent;
   border: 0;
+  margin-right: var(--gap-lg);
 }
 
 .project-main span,
+.project-main strong,
 .project-main small,
 .empty-copy {
   color: var(--color-text-muted);

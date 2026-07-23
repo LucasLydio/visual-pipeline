@@ -38,7 +38,6 @@ import {
   PipelineStepTarget,
 } from '../../data-access/dashboard-pipeline.facade';
 import { DashboardFacade } from '../../data-access/dashboard.facade';
-import { ToastViewportComponent } from '../../../../shared/ui/toast-viewport/toast-viewport.component';
 
 @Component({
   selector: 'vp-dashboard-page',
@@ -55,7 +54,6 @@ import { ToastViewportComponent } from '../../../../shared/ui/toast-viewport/toa
     ProjectDetailDialogComponent,
     ProjectDialogComponent,
     TeamDialogComponent,
-    ToastViewportComponent,
     WorkspaceToolbarComponent,
   ],
   providers: [DashboardFacade, DashboardPipelineFacade],

@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, of, tap } from 'rxjs';
 
 import { TeamApi } from '../../../core/api/team-api';
+import { SessionRefreshRequiredError } from '../../../core/errors/session-refresh-required.error';
 import {
   AddTeamMemberRequest,
   CreateProjectRequest,
@@ -126,6 +127,11 @@ export class DashboardFacade {
 
     return action$.pipe(
       catchError((error: unknown) => {
+        if (error instanceof SessionRefreshRequiredError) {
+          this.actionError.set(null);
+          return of(null);
+        }
+
         this.actionError.set(this.errorMessage(error, 'Action failed.'));
         return of(null);
       }),
