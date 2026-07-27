@@ -57,6 +57,12 @@ export class PipelineManagerComponent {
   @Output() deletePipelineStep = new EventEmitter<PipelineStep>();
   @Output() pipelineSelected = new EventEmitter<ProjectPipeline>();
   @Output() templateSelected = new EventEmitter<PipelineTemplate>();
+  readonly statusClassMap: Record<string, string> = {
+    ACTIVE: 'dot-green',
+    PAUSED: 'dot-red',
+    ARCHIVED: 'dot-gray',
+    ARCHIEVED: 'dot-gray',
+  };
 
   protected orderedTemplateSteps(template: PipelineTemplate): readonly PipelineTemplateStep[] {
     return [...template.steps].sort((left, right) => left.order - right.order);

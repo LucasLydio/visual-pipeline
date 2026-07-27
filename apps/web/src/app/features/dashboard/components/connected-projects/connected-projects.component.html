@@ -22,9 +22,21 @@
         [class.is-archived]="project.status === 'ARCHIVED'"
       >
         <button type="button" class="project-main" (click)="projectFocused.emit(project)">
+        <div>
           <span>{{ project.provider }}</span>
+          @if (providerIconMap[project.provider]; as iconName) {
+            <ng-icon [name]="iconName" aria-hidden="true" style="margin-inline: .4rem;" />
+          }
+        </div>
+
           <strong>{{ project.name }}</strong>
-          <small>{{ project.defaultBranch }} - {{ project.status }}</small>
+          <small>
+            branch: {{ project.defaultBranch }} -
+            <span
+              class="status-dot"
+              [class]="statusClassMap[project.status] || 'dot-gray'">
+            </span>
+          </small>
         </button>
         <button
           type="button"

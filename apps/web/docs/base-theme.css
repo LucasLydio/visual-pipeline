@@ -160,6 +160,32 @@ body {
     color var(--transition-base);
 }
 
+/* Base circle styling */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-inline: 0.25rem;
+  vertical-align: middle;
+}
+
+/* Color variations */
+.status-dot.dot-green {
+  background-color: #22c55e;
+  box-shadow: 0 0 0 1px #c5f6d6; /* Optional soft glow ring */
+}
+
+.status-dot.dot-red {
+  background-color: #ef4444;
+  box-shadow: 0 0 0 1px #fee2e2;
+}
+
+.status-dot.dot-gray {
+  background-color: #9ca3af;
+  box-shadow: 0 0 0 1px #f3f4f6;
+}
+
 header,
 nav,
 main,

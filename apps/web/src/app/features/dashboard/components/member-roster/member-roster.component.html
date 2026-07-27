@@ -11,7 +11,7 @@
     @for (member of members; track member.id) {
       <article>
         <div class="avatar" aria-hidden="true">{{ member.name.slice(0, 2).toUpperCase() }}</div>
-        <div>
+        <div class="text">
           <strong>{{ member.name }}</strong>
           <small>{{ member.title || 'No title assigned' }} - {{ member.role }}</small>
           <small>{{ member.email }}</small>

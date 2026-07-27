@@ -2,7 +2,7 @@
   <header class="panel-header">
     <div>
       <span class="section-label">Pipelines</span>
-      <h2>{{ project ? project.name : 'Select a repository' }}</h2>
+      <h4>{{ project ? project.name : 'Select a repository' }}</h4>
     </div>
     @if (project) {
       <div class="header-actions">
@@ -26,7 +26,7 @@
     <div class="pipeline-grid">
       <section>
         <div class="section-heading">
-          <h3>Reusable templates</h3>
+          <h5>Reusable templates</h5>
           <span>{{ templates.length }}</span>
         </div>
         <div class="stack">
@@ -34,10 +34,15 @@
             <article [class.is-muted]="!template.isActive">
               <button type="button" class="item-main" (click)="templateSelected.emit(template)">
                 <strong>{{ template.name }}</strong>
-                <small
-                  >{{ template.steps.length }} steps -
-                  {{ template.isActive ? 'active' : 'archived' }}</small
-                >
+                <small>
+                  {{ template.steps.length }} steps -
+                  {{ template.isActive ? 'ACTIVE' : 'ARCHIVIED' }}
+
+                  <span
+                    class="status-dot"
+                    [class]="statusClassMap[template.isActive ? 'ACTIVE' : 'ARCHIVIED'] || 'dot-gray'">
+                  </span>
+                </small>
               </button>
               <div class="item-actions">
                 <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
@@ -93,7 +98,7 @@
 
       <section>
         <div class="section-heading">
-          <h3>Project pipelines</h3>
+          <h5>Project pipelines</h5>
           <span>{{ pipelines.length }}</span>
         </div>
         <div class="stack">
@@ -101,7 +106,14 @@
             <article [class.is-muted]="pipeline.status === 'ARCHIVED'">
               <button type="button" class="item-main" (click)="pipelineSelected.emit(pipeline)">
                 <strong>{{ pipeline.name }}</strong>
-                <small>{{ pipeline.steps.length }} steps - {{ pipeline.status }}</small>
+                <small>
+                  {{ pipeline.steps.length }} steps - {{ pipeline.status }}
+
+                  <span
+                    class="status-dot"
+                    [class]="statusClassMap[pipeline.status] || 'dot-gray'">
+                  </span>
+                </small>
               </button>
               <div class="item-actions">
                 <button type="button" title="Edit pipeline" (click)="editPipeline.emit(pipeline)">

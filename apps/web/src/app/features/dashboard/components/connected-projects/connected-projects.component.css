@@ -48,6 +48,7 @@ input {
 }
 
 article {
+  display: flex;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--color-border);
@@ -68,8 +69,11 @@ article.is-archived {
 }
 
 .project-main {
-  display: grid;
+  display: flex;
   width: 100%;
+  max-width: 16rem;
+  align-items: baseline;
+  flex-wrap: wrap;
   gap: 0.2rem;
   padding-inline: var(--padding-sm);
   color: var(--color-text);

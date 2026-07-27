@@ -11,6 +11,12 @@ article,
   display: flex;
   align-items: center;
 }
+article small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 13rem;
+}
 
 header {
   justify-content: space-between;
