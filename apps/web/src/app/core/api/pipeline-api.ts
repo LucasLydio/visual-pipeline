@@ -63,4 +63,5 @@ export abstract class PipelineApi {
     dto: CreatePipelineRunRequest,
   ): Observable<PipelineRun>;
   abstract getPipelineRun(runId: string): Observable<PipelineRun>;
+  abstract cancelPipelineRun(runId: string): Observable<PipelineRun>;
 }

@@ -40,6 +40,7 @@ src/modules/pipeline-runs/
 POST /pipelines/:pipelineId/runs
 GET  /pipelines/:pipelineId/runs
 GET  /pipeline-runs/:runId
+PATCH /pipeline-runs/:runId/cancel
 ```
 
 ## Example Manual Run
@@ -60,5 +61,6 @@ Both fields are optional. When `branch` is omitted, the API uses the connected p
 - API returns run history with step snapshots.
 - OpenAPI includes run routes and schemas.
 - Web dashboard can queue a run and view run history.
+- Web dashboard can cancel queued or running runs.
 - Pipeline circles can reflect the latest run status.
 - No command execution or webhook ingestion is added in this step.

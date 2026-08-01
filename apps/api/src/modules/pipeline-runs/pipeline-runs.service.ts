@@ -67,6 +67,25 @@ export class PipelineRunsService {
     return run;
   }
 
+  async cancelRun(runId: string, userId: string) {
+    const run = await this.runsRepository.findRunById(runId);
+    if (!run) throw new NotFoundException('Pipeline run not found.');
+
+    await this.assertProjectOwner(
+      run.pipeline.project.teamId,
+      run.pipeline.project.ownerId,
+      userId,
+    );
+
+    if (!['QUEUED', 'RUNNING'].includes(run.status)) {
+      throw new BadRequestException(
+        'Only queued or running pipeline runs can be canceled.',
+      );
+    }
+
+    return this.runsRepository.cancelRun(run.id);
+  }
+
   private async getPipelineOrThrow(pipelineId: string, requireActive = false) {
     const pipeline = await this.runsRepository.findPipelineById(pipelineId);
     if (!pipeline) throw new NotFoundException('Pipeline not found.');

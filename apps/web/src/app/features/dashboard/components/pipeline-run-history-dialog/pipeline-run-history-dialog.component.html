@@ -25,6 +25,12 @@
               <ng-icon name="lucideClock3" aria-hidden="true" />
               {{ formatDate(run.queuedAt) }}
             </small>
+            @if (canCancel(run)) {
+              <button type="button" class="cancel-run" (click)="cancelRun.emit(run)">
+                <ng-icon name="lucideCircleStop" aria-hidden="true" />
+                Cancel
+              </button>
+            }
           </div>
           <div class="run-meta">
             <span>

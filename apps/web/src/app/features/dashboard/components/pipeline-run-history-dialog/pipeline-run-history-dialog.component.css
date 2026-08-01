@@ -84,6 +84,19 @@ article {
   gap: 0.25rem;
 }
 
+.cancel-run {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  padding-inline: 0.65rem;
+  color: #fed7d7;
+  background: rgba(180, 35, 24, 0.14);
+  border: 1px solid rgba(180, 35, 24, 0.32);
+  border-radius: 0.4rem;
+}
+
 .status-pill {
   padding: 0.2rem 0.45rem;
   color: white;

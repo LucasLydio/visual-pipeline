@@ -257,6 +257,16 @@ export const pipelinePaths: OpenApiPaths = {
       responses: { '200': response('PipelineRun', 'Pipeline run found.') },
     },
   },
+  '/pipeline-runs/{runId}/cancel': {
+    patch: {
+      tags: ['Pipelines'],
+      summary: 'Cancel a queued or running pipeline run.',
+      operationId: 'cancelPipelineRun',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/PipelineRunId' }],
+      responses: { '200': response('PipelineRun', 'Pipeline run canceled.') },
+    },
+  },
   '/pipeline-steps/{stepId}': {
     patch: {
       tags: ['Pipelines'],

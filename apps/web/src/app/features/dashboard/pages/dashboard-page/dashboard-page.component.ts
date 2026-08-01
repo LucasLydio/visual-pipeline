@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   CreatePipelineRequest,
+  PipelineRun,
   CreatePipelineTemplateRequest,
   PipelineStep,
   PipelineStepRequest,
@@ -158,6 +159,10 @@ export class DashboardPageComponent {
   protected openRunHistory(pipeline: ProjectPipeline): void {
     this.pipelineFacade.selectPipeline(pipeline);
     this.showRunHistoryDialog.set(true);
+  }
+
+  protected cancelPipelineRun(run: PipelineRun): void {
+    this.pipelineFacade.cancelPipelineRun(run).subscribe();
   }
 
   protected savePipeline(dto: CreatePipelineRequest | UpdatePipelineRequest): void {

@@ -148,6 +148,12 @@ export class HttpPipelineApiService implements PipelineApi {
     });
   }
 
+  cancelPipelineRun(runId: string): Observable<PipelineRun> {
+    return this.http.patch<PipelineRun>(`${this.baseUrl}/pipeline-runs/${runId}/cancel`, null, {
+      headers: this.authHeaders(),
+    });
+  }
+
   private authHeaders(): HttpHeaders {
     const token = this.authSession.getSession()?.accessToken;
     return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();

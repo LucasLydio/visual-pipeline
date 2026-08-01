@@ -141,6 +141,7 @@
     [runs]="pipelineFacade.runsState().runs"
     [loading]="pipelineFacade.runsState().loading"
     [error]="pipelineFacade.runsState().error"
+    (cancelRun)="cancelPipelineRun($event)"
     (closed)="showRunHistoryDialog.set(false)"
   />
 }

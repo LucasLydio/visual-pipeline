@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideClock3, lucideGitBranch, lucideX } from '@ng-icons/lucide';
+import { lucideCircleStop, lucideClock3, lucideGitBranch, lucideX } from '@ng-icons/lucide';
 
 import { PipelineRun, ProjectPipeline } from '../../../../core/models/pipeline-api.models';
 
 @Component({
   selector: 'vp-pipeline-run-history-dialog',
   imports: [NgIcon],
-  providers: [provideIcons({ lucideClock3, lucideGitBranch, lucideX })],
+  providers: [provideIcons({ lucideCircleStop, lucideClock3, lucideGitBranch, lucideX })],
   templateUrl: './pipeline-run-history-dialog.component.html',
   styleUrl: './pipeline-run-history-dialog.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,6 +18,7 @@ export class PipelineRunHistoryDialogComponent {
   @Input() loading = false;
   @Input() error: string | null = null;
   @Output() closed = new EventEmitter<void>();
+  @Output() cancelRun = new EventEmitter<PipelineRun>();
 
   protected statusClass(status: string): string {
     return `status-${status.toLowerCase()}`;
@@ -28,5 +29,9 @@ export class PipelineRunHistoryDialogComponent {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(new Date(value));
+  }
+
+  protected canCancel(run: PipelineRun): boolean {
+    return run.status === 'QUEUED' || run.status === 'RUNNING';
   }
 }

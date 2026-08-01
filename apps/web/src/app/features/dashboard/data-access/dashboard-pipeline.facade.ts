@@ -215,6 +215,22 @@ export class DashboardPipelineFacade {
     );
   }
 
+  cancelPipelineRun(run: PipelineRun): Observable<boolean> {
+    return this.api.cancelPipelineRun(run.id).pipe(
+      tap(() => {
+        this.toast.success('Pipeline run canceled.');
+        this.refreshRuns();
+      }),
+      map(() => true),
+      catchError((error: unknown) => {
+        if (error instanceof SessionRefreshRequiredError) return of(false);
+
+        this.toast.error(this.errorMessage(error, 'Could not cancel pipeline run.'));
+        return of(false);
+      }),
+    );
+  }
+
   private run(action$: Observable<unknown>, successMessage: string): Observable<boolean> {
     return action$.pipe(
       tap(() => {

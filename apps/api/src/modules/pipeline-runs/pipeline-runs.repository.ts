@@ -69,6 +69,30 @@ export class PipelineRunsRepository {
     });
   }
 
+  async cancelRun(runId: string) {
+    const finishedAt = new Date();
+
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.pipelineStepRun.updateMany({
+        where: {
+          pipelineRunId: runId,
+          status: { in: ['QUEUED', 'RUNNING'] },
+        },
+        data: { status: 'CANCELED', finishedAt },
+      });
+
+      return prisma.pipelineRun.update({
+        where: { id: runId },
+        data: {
+          status: 'CANCELED',
+          finishedAt,
+          failureReason: 'Canceled manually.',
+        },
+        include: this.runInclude(),
+      });
+    });
+  }
+
   private runInclude() {
     return {
       steps: { orderBy: { order: 'asc' as const } },
