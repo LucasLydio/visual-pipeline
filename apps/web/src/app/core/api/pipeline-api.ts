@@ -2,7 +2,9 @@ import { Observable } from 'rxjs';
 
 import {
   CreatePipelineRequest,
+  CreatePipelineRunRequest,
   CreatePipelineTemplateRequest,
+  PipelineRun,
   PipelineStep,
   PipelineStepRequest,
   PipelineTemplate,
@@ -55,4 +57,10 @@ export abstract class PipelineApi {
     dto: Partial<PipelineStepRequest>,
   ): Observable<PipelineStep>;
   abstract deletePipelineStep(stepId: string): Observable<void>;
+  abstract listPipelineRuns(pipelineId: string): Observable<readonly PipelineRun[]>;
+  abstract triggerPipelineRun(
+    pipelineId: string,
+    dto: CreatePipelineRunRequest,
+  ): Observable<PipelineRun>;
+  abstract getPipelineRun(runId: string): Observable<PipelineRun>;
 }

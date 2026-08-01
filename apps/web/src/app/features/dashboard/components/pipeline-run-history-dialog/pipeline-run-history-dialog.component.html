@@ -1,0 +1,52 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="run-history-title">
+  <header>
+    <div>
+      <span class="section-label">Run history</span>
+      <h2 id="run-history-title">{{ pipeline?.name ?? 'Pipeline' }}</h2>
+    </div>
+    <button type="button" class="icon-button" aria-label="Close" (click)="closed.emit()">
+      <ng-icon name="lucideX" aria-hidden="true" />
+    </button>
+  </header>
+
+  @if (loading) {
+    <div class="loading-lines" aria-live="polite"><span></span><span></span></div>
+  } @else if (error) {
+    <p class="error-message" role="alert">{{ error }}</p>
+  } @else {
+    <div class="run-list">
+      @for (run of runs; track run.id) {
+        <article>
+          <div class="run-main">
+            <span class="status-pill {{ statusClass(run.status) }}">{{ run.status }}</span>
+            <strong>{{ run.trigger }}</strong>
+            <small>
+              <ng-icon name="lucideClock3" aria-hidden="true" />
+              {{ formatDate(run.queuedAt) }}
+            </small>
+          </div>
+          <div class="run-meta">
+            <span>
+              <ng-icon name="lucideGitBranch" aria-hidden="true" />
+              {{ run.branch }}
+            </span>
+            <span>{{ run.steps.length }} steps</span>
+            <span>{{ run.triggeredBy?.displayName ?? 'System' }}</span>
+          </div>
+          <ol class="step-snapshots">
+            @for (step of run.steps; track step.id) {
+              <li class="{{ statusClass(step.status) }}">
+                <span>{{ step.order }}</span>
+                <strong>{{ step.name }}</strong>
+                <small>{{ step.status }}</small>
+              </li>
+            }
+          </ol>
+        </article>
+      } @empty {
+        <p class="empty-copy">No runs have been queued for this pipeline yet.</p>
+      }
+    </div>
+  }
+</section>

@@ -1,4 +1,8 @@
 export type PipelineStatus = 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+export type PipelineRunStatus = 'QUEUED' | 'RUNNING' | 'PASSED' | 'FAILED' | 'SKIPPED' | 'CANCELED';
+export type PipelineRunTrigger = 'MANUAL' | 'GITHUB_WEBHOOK' | 'AGENT' | 'SCHEDULED';
+export type PipelineStepRunStatus =
+  'QUEUED' | 'RUNNING' | 'PASSED' | 'FAILED' | 'SKIPPED' | 'CANCELED';
 
 export interface PipelineTemplateStep {
   readonly id: string;
@@ -39,6 +43,51 @@ export interface ProjectPipeline {
   readonly description: string | null;
   readonly status: PipelineStatus;
   readonly steps: readonly PipelineStep[];
+}
+
+export interface PipelineRunActor {
+  readonly id: string;
+  readonly email: string;
+  readonly displayName: string;
+}
+
+export interface PipelineStepRun {
+  readonly id: string;
+  readonly pipelineRunId: string;
+  readonly pipelineStepId: string | null;
+  readonly name: string;
+  readonly order: number;
+  readonly command: string | null;
+  readonly isRequired: boolean;
+  readonly status: PipelineStepRunStatus;
+  readonly logsSummary: string | null;
+  readonly startedAt: string | null;
+  readonly finishedAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface PipelineRun {
+  readonly id: string;
+  readonly pipelineId: string;
+  readonly triggeredById: string | null;
+  readonly status: PipelineRunStatus;
+  readonly trigger: PipelineRunTrigger;
+  readonly branch: string;
+  readonly commitSha: string | null;
+  readonly failureReason: string | null;
+  readonly queuedAt: string;
+  readonly startedAt: string | null;
+  readonly finishedAt: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly triggeredBy: PipelineRunActor | null;
+  readonly steps: readonly PipelineStepRun[];
+}
+
+export interface CreatePipelineRunRequest {
+  readonly branch?: string;
+  readonly commitSha?: string;
 }
 
 export interface PipelineTemplateStepRequest {

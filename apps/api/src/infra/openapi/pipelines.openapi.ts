@@ -221,6 +221,42 @@ export const pipelinePaths: OpenApiPaths = {
       responses: { '201': response('PipelineStep', 'Pipeline step created.') },
     },
   },
+  '/pipelines/{pipelineId}/runs': {
+    get: {
+      tags: ['Pipelines'],
+      summary: 'List execution runs for a project pipeline.',
+      operationId: 'listPipelineRuns',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/PipelineId' }],
+      responses: { '200': response('PipelineRunList', 'Pipeline runs found.') },
+    },
+    post: {
+      tags: ['Pipelines'],
+      summary: 'Queue a manual pipeline run.',
+      operationId: 'triggerManualPipelineRun',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/PipelineId' }],
+      requestBody: {
+        required: false,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/CreatePipelineRunRequest' },
+          },
+        },
+      },
+      responses: { '201': response('PipelineRun', 'Pipeline run queued.') },
+    },
+  },
+  '/pipeline-runs/{runId}': {
+    get: {
+      tags: ['Pipelines'],
+      summary: 'Get a pipeline run with step snapshots.',
+      operationId: 'getPipelineRun',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/PipelineRunId' }],
+      responses: { '200': response('PipelineRun', 'Pipeline run found.') },
+    },
+  },
   '/pipeline-steps/{stepId}': {
     patch: {
       tags: ['Pipelines'],

@@ -3,14 +3,18 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArchive,
   lucideFilePlus2,
+  lucideHistory,
   lucideListPlus,
   lucidePencil,
+  lucidePlay,
   lucidePlus,
   lucideTrash2,
 } from '@ng-icons/lucide';
 
 import {
+  PipelineRun,
   PipelineStep,
+  PipelineStepRunStatus,
   PipelineTemplate,
   PipelineTemplateStep,
   ProjectPipeline,
@@ -24,8 +28,10 @@ import { WorkspaceProject } from '../../../../core/models/team.models';
     provideIcons({
       lucideArchive,
       lucideFilePlus2,
+      lucideHistory,
       lucideListPlus,
       lucidePencil,
+      lucidePlay,
       lucidePlus,
       lucideTrash2,
     }),
@@ -42,6 +48,7 @@ export class PipelineManagerComponent {
   @Input() error: string | null = null;
   @Input() selectedPipeline: ProjectPipeline | null = null;
   @Input() selectedTemplate: PipelineTemplate | null = null;
+  @Input() latestRun: PipelineRun | null = null;
 
   @Output() createTemplate = new EventEmitter<void>();
   @Output() editTemplate = new EventEmitter<PipelineTemplate>();
@@ -57,6 +64,8 @@ export class PipelineManagerComponent {
   @Output() deletePipelineStep = new EventEmitter<PipelineStep>();
   @Output() pipelineSelected = new EventEmitter<ProjectPipeline>();
   @Output() templateSelected = new EventEmitter<PipelineTemplate>();
+  @Output() runPipeline = new EventEmitter<ProjectPipeline>();
+  @Output() viewRuns = new EventEmitter<ProjectPipeline>();
   readonly statusClassMap: Record<string, string> = {
     ACTIVE: 'dot-green',
     PAUSED: 'dot-red',
@@ -70,5 +79,17 @@ export class PipelineManagerComponent {
 
   protected orderedPipelineSteps(pipeline: ProjectPipeline): readonly PipelineStep[] {
     return [...pipeline.steps].sort((left, right) => left.order - right.order);
+  }
+
+  protected stepRunStatus(step: PipelineStep): PipelineStepRunStatus | null {
+    return (
+      this.latestRun?.steps.find((runStep) => runStep.pipelineStepId === step.id)?.status ?? null
+    );
+  }
+
+  protected stepRunClass(step: PipelineStep): string {
+    const status = this.stepRunStatus(step);
+
+    return status ? `run-${status.toLowerCase()}` : '';
   }
 }

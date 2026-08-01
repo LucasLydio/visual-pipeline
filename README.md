@@ -16,9 +16,10 @@ The repository currently includes the monorepo foundation plus the first live pr
 - Postgres + Prisma persistence for users, teams, projects, sessions, and audit-ready records
 - GitHub OAuth login
 - Live dashboard API for teams, members, roles, titles, and connected projects
-- API foundation for reusable pipeline templates and project pipeline steps
+- API and web foundation for reusable pipeline templates and project pipeline steps
+- Manual pipeline run history with immutable step-run snapshots
 
-Deployment execution is still outside the current scope. The dashboard can connect projects, organize ownership, and define pipeline maps, but real execution/webhook ingestion should be added in a later documented step.
+Deployment execution is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, and queue manual pipeline runs for history, but real command execution/webhook ingestion should be added in a later documented step.
 
 ## Requirements
 
@@ -46,10 +47,10 @@ npm run dev:agent
 
 ## Local services
 
-| Service | Workspace | URL |
-| --- | --- | --- |
-| Web | `apps/web` | `http://localhost:4200` |
-| API | `apps/api` | `http://localhost:3000` |
+| Service          | Workspace           | URL                     |
+| ---------------- | ------------------- | ----------------------- |
+| Web              | `apps/web`          | `http://localhost:4200` |
+| API              | `apps/api`          | `http://localhost:3000` |
 | Deployment agent | `apps/deploy-agent` | `http://localhost:3001` |
 
 Set `PORT` to override a NestJS service port when needed.
@@ -58,11 +59,11 @@ Set `PORT` to override a NestJS service port when needed.
 
 The Angular workspace currently exposes these main routes:
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Public landing page with GitHub, GitLab, and Bitbucket entry points |
-| `/auth/callback` | Stores the API session returned after GitHub OAuth |
-| `/app` | Live dashboard for teams, members, roles, titles, and synced repositories |
+| Route            | Purpose                                                                   |
+| ---------------- | ------------------------------------------------------------------------- |
+| `/`              | Public landing page with GitHub, GitLab, and Bitbucket entry points       |
+| `/auth/callback` | Stores the API session returned after GitHub OAuth                        |
+| `/app`           | Live dashboard for teams, members, roles, titles, and synced repositories |
 
 The dashboard uses `TeamApi` from `apps/web/src/app/core/api` and the `HttpTeamApiService` adapter. It calls the NestJS API directly; mock dashboard adapters have been removed.
 
@@ -71,6 +72,8 @@ Synced repositories can be managed from the dashboard modal: update metadata, ar
 Set the frontend API base URL in `apps/web/src/environments/environment.ts`. The local default is `http://localhost:3000`.
 
 The API exposes a frontend-optimized `GET /workspace/dashboard` endpoint so the dashboard can load the current user, active team, members, and projects with one request instead of reaching repeatedly into team and project routes.
+
+Pipeline runs are available from the dashboard after selecting a pipeline. `POST /pipelines/:pipelineId/runs` queues a manual run and snapshots enabled steps. Run history is read from `GET /pipelines/:pipelineId/runs`.
 
 ## Local Auth Setup
 
@@ -88,15 +91,15 @@ After changing API environment values, restart `npm run dev:api`.
 
 ## Workspace commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev:web` | Start Angular in development mode |
-| `npm run dev:api` | Start the API with watch mode |
-| `npm run dev:agent` | Start the deployment agent with watch mode |
-| `npm run build` | Build every workspace that provides a build script |
-| `npm run test` | Test every workspace that provides a test script |
-| `npm run lint` | Lint every workspace that provides a lint script |
-| `npm run build --workspace=@visual-pipeline/contracts` | Build only the shared contracts |
+| Command                                                | Purpose                                            |
+| ------------------------------------------------------ | -------------------------------------------------- |
+| `npm run dev:web`                                      | Start Angular in development mode                  |
+| `npm run dev:api`                                      | Start the API with watch mode                      |
+| `npm run dev:agent`                                    | Start the deployment agent with watch mode         |
+| `npm run build`                                        | Build every workspace that provides a build script |
+| `npm run test`                                         | Test every workspace that provides a test script   |
+| `npm run lint`                                         | Lint every workspace that provides a lint script   |
+| `npm run build --workspace=@visual-pipeline/contracts` | Build only the shared contracts                    |
 
 Step 1 has no product behavior to test yet, so generated placeholder specs were removed. The NestJS test commands allow an empty suite, while the Angular `test` script should be added with the first real Angular test because its builder rejects an empty suite.
 

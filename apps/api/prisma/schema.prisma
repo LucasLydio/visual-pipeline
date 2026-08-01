@@ -52,6 +52,31 @@ enum PipelineStatus {
   ARCHIVED
 }
 
+enum PipelineRunStatus {
+  QUEUED
+  RUNNING
+  PASSED
+  FAILED
+  SKIPPED
+  CANCELED
+}
+
+enum PipelineRunTrigger {
+  MANUAL
+  GITHUB_WEBHOOK
+  AGENT
+  SCHEDULED
+}
+
+enum PipelineStepRunStatus {
+  QUEUED
+  RUNNING
+  PASSED
+  FAILED
+  SKIPPED
+  CANCELED
+}
+
 enum DeploymentStatus {
   QUEUED
   RUNNING
@@ -92,6 +117,7 @@ model User {
   teamMemberships   TeamMember[]
   ownedProjects     Project[]            @relation("ProjectOwner")
   pipelineTemplates PipelineTemplate[]   @relation("PipelineTemplateCreatedBy")
+  pipelineRuns      PipelineRun[]        @relation("PipelineRunTriggeredBy")
   deployments       Deployment[]         @relation("DeploymentTriggeredBy")
   auditLogs         AuditLog[]
 
@@ -149,12 +175,12 @@ model PasswordResetToken {
 }
 
 model Team {
-  id          String       @id @default(uuid()) @db.Uuid
-  name        String       @db.VarChar(120)
-  slug        String       @unique @db.VarChar(80)
-  description String?      @db.VarChar(240)
-  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime     @updatedAt @db.Timestamptz(3)
+  id          String             @id @default(uuid()) @db.Uuid
+  name        String             @db.VarChar(120)
+  slug        String             @unique @db.VarChar(80)
+  description String?            @db.VarChar(240)
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
   members     TeamMember[]
   projects    Project[]
   templates   PipelineTemplate[]
@@ -243,17 +269,18 @@ model PipelineTemplateStep {
 }
 
 model Pipeline {
-  id          String         @id @default(uuid()) @db.Uuid
-  projectId   String         @db.Uuid
-  templateId  String?        @db.Uuid
-  name        String         @db.VarChar(140)
-  description String?        @db.VarChar(240)
-  status      PipelineStatus @default(ACTIVE)
-  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime       @updatedAt @db.Timestamptz(3)
-  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id          String            @id @default(uuid()) @db.Uuid
+  projectId   String            @db.Uuid
+  templateId  String?           @db.Uuid
+  name        String            @db.VarChar(140)
+  description String?           @db.VarChar(240)
+  status      PipelineStatus    @default(ACTIVE)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
   template    PipelineTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
   steps       PipelineStep[]
+  runs        PipelineRun[]
   deployments Deployment[]
 
   @@index([projectId])
@@ -262,19 +289,68 @@ model Pipeline {
 }
 
 model PipelineStep {
-  id         String   @id @default(uuid()) @db.Uuid
-  pipelineId String   @db.Uuid
-  name       String   @db.VarChar(120)
+  id         String            @id @default(uuid()) @db.Uuid
+  pipelineId String            @db.Uuid
+  name       String            @db.VarChar(120)
   order      Int
-  command    String?  @db.Text
-  isRequired Boolean  @default(true)
-  isEnabled  Boolean  @default(true)
-  createdAt  DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
-  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  command    String?           @db.Text
+  isRequired Boolean           @default(true)
+  isEnabled  Boolean           @default(true)
+  createdAt  DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime          @updatedAt @db.Timestamptz(3)
+  pipeline   Pipeline          @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  runs       PipelineStepRun[]
 
   @@unique([pipelineId, order])
   @@index([pipelineId])
+}
+
+model PipelineRun {
+  id            String             @id @default(uuid()) @db.Uuid
+  pipelineId    String             @db.Uuid
+  triggeredById String?            @db.Uuid
+  status        PipelineRunStatus  @default(QUEUED)
+  trigger       PipelineRunTrigger @default(MANUAL)
+  branch        String             @default("main") @db.VarChar(120)
+  commitSha     String?            @db.VarChar(64)
+  failureReason String?            @db.VarChar(240)
+  queuedAt      DateTime           @default(now()) @db.Timestamptz(3)
+  startedAt     DateTime?          @db.Timestamptz(3)
+  finishedAt    DateTime?          @db.Timestamptz(3)
+  createdAt     DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime           @updatedAt @db.Timestamptz(3)
+  pipeline      Pipeline           @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  triggeredBy   User?              @relation("PipelineRunTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
+  steps         PipelineStepRun[]
+
+  @@index([pipelineId])
+  @@index([triggeredById])
+  @@index([status])
+  @@index([trigger])
+  @@index([queuedAt])
+}
+
+model PipelineStepRun {
+  id             String                @id @default(uuid()) @db.Uuid
+  pipelineRunId  String                @db.Uuid
+  pipelineStepId String?               @db.Uuid
+  name           String                @db.VarChar(120)
+  order          Int
+  command        String?               @db.Text
+  isRequired     Boolean               @default(true)
+  status         PipelineStepRunStatus @default(QUEUED)
+  logsSummary    String?               @db.Text
+  startedAt      DateTime?             @db.Timestamptz(3)
+  finishedAt     DateTime?             @db.Timestamptz(3)
+  createdAt      DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime              @updatedAt @db.Timestamptz(3)
+  pipelineRun    PipelineRun           @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
+  pipelineStep   PipelineStep?         @relation(fields: [pipelineStepId], references: [id], onDelete: SetNull)
+
+  @@unique([pipelineRunId, order])
+  @@index([pipelineRunId])
+  @@index([pipelineStepId])
+  @@index([status])
 }
 
 model Deployment {

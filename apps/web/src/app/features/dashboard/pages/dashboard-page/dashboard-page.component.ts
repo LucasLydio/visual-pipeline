@@ -27,6 +27,7 @@ import { MemberDialogComponent } from '../../components/member-dialog/member-dia
 import { MemberRosterComponent } from '../../components/member-roster/member-roster.component';
 import { PipelineDialogComponent } from '../../components/pipeline-dialog/pipeline-dialog.component';
 import { PipelineManagerComponent } from '../../components/pipeline-manager/pipeline-manager.component';
+import { PipelineRunHistoryDialogComponent } from '../../components/pipeline-run-history-dialog/pipeline-run-history-dialog.component';
 import { PipelineStepDialogComponent } from '../../components/pipeline-step-dialog/pipeline-step-dialog.component';
 import { PipelineTemplateDialogComponent } from '../../components/pipeline-template-dialog/pipeline-template-dialog.component';
 import { ProjectDetailDialogComponent } from '../../components/project-detail-dialog/project-detail-dialog.component';
@@ -49,6 +50,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
     MemberRosterComponent,
     PipelineDialogComponent,
     PipelineManagerComponent,
+    PipelineRunHistoryDialogComponent,
     PipelineStepDialogComponent,
     PipelineTemplateDialogComponent,
     ProjectDetailDialogComponent,
@@ -68,6 +70,7 @@ export class DashboardPageComponent {
   protected readonly showProjectDialog = signal(false);
   protected readonly showTemplateDialog = signal(false);
   protected readonly showPipelineDialog = signal(false);
+  protected readonly showRunHistoryDialog = signal(false);
   protected readonly editingTemplate = signal<PipelineTemplate | null>(null);
   protected readonly editingPipeline = signal<ProjectPipeline | null>(null);
   protected readonly stepTarget = signal<PipelineStepTarget | null>(null);
@@ -141,6 +144,20 @@ export class DashboardPageComponent {
   protected openPipelineDialog(pipeline?: ProjectPipeline): void {
     this.editingPipeline.set(pipeline ?? null);
     this.showPipelineDialog.set(true);
+  }
+
+  protected selectPipeline(pipeline: ProjectPipeline): void {
+    this.pipelineFacade.selectPipeline(pipeline);
+  }
+
+  protected queuePipelineRun(pipeline: ProjectPipeline): void {
+    this.pipelineFacade.selectPipeline(pipeline);
+    this.pipelineFacade.triggerPipelineRun(pipeline).subscribe();
+  }
+
+  protected openRunHistory(pipeline: ProjectPipeline): void {
+    this.pipelineFacade.selectPipeline(pipeline);
+    this.showRunHistoryDialog.set(true);
   }
 
   protected savePipeline(dto: CreatePipelineRequest | UpdatePipelineRequest): void {

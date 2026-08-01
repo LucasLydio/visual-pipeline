@@ -67,6 +67,7 @@
         [error]="pipelineFacade.state().error"
         [selectedPipeline]="pipelineFacade.selectedPipeline()"
         [selectedTemplate]="pipelineFacade.selectedTemplate()"
+        [latestRun]="pipelineFacade.latestRun()"
         (createTemplate)="openTemplateDialog()"
         (editTemplate)="openTemplateDialog($event)"
         (archiveTemplate)="templateToArchive.set($event)"
@@ -80,10 +81,12 @@
         (archivePipeline)="pipelineToArchive.set($event)"
         (addPipelineStep)="addPipelineStep($event)"
         (editPipelineStep)="editPipelineStep($event)"
+        (runPipeline)="queuePipelineRun($event)"
+        (viewRuns)="openRunHistory($event)"
         (deletePipelineStep)="
           stepToDelete.set({ type: 'pipeline', pipelineId: $event.pipelineId, step: $event })
         "
-        (pipelineSelected)="pipelineFacade.selectedPipeline.set($event)"
+        (pipelineSelected)="selectPipeline($event)"
         (templateSelected)="pipelineFacade.selectedTemplate.set($event)"
       />
     }
@@ -129,6 +132,16 @@
     [templates]="pipelineFacade.activeTemplates()"
     (saved)="savePipeline($event)"
     (closed)="showPipelineDialog.set(false); editingPipeline.set(null)"
+  />
+}
+
+@if (showRunHistoryDialog()) {
+  <vp-pipeline-run-history-dialog
+    [pipeline]="pipelineFacade.selectedPipeline()"
+    [runs]="pipelineFacade.runsState().runs"
+    [loading]="pipelineFacade.runsState().loading"
+    [error]="pipelineFacade.runsState().error"
+    (closed)="showRunHistoryDialog.set(false)"
   />
 }
 

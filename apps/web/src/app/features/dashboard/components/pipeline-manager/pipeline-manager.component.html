@@ -36,11 +36,13 @@
                 <strong>{{ template.name }}</strong>
                 <small>
                   {{ template.steps.length }} steps -
-                  {{ template.isActive ? 'ACTIVE' : 'ARCHIVIED' }}
+                  {{ template.isActive ? 'ACTIVE' : 'ARCHIVED' }}
 
                   <span
-                    class="status-dot"
-                    [class]="statusClassMap[template.isActive ? 'ACTIVE' : 'ARCHIVIED'] || 'dot-gray'">
+                    class="status-dot {{
+                      statusClassMap[template.isActive ? 'ACTIVE' : 'ARCHIVED'] || 'dot-gray'
+                    }}"
+                  >
                   </span>
                 </small>
               </button>
@@ -109,15 +111,19 @@
                 <small>
                   {{ pipeline.steps.length }} steps - {{ pipeline.status }}
 
-                  <span
-                    class="status-dot"
-                    [class]="statusClassMap[pipeline.status] || 'dot-gray'">
+                  <span class="status-dot {{ statusClassMap[pipeline.status] || 'dot-gray' }}">
                   </span>
                 </small>
               </button>
               <div class="item-actions">
                 <button type="button" title="Edit pipeline" (click)="editPipeline.emit(pipeline)">
                   <ng-icon name="lucidePencil" aria-hidden="true" />
+                </button>
+                <button type="button" title="Queue manual run" (click)="runPipeline.emit(pipeline)">
+                  <ng-icon name="lucidePlay" aria-hidden="true" />
+                </button>
+                <button type="button" title="View run history" (click)="viewRuns.emit(pipeline)">
+                  <ng-icon name="lucideHistory" aria-hidden="true" />
                 </button>
                 <button
                   type="button"
@@ -140,13 +146,15 @@
                     <li [class.is-disabled]="!step.isEnabled">
                       <button
                         type="button"
-                        class="step-node"
+                        class="step-node {{ stepRunClass(step) }}"
                         [title]="'Edit ' + step.name"
                         (click)="editPipelineStep.emit(step)"
                       >
                         <span class="step-index">{{ step.order }}</span>
                         <strong>{{ step.name }}</strong>
-                        <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
+                        <small>{{
+                          stepRunStatus(step) ?? (step.isRequired ? 'Required' : 'Optional')
+                        }}</small>
                       </button>
                       <button
                         type="button"

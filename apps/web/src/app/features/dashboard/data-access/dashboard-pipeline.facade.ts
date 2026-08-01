@@ -16,7 +16,9 @@ import { PipelineApi } from '../../../core/api/pipeline-api';
 import { SessionRefreshRequiredError } from '../../../core/errors/session-refresh-required.error';
 import {
   CreatePipelineRequest,
+  CreatePipelineRunRequest,
   CreatePipelineTemplateRequest,
+  PipelineRun,
   PipelineStep,
   PipelineStepRequest,
   PipelineTemplate,
@@ -41,6 +43,12 @@ interface PipelineState {
   readonly error: string | null;
 }
 
+interface PipelineRunsState {
+  readonly loading: boolean;
+  readonly runs: readonly PipelineRun[];
+  readonly error: string | null;
+}
+
 @Injectable()
 export class DashboardPipelineFacade {
   private readonly api = inject(PipelineApi);
@@ -49,6 +57,7 @@ export class DashboardPipelineFacade {
     project: null,
     teamId: null,
   });
+  private readonly selectedPipelineId$ = new BehaviorSubject<string | null>(null);
 
   readonly selectedPipeline = signal<ProjectPipeline | null>(null);
   readonly selectedTemplate = signal<PipelineTemplate | null>(null);
@@ -90,15 +99,46 @@ export class DashboardPipelineFacade {
     { initialValue: this.emptyState(false) },
   );
 
+  readonly runsState = toSignal(
+    this.selectedPipelineId$.pipe(
+      switchMap((pipelineId) => {
+        if (!pipelineId) return of(this.emptyRunsState(false));
+
+        return this.api.listPipelineRuns(pipelineId).pipe(
+          map((runs): PipelineRunsState => ({ loading: false, runs, error: null })),
+          startWith(this.emptyRunsState(true)),
+          catchError((error: unknown) => {
+            if (error instanceof SessionRefreshRequiredError) {
+              return of(this.emptyRunsState(false));
+            }
+
+            const message = this.errorMessage(error, 'Unable to load pipeline runs.');
+            this.toast.error(message);
+            return of({ ...this.emptyRunsState(false), error: message });
+          }),
+        );
+      }),
+    ),
+    { initialValue: this.emptyRunsState(false) },
+  );
+
   readonly activeTemplates = computed(() =>
     this.state().templates.filter((template) => template.isActive),
   );
+  readonly latestRun = computed(() => this.runsState().runs[0] ?? null);
 
   focusProject(project: WorkspaceProject | null, teamId: string | null): void {
     this.focusedProject.set(project);
     this.selectedPipeline.set(null);
     this.selectedTemplate.set(null);
+    this.selectedPipelineId$.next(null);
     this.context$.next({ project, teamId });
+  }
+
+  selectPipeline(pipeline: ProjectPipeline): void {
+    this.selectedPipeline.set(pipeline);
+    this.selectedTemplate.set(null);
+    this.selectedPipelineId$.next(pipeline.id);
   }
 
   refresh(): void {
@@ -156,6 +196,25 @@ export class DashboardPipelineFacade {
     return this.run(this.api.deletePipelineStep(stepId), 'Pipeline step deleted.');
   }
 
+  triggerPipelineRun(
+    pipeline: ProjectPipeline,
+    dto: CreatePipelineRunRequest = {},
+  ): Observable<boolean> {
+    return this.api.triggerPipelineRun(pipeline.id, dto).pipe(
+      tap(() => {
+        this.toast.success('Pipeline run queued.');
+        this.refreshRuns();
+      }),
+      map(() => true),
+      catchError((error: unknown) => {
+        if (error instanceof SessionRefreshRequiredError) return of(false);
+
+        this.toast.error(this.errorMessage(error, 'Could not queue pipeline run.'));
+        return of(false);
+      }),
+    );
+  }
+
   private run(action$: Observable<unknown>, successMessage: string): Observable<boolean> {
     return action$.pipe(
       tap(() => {
@@ -176,6 +235,14 @@ export class DashboardPipelineFacade {
 
   private emptyState(loading: boolean): PipelineState {
     return { loading, templates: [], pipelines: [], error: null };
+  }
+
+  private refreshRuns(): void {
+    this.selectedPipelineId$.next(this.selectedPipelineId$.value);
+  }
+
+  private emptyRunsState(loading: boolean): PipelineRunsState {
+    return { loading, runs: [], error: null };
   }
 
   private errorMessage(error: unknown, fallback: string): string {

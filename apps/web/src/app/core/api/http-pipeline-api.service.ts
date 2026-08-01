@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CreatePipelineRequest,
+  CreatePipelineRunRequest,
   CreatePipelineTemplateRequest,
+  PipelineRun,
   PipelineStep,
   PipelineStepRequest,
   PipelineTemplate,
@@ -124,6 +126,24 @@ export class HttpPipelineApiService implements PipelineApi {
 
   deletePipelineStep(stepId: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/pipeline-steps/${stepId}`, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  listPipelineRuns(pipelineId: string): Observable<readonly PipelineRun[]> {
+    return this.http.get<readonly PipelineRun[]>(`${this.baseUrl}/pipelines/${pipelineId}/runs`, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  triggerPipelineRun(pipelineId: string, dto: CreatePipelineRunRequest): Observable<PipelineRun> {
+    return this.http.post<PipelineRun>(`${this.baseUrl}/pipelines/${pipelineId}/runs`, dto, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  getPipelineRun(runId: string): Observable<PipelineRun> {
+    return this.http.get<PipelineRun>(`${this.baseUrl}/pipeline-runs/${runId}`, {
       headers: this.authHeaders(),
     });
   }

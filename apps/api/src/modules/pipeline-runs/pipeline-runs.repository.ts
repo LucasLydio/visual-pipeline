@@ -1,0 +1,80 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../infra/prisma/prisma.service.js';
+
+export interface PipelineRunCreateRecord {
+  pipelineId: string;
+  triggeredById: string;
+  branch: string;
+  commitSha?: string;
+  steps: Array<{
+    pipelineStepId: string;
+    name: string;
+    order: number;
+    command?: string | null;
+    isRequired: boolean;
+  }>;
+}
+
+@Injectable()
+export class PipelineRunsRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findPipelineById(pipelineId: string) {
+    return this.prisma.pipeline.findUnique({
+      where: { id: pipelineId },
+      include: {
+        project: true,
+        steps: { where: { isEnabled: true }, orderBy: { order: 'asc' } },
+      },
+    });
+  }
+
+  async createRun(data: PipelineRunCreateRecord) {
+    return this.prisma.pipelineRun.create({
+      data: {
+        pipelineId: data.pipelineId,
+        triggeredById: data.triggeredById,
+        branch: data.branch,
+        commitSha: data.commitSha,
+        steps: {
+          create: data.steps.map((step) => ({
+            pipelineStepId: step.pipelineStepId,
+            name: step.name,
+            order: step.order,
+            command: step.command,
+            isRequired: step.isRequired,
+          })),
+        },
+      },
+      include: this.runInclude(),
+    });
+  }
+
+  async findRunsByPipeline(pipelineId: string) {
+    return this.prisma.pipelineRun.findMany({
+      where: { pipelineId },
+      include: this.runInclude(),
+      orderBy: { queuedAt: 'desc' },
+      take: 25,
+    });
+  }
+
+  async findRunById(runId: string) {
+    return this.prisma.pipelineRun.findUnique({
+      where: { id: runId },
+      include: {
+        ...this.runInclude(),
+        pipeline: { include: { project: true } },
+      },
+    });
+  }
+
+  private runInclude() {
+    return {
+      steps: { orderBy: { order: 'asc' as const } },
+      triggeredBy: {
+        select: { id: true, email: true, displayName: true },
+      },
+    };
+  }
+}

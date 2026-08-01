@@ -13,6 +13,18 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
     type: 'string',
     enum: ['ACTIVE', 'PAUSED', 'ARCHIVED'],
   },
+  PipelineRunStatus: {
+    type: 'string',
+    enum: ['QUEUED', 'RUNNING', 'PASSED', 'FAILED', 'SKIPPED', 'CANCELED'],
+  },
+  PipelineRunTrigger: {
+    type: 'string',
+    enum: ['MANUAL', 'GITHUB_WEBHOOK', 'AGENT', 'SCHEDULED'],
+  },
+  PipelineStepRunStatus: {
+    type: 'string',
+    enum: ['QUEUED', 'RUNNING', 'PASSED', 'FAILED', 'SKIPPED', 'CANCELED'],
+  },
   PipelineTemplateStep: {
     type: 'object',
     required: ['id', 'templateId', 'name', 'order', 'isRequired', 'isEnabled'],
@@ -144,6 +156,72 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
       name: { type: 'string', minLength: 2, maxLength: 140 },
       description: { type: 'string', nullable: true, maxLength: 240 },
       status: { $ref: '#/components/schemas/PipelineStatus' },
+    },
+  },
+  PipelineRunActor: {
+    type: 'object',
+    required: ['id', 'email', 'displayName'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      email: { type: 'string', format: 'email' },
+      displayName: { type: 'string' },
+    },
+  },
+  PipelineStepRun: {
+    type: 'object',
+    required: ['id', 'pipelineRunId', 'name', 'order', 'isRequired', 'status'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      pipelineRunId: { type: 'string', format: 'uuid' },
+      pipelineStepId: { type: 'string', format: 'uuid', nullable: true },
+      name: { type: 'string' },
+      order: { type: 'integer' },
+      command: { type: 'string', nullable: true },
+      isRequired: { type: 'boolean' },
+      status: { $ref: '#/components/schemas/PipelineStepRunStatus' },
+      logsSummary: { type: 'string', nullable: true },
+      startedAt: { type: 'string', format: 'date-time', nullable: true },
+      finishedAt: { type: 'string', format: 'date-time', nullable: true },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  PipelineRun: {
+    type: 'object',
+    required: ['id', 'pipelineId', 'status', 'trigger', 'branch', 'steps'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      pipelineId: { type: 'string', format: 'uuid' },
+      triggeredById: { type: 'string', format: 'uuid', nullable: true },
+      status: { $ref: '#/components/schemas/PipelineRunStatus' },
+      trigger: { $ref: '#/components/schemas/PipelineRunTrigger' },
+      branch: { type: 'string' },
+      commitSha: { type: 'string', nullable: true },
+      failureReason: { type: 'string', nullable: true },
+      queuedAt: { type: 'string', format: 'date-time' },
+      startedAt: { type: 'string', format: 'date-time', nullable: true },
+      finishedAt: { type: 'string', format: 'date-time', nullable: true },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
+      triggeredBy: {
+        $ref: '#/components/schemas/PipelineRunActor',
+        nullable: true,
+      },
+      steps: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/PipelineStepRun' },
+      },
+    },
+  },
+  PipelineRunList: {
+    type: 'array',
+    items: { $ref: '#/components/schemas/PipelineRun' },
+  },
+  CreatePipelineRunRequest: {
+    type: 'object',
+    properties: {
+      branch: { type: 'string', maxLength: 120 },
+      commitSha: { type: 'string', minLength: 7, maxLength: 64 },
     },
   },
 };
