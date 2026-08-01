@@ -1,4 +1,5 @@
 import { appPaths } from './app.openapi.js';
+import { agentPaths } from './agent.openapi.js';
 import { authPaths } from './auth.openapi.js';
 import { openApiComponents } from './components.openapi.js';
 import { healthPaths } from './health.openapi.js';
@@ -26,6 +27,7 @@ export const openApiDocument: OpenApiDocument = {
   ],
   tags: [
     { name: 'App', description: 'Basic application route.' },
+    { name: 'Agent', description: 'Deploy-agent job execution contract.' },
     { name: 'Health', description: 'Infrastructure health routes.' },
     {
       name: 'Auth',
@@ -43,6 +45,7 @@ export const openApiDocument: OpenApiDocument = {
   ],
   paths: {
     ...appPaths,
+    ...agentPaths,
     ...healthPaths,
     ...authPaths,
     ...usersPaths,

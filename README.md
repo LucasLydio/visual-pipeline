@@ -18,8 +18,9 @@ The repository currently includes the monorepo foundation plus the first live pr
 - Live dashboard API for teams, members, roles, titles, and connected projects
 - API and web foundation for reusable pipeline templates and project pipeline steps
 - Manual pipeline run history with immutable step-run snapshots
+- Deploy-agent execution contract for claiming and completing queued runs
 
-Deployment execution is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, and queue manual pipeline runs for history, but real command execution/webhook ingestion should be added in a later documented step.
+Shell command execution is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, and queue manual pipeline runs for history. The deploy-agent can claim queued runs and mark steps as completed, but real repository checkout, command execution, secret handling, and webhook ingestion should be added in later documented steps.
 
 ## Requirements
 
@@ -85,9 +86,19 @@ GITHUB_CLIENT_SECRET=your_client_secret
 GITHUB_CALLBACK_URL=http://localhost:3000/auth/github/callback
 FRONTEND_ORIGIN=http://localhost:4200
 FRONTEND_AUTH_CALLBACK_URL=http://localhost:4200/auth/callback
+AGENT_SHARED_TOKEN=local-dev-agent-token
 ```
 
 After changing API environment values, restart `npm run dev:api`.
+
+For the deploy-agent, configure:
+
+```bash
+AGENT_SHARED_TOKEN=local-dev-agent-token
+VISUAL_PIPELINE_API_URL=http://localhost:3000
+```
+
+The deploy-agent exposes `POST /agent/jobs/process-next` locally. It claims one queued run from the API and records step completion without executing shell commands.
 
 ## Workspace commands
 

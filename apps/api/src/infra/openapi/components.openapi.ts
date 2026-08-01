@@ -74,6 +74,20 @@ export const openApiComponents: OpenApiComponents = {
       description: 'Pipeline run identifier.',
       schema: { type: 'string', format: 'uuid' },
     },
+    PipelineStepRunId: {
+      name: 'stepRunId',
+      in: 'path',
+      required: true,
+      description: 'Pipeline step run identifier.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    AgentToken: {
+      name: 'x-agent-token',
+      in: 'header',
+      required: true,
+      description: 'Shared deploy-agent token.',
+      schema: { type: 'string' },
+    },
     Search: {
       name: 'search',
       in: 'query',

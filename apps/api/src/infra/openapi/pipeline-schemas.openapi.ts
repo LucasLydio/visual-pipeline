@@ -224,4 +224,23 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
       commitSha: { type: 'string', minLength: 7, maxLength: 64 },
     },
   },
+  CompleteAgentStepRequest: {
+    type: 'object',
+    required: ['status'],
+    properties: {
+      status: {
+        type: 'string',
+        enum: ['PASSED', 'FAILED', 'SKIPPED', 'CANCELED'],
+      },
+      logsSummary: { type: 'string', nullable: true },
+    },
+  },
+  CompleteAgentJobRequest: {
+    type: 'object',
+    required: ['status'],
+    properties: {
+      status: { type: 'string', enum: ['PASSED', 'FAILED', 'CANCELED'] },
+      failureReason: { type: 'string', nullable: true, maxLength: 240 },
+    },
+  },
 };

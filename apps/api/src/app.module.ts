@@ -4,6 +4,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { OpenApiStaticController } from './infra/openapi/openapi-static.controller.js';
 import { PrismaModule } from './infra/prisma/prisma.module.js';
+import { AgentModule } from './modules/agent/agent.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { PipelineRunsModule } from './modules/pipeline-runs/pipeline-runs.module.js';
 import { PipelinesModule } from './modules/pipelines/pipelines.module.js';
@@ -19,6 +20,7 @@ import { WorkspaceModule } from './modules/workspace/workspace.module.js';
       isGlobal: true,
     }),
     PrismaModule,
+    AgentModule,
     UsersModule,
     AuthModule,
     TeamsModule,
