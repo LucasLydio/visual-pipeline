@@ -37,10 +37,11 @@ button {
 
 .header-actions button,
 .neutral {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.35rem;
-  padding-inline: 0.7rem;
+  font-size: var(--font-size-xs);
+  height: 2rem;
 }
 
 .neutral {

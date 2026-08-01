@@ -46,6 +46,7 @@ p {
   height: 2.3rem;
   place-items: center;
   background: transparent;
+  color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: 0.4rem;
 }
@@ -91,7 +92,7 @@ article {
   gap: 0.3rem;
   margin-left: auto;
   padding-inline: 0.65rem;
-  color: #fed7d7;
+  color: var(--color-text);
   background: rgba(180, 35, 24, 0.14);
   border: 1px solid rgba(180, 35, 24, 0.32);
   border-radius: 0.4rem;
@@ -130,8 +131,8 @@ article {
   width: 1.8rem;
   height: 1.8rem;
   place-items: center;
-  color: white;
-  background: #64748b;
+  color: var(--color-text);
+  background: var(--color-surface);
   border-radius: 50%;
   font-weight: 800;
 }
@@ -164,7 +165,8 @@ article {
 .status-canceled,
 .status-skipped span,
 .status-canceled span {
-  background: #71717a;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .error-message {
