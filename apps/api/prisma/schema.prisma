@@ -64,6 +64,7 @@ enum PipelineRunStatus {
 enum PipelineRunTrigger {
   MANUAL
   GITHUB_WEBHOOK
+  GITHUB_ACTIONS
   AGENT
   SCHEDULED
 }
@@ -222,6 +223,9 @@ model Project {
   repositoryUrl     String            @db.Text
   repositoryId      String?           @db.VarChar(255)
   defaultBranch     String            @default("main") @db.VarChar(120)
+  workflowTokenHash String?           @db.VarChar(128)
+  workflowEnabledAt DateTime?         @db.Timestamptz(3)
+  workflowRotatedAt DateTime?         @db.Timestamptz(3)
   status            ProjectStatus     @default(ACTIVE)
   createdAt         DateTime          @default(now()) @db.Timestamptz(3)
   updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
@@ -321,6 +325,9 @@ model PipelineRun {
   trigger           PipelineRunTrigger @default(MANUAL)
   branch            String             @default("main") @db.VarChar(120)
   commitSha         String?            @db.VarChar(64)
+  externalRunId     String?            @db.VarChar(120)
+  externalRunUrl    String?            @db.Text
+  runnerName        String?            @db.VarChar(120)
   failureReason     String?            @db.VarChar(240)
   queuedAt          DateTime           @default(now()) @db.Timestamptz(3)
   startedAt         DateTime?          @db.Timestamptz(3)
@@ -336,6 +343,7 @@ model PipelineRun {
   @@index([triggeredById])
   @@index([status])
   @@index([trigger])
+  @@index([externalRunId])
   @@index([queuedAt])
 }
 

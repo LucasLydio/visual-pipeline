@@ -81,11 +81,32 @@ export const openApiComponents: OpenApiComponents = {
       description: 'Pipeline step run identifier.',
       schema: { type: 'string', format: 'uuid' },
     },
+    WorkflowStepOrder: {
+      name: 'order',
+      in: 'path',
+      required: true,
+      description: 'Pipeline step order from the generated workflow.',
+      schema: { type: 'integer', minimum: 1 },
+    },
     AgentToken: {
       name: 'x-agent-token',
       in: 'header',
       required: true,
       description: 'Shared deploy-agent token.',
+      schema: { type: 'string' },
+    },
+    VisualPipelineProjectId: {
+      name: 'x-visual-pipeline-project-id',
+      in: 'header',
+      required: true,
+      description: 'Synced project id configured in the generated workflow.',
+      schema: { type: 'string', format: 'uuid' },
+    },
+    VisualPipelineToken: {
+      name: 'x-visual-pipeline-token',
+      in: 'header',
+      required: true,
+      description: 'Per-project workflow token stored as a GitHub secret.',
       schema: { type: 'string' },
     },
     GitHubEvent: {

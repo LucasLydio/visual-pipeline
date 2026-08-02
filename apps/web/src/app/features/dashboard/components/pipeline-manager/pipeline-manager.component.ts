@@ -3,6 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArchive,
   lucideFilePlus2,
+  lucideGitBranch,
   lucideHistory,
   lucideListPlus,
   lucidePencil,
@@ -28,6 +29,7 @@ import { WorkspaceProject } from '../../../../core/models/team.models';
     provideIcons({
       lucideArchive,
       lucideFilePlus2,
+      lucideGitBranch,
       lucideHistory,
       lucideListPlus,
       lucidePencil,
@@ -66,6 +68,7 @@ export class PipelineManagerComponent {
   @Output() templateSelected = new EventEmitter<PipelineTemplate>();
   @Output() runPipeline = new EventEmitter<ProjectPipeline>();
   @Output() viewRuns = new EventEmitter<ProjectPipeline>();
+  @Output() setupWorkflow = new EventEmitter<WorkspaceProject>();
   readonly statusClassMap: Record<string, string> = {
     ACTIVE: 'dot-green',
     PAUSED: 'dot-red',

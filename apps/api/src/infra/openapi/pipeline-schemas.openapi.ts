@@ -19,7 +19,7 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
   },
   PipelineRunTrigger: {
     type: 'string',
-    enum: ['MANUAL', 'GITHUB_WEBHOOK', 'AGENT', 'SCHEDULED'],
+    enum: ['MANUAL', 'GITHUB_WEBHOOK', 'GITHUB_ACTIONS', 'AGENT', 'SCHEDULED'],
   },
   PipelineStepRunStatus: {
     type: 'string',
@@ -197,6 +197,9 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
       trigger: { $ref: '#/components/schemas/PipelineRunTrigger' },
       branch: { type: 'string' },
       commitSha: { type: 'string', nullable: true },
+      externalRunId: { type: 'string', nullable: true },
+      externalRunUrl: { type: 'string', nullable: true },
+      runnerName: { type: 'string', nullable: true },
       failureReason: { type: 'string', nullable: true },
       queuedAt: { type: 'string', format: 'date-time' },
       startedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -250,6 +253,66 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
       status: { type: 'string', enum: ['processed', 'ignored'] },
       message: { type: 'string' },
       runId: { type: 'string', format: 'uuid' },
+    },
+  },
+  WorkflowSetup: {
+    type: 'object',
+    required: [
+      'projectId',
+      'enabled',
+      'secretName',
+      'workflowPath',
+      'apiBaseUrl',
+      'workflowYaml',
+    ],
+    properties: {
+      projectId: { type: 'string', format: 'uuid' },
+      enabled: { type: 'boolean' },
+      secretName: { type: 'string', example: 'VISUAL_PIPELINE_TOKEN' },
+      workflowPath: {
+        type: 'string',
+        example: '.github/workflows/visual-pipeline.yml',
+      },
+      apiBaseUrl: { type: 'string', example: 'https://api.example.com' },
+      workflowYaml: { type: 'string' },
+      workflowToken: { type: 'string' },
+    },
+  },
+  StartWorkflowRunRequest: {
+    type: 'object',
+    properties: {
+      branch: { type: 'string', maxLength: 120 },
+      commitSha: { type: 'string', minLength: 7, maxLength: 64 },
+      externalRunId: { type: 'string', maxLength: 120 },
+      externalRunUrl: { type: 'string', maxLength: 2048 },
+      runnerName: { type: 'string', maxLength: 120 },
+    },
+  },
+  WorkflowRunStartResponse: {
+    type: 'object',
+    required: ['runId', 'message'],
+    properties: {
+      runId: { type: 'string', format: 'uuid' },
+      message: { type: 'string' },
+    },
+  },
+  CompleteWorkflowStepRequest: {
+    type: 'object',
+    required: ['status'],
+    properties: {
+      status: {
+        type: 'string',
+        enum: ['PASSED', 'FAILED', 'SKIPPED', 'CANCELED'],
+      },
+      logsSummary: { type: 'string', nullable: true },
+    },
+  },
+  CompleteWorkflowRunRequest: {
+    type: 'object',
+    required: ['status'],
+    properties: {
+      status: { type: 'string', enum: ['PASSED', 'FAILED', 'CANCELED'] },
+      failureReason: { type: 'string', nullable: true, maxLength: 240 },
     },
   },
 };

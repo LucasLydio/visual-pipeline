@@ -1,6 +1,7 @@
 export type PipelineStatus = 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
 export type PipelineRunStatus = 'QUEUED' | 'RUNNING' | 'PASSED' | 'FAILED' | 'SKIPPED' | 'CANCELED';
-export type PipelineRunTrigger = 'MANUAL' | 'GITHUB_WEBHOOK' | 'AGENT' | 'SCHEDULED';
+export type PipelineRunTrigger =
+  'MANUAL' | 'GITHUB_WEBHOOK' | 'GITHUB_ACTIONS' | 'AGENT' | 'SCHEDULED';
 export type PipelineStepRunStatus =
   'QUEUED' | 'RUNNING' | 'PASSED' | 'FAILED' | 'SKIPPED' | 'CANCELED';
 
@@ -75,6 +76,9 @@ export interface PipelineRun {
   readonly trigger: PipelineRunTrigger;
   readonly branch: string;
   readonly commitSha: string | null;
+  readonly externalRunId: string | null;
+  readonly externalRunUrl: string | null;
+  readonly runnerName: string | null;
   readonly failureReason: string | null;
   readonly queuedAt: string;
   readonly startedAt: string | null;
@@ -130,4 +134,14 @@ export interface UpdatePipelineRequest {
   readonly name?: string;
   readonly description?: string | null;
   readonly status?: PipelineStatus;
+}
+
+export interface WorkflowSetup {
+  readonly projectId: string;
+  readonly enabled: boolean;
+  readonly secretName: string;
+  readonly workflowPath: string;
+  readonly apiBaseUrl: string;
+  readonly workflowYaml: string;
+  readonly workflowToken?: string;
 }

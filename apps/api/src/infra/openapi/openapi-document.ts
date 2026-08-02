@@ -11,6 +11,7 @@ import { openApiSchemas } from './schemas.openapi.js';
 import { teamPaths } from './teams.openapi.js';
 import { usersPaths } from './users.openapi.js';
 import { webhookPaths } from './webhooks.openapi.js';
+import { workflowPaths } from './workflows.openapi.js';
 import { workspacePaths } from './workspace.openapi.js';
 
 export const openApiDocument: OpenApiDocument = {
@@ -43,6 +44,10 @@ export const openApiDocument: OpenApiDocument = {
       description: 'Reusable templates and project pipeline steps.',
     },
     { name: 'Webhooks', description: 'External provider webhook ingestion.' },
+    {
+      name: 'Workflows',
+      description: 'Hybrid GitHub Actions setup and execution callbacks.',
+    },
     { name: 'Workspace', description: 'Frontend-optimized workspace data.' },
   ],
   paths: {
@@ -55,6 +60,7 @@ export const openApiDocument: OpenApiDocument = {
     ...projectPaths,
     ...pipelinePaths,
     ...webhookPaths,
+    ...workflowPaths,
     ...workspacePaths,
   },
   components: {

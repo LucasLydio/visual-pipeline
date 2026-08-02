@@ -13,6 +13,7 @@ import {
   ProjectPipeline,
   UpdatePipelineRequest,
   UpdatePipelineTemplateRequest,
+  WorkflowSetup,
 } from '../models/pipeline-api.models';
 
 export abstract class PipelineApi {
@@ -64,4 +65,6 @@ export abstract class PipelineApi {
   ): Observable<PipelineRun>;
   abstract getPipelineRun(runId: string): Observable<PipelineRun>;
   abstract cancelPipelineRun(runId: string): Observable<PipelineRun>;
+  abstract getWorkflowSetup(projectId: string): Observable<WorkflowSetup>;
+  abstract rotateWorkflowToken(projectId: string): Observable<WorkflowSetup>;
 }

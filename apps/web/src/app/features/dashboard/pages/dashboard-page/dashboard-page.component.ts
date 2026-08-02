@@ -35,6 +35,7 @@ import { ProjectDetailDialogComponent } from '../../components/project-detail-di
 import { ProjectDialogComponent } from '../../components/project-dialog/project-dialog.component';
 import { TeamDialogComponent } from '../../components/team-dialog/team-dialog.component';
 import { WorkspaceToolbarComponent } from '../../components/workspace-toolbar/workspace-toolbar.component';
+import { WorkflowSetupDialogComponent } from '../../components/workflow-setup-dialog/workflow-setup-dialog.component';
 import {
   DashboardPipelineFacade,
   PipelineStepTarget,
@@ -58,6 +59,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
     ProjectDialogComponent,
     TeamDialogComponent,
     WorkspaceToolbarComponent,
+    WorkflowSetupDialogComponent,
   ],
   providers: [DashboardFacade, DashboardPipelineFacade],
   templateUrl: './dashboard-page.component.html',
@@ -72,6 +74,7 @@ export class DashboardPageComponent {
   protected readonly showTemplateDialog = signal(false);
   protected readonly showPipelineDialog = signal(false);
   protected readonly showRunHistoryDialog = signal(false);
+  protected readonly showWorkflowSetupDialog = signal(false);
   protected readonly editingTemplate = signal<PipelineTemplate | null>(null);
   protected readonly editingPipeline = signal<ProjectPipeline | null>(null);
   protected readonly stepTarget = signal<PipelineStepTarget | null>(null);
@@ -159,6 +162,18 @@ export class DashboardPageComponent {
   protected openRunHistory(pipeline: ProjectPipeline): void {
     this.pipelineFacade.selectPipeline(pipeline);
     this.showRunHistoryDialog.set(true);
+  }
+
+  protected openWorkflowSetup(project: WorkspaceProject): void {
+    this.showWorkflowSetupDialog.set(true);
+    this.pipelineFacade.loadWorkflowSetup(project);
+  }
+
+  protected rotateWorkflowToken(): void {
+    const project = this.pipelineFacade.focusedProject();
+    if (!project) return;
+
+    this.pipelineFacade.rotateWorkflowToken(project);
   }
 
   protected cancelPipelineRun(run: PipelineRun): void {

@@ -16,6 +16,7 @@ import {
   ProjectPipeline,
   UpdatePipelineRequest,
   UpdatePipelineTemplateRequest,
+  WorkflowSetup,
 } from '../models/pipeline-api.models';
 import { AuthSessionService } from '../services/auth-session.service';
 import { PipelineApi } from './pipeline-api';
@@ -152,6 +153,20 @@ export class HttpPipelineApiService implements PipelineApi {
     return this.http.patch<PipelineRun>(`${this.baseUrl}/pipeline-runs/${runId}/cancel`, null, {
       headers: this.authHeaders(),
     });
+  }
+
+  getWorkflowSetup(projectId: string): Observable<WorkflowSetup> {
+    return this.http.get<WorkflowSetup>(`${this.baseUrl}/projects/${projectId}/workflow-setup`, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  rotateWorkflowToken(projectId: string): Observable<WorkflowSetup> {
+    return this.http.post<WorkflowSetup>(
+      `${this.baseUrl}/projects/${projectId}/workflow-setup/token`,
+      null,
+      { headers: this.authHeaders() },
+    );
   }
 
   private authHeaders(): HttpHeaders {

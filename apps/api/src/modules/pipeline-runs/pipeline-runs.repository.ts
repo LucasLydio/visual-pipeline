@@ -4,7 +4,8 @@ import { PrismaService } from '../../infra/prisma/prisma.service.js';
 export interface PipelineRunCreateRecord {
   pipelineId: string;
   triggeredById?: string | null;
-  trigger?: 'MANUAL' | 'GITHUB_WEBHOOK' | 'AGENT' | 'SCHEDULED';
+  trigger?:
+    'MANUAL' | 'GITHUB_WEBHOOK' | 'GITHUB_ACTIONS' | 'AGENT' | 'SCHEDULED';
   branch: string;
   commitSha?: string;
   steps: Array<{

@@ -20,8 +20,9 @@ The repository currently includes the monorepo foundation plus the first live pr
 - Manual pipeline run history with immutable step-run snapshots
 - Deploy-agent execution contract for claiming and completing queued runs
 - GitHub push webhook ingestion for queueing pipeline runs
+- Hybrid GitHub Actions workflow setup for selected synced projects
 
-Shell command execution is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, and queue manual or GitHub webhook pipeline runs for history. The deploy-agent can claim queued runs and mark steps as completed, but real repository checkout, command execution, and secret handling should be added in later documented steps.
+Direct shell command execution inside Visual Pipeline infrastructure is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, queue manual or GitHub webhook pipeline runs, and generate a GitHub Actions workflow so a selected repository can execute its own steps and report results back. The deploy-agent can still claim queued runs and mark steps as completed, but real repository checkout and secret handling inside the deploy-agent should be added in later documented steps.
 
 ## Requirements
 
@@ -89,6 +90,7 @@ FRONTEND_ORIGIN=http://localhost:4200
 FRONTEND_AUTH_CALLBACK_URL=http://localhost:4200/auth/callback
 AGENT_SHARED_TOKEN=local-dev-agent-token
 GITHUB_WEBHOOK_SECRET=local-webhook-secret
+PUBLIC_API_BASE_URL=https://your-public-api-url
 ```
 
 After changing API environment values, restart `npm run dev:api`.
@@ -109,6 +111,13 @@ POST http://localhost:3000/webhooks/github
 ```
 
 For real GitHub delivery, expose the API with a tunnel and configure the same `GITHUB_WEBHOOK_SECRET` in GitHub and `apps/api/.env`.
+
+Hybrid GitHub Actions execution is configured from the dashboard after selecting a GitHub project with an active pipeline. Use the Workflow button to generate:
+
+- `.github/workflows/visual-pipeline.yml`
+- the `VISUAL_PIPELINE_TOKEN` GitHub repository secret
+
+The generated workflow calls the API through `PUBLIC_API_BASE_URL`, starts a `GITHUB_ACTIONS` run, reports each step by order, and writes log summaries to the existing run history.
 
 ## Workspace commands
 

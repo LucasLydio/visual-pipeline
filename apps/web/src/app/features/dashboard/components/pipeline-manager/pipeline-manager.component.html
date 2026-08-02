@@ -9,6 +9,9 @@
         <button type="button" class="neutral" (click)="createTemplate.emit()">
           <ng-icon name="lucideFilePlus2" aria-hidden="true" />Template
         </button>
+        <button type="button" class="neutral" (click)="setupWorkflow.emit(project)">
+          <ng-icon name="lucideGitBranch" aria-hidden="true" />Workflow
+        </button>
         <button type="button" (click)="createPipeline.emit()">
           <ng-icon name="lucidePlus" aria-hidden="true" />Pipeline
         </button>

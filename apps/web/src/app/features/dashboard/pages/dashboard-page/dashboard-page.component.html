@@ -83,6 +83,7 @@
         (editPipelineStep)="editPipelineStep($event)"
         (runPipeline)="queuePipelineRun($event)"
         (viewRuns)="openRunHistory($event)"
+        (setupWorkflow)="openWorkflowSetup($event)"
         (deletePipelineStep)="
           stepToDelete.set({ type: 'pipeline', pipelineId: $event.pipelineId, step: $event })
         "
@@ -143,6 +144,17 @@
     [error]="pipelineFacade.runsState().error"
     (cancelRun)="cancelPipelineRun($event)"
     (closed)="showRunHistoryDialog.set(false)"
+  />
+}
+
+@if (showWorkflowSetupDialog()) {
+  <vp-workflow-setup-dialog
+    [project]="pipelineFacade.focusedProject()"
+    [setup]="pipelineFacade.workflowSetupState().setup"
+    [loading]="pipelineFacade.workflowSetupState().loading"
+    [error]="pipelineFacade.workflowSetupState().error"
+    (tokenRequested)="rotateWorkflowToken()"
+    (closed)="showWorkflowSetupDialog.set(false)"
   />
 }
 

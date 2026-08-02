@@ -27,6 +27,7 @@ import {
   ProjectPipeline,
   UpdatePipelineRequest,
   UpdatePipelineTemplateRequest,
+  WorkflowSetup,
 } from '../../../core/models/pipeline-api.models';
 import { WorkspaceProject } from '../../../core/models/team.models';
 import { ToastNotificationService } from '../../../core/services/toast-notification.service';
@@ -49,6 +50,12 @@ interface PipelineRunsState {
   readonly error: string | null;
 }
 
+interface WorkflowSetupState {
+  readonly loading: boolean;
+  readonly setup: WorkflowSetup | null;
+  readonly error: string | null;
+}
+
 @Injectable()
 export class DashboardPipelineFacade {
   private readonly api = inject(PipelineApi);
@@ -62,6 +69,11 @@ export class DashboardPipelineFacade {
   readonly selectedPipeline = signal<ProjectPipeline | null>(null);
   readonly selectedTemplate = signal<PipelineTemplate | null>(null);
   readonly focusedProject = signal<WorkspaceProject | null>(null);
+  readonly workflowSetupState = signal<WorkflowSetupState>({
+    loading: false,
+    setup: null,
+    error: null,
+  });
 
   readonly state = toSignal(
     this.context$.pipe(
@@ -229,6 +241,54 @@ export class DashboardPipelineFacade {
         return of(false);
       }),
     );
+  }
+
+  loadWorkflowSetup(project: WorkspaceProject): void {
+    this.workflowSetupState.set({ loading: true, setup: null, error: null });
+    this.api
+      .getWorkflowSetup(project.id)
+      .pipe(
+        catchError((error: unknown) => {
+          if (error instanceof SessionRefreshRequiredError) {
+            return of(null);
+          }
+
+          const message = this.errorMessage(error, 'Could not load workflow setup.');
+          this.toast.error(message);
+          this.workflowSetupState.set({ loading: false, setup: null, error: message });
+          return of(null);
+        }),
+      )
+      .subscribe((setup) => {
+        if (setup) this.workflowSetupState.set({ loading: false, setup, error: null });
+      });
+  }
+
+  rotateWorkflowToken(project: WorkspaceProject): void {
+    this.workflowSetupState.update((state) => ({ ...state, loading: true, error: null }));
+    this.api
+      .rotateWorkflowToken(project.id)
+      .pipe(
+        catchError((error: unknown) => {
+          if (error instanceof SessionRefreshRequiredError) {
+            return of(null);
+          }
+
+          const message = this.errorMessage(error, 'Could not create workflow token.');
+          this.toast.error(message);
+          this.workflowSetupState.update((state) => ({
+            ...state,
+            loading: false,
+            error: message,
+          }));
+          return of(null);
+        }),
+      )
+      .subscribe((setup) => {
+        if (!setup) return;
+        this.workflowSetupState.set({ loading: false, setup, error: null });
+        this.toast.success('Workflow token created. Add it as a GitHub secret.');
+      });
   }
 
   private run(action$: Observable<unknown>, successMessage: string): Observable<boolean> {

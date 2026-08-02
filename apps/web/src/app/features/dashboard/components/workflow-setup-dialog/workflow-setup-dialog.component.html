@@ -1,0 +1,73 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="workflow-dialog-title">
+  <header>
+    <div>
+      <span class="section-label">GitHub Actions</span>
+      <h2 id="workflow-dialog-title">{{ project?.name ?? 'Workflow setup' }}</h2>
+    </div>
+    <button type="button" class="icon-button" title="Close" (click)="closed.emit()">
+      <ng-icon name="lucideX" aria-hidden="true" />
+    </button>
+  </header>
+
+  @if (loading) {
+    <div class="loading-lines" aria-live="polite"><span></span><span></span></div>
+  } @else if (error) {
+    <p class="dialog-error" role="alert">{{ error }}</p>
+  } @else if (setup) {
+    <div class="setup-grid">
+      <label>
+        <span>Workflow file</span>
+        <div class="copy-row">
+          <code>{{ setup.workflowPath }}</code>
+          <button type="button" title="Copy path" (click)="copy(setup.workflowPath, 'path')">
+            <ng-icon name="lucideCopy" aria-hidden="true" />
+          </button>
+        </div>
+      </label>
+
+      <label>
+        <span>Repository secret</span>
+        <div class="copy-row">
+          <code>{{ setup.secretName }}</code>
+          <button type="button" title="Copy secret name" (click)="copy(setup.secretName, 'secret')">
+            <ng-icon name="lucideCopy" aria-hidden="true" />
+          </button>
+        </div>
+      </label>
+    </div>
+
+    @if (setup.workflowToken) {
+      <label>
+        <span>One-time token</span>
+        <div class="copy-row token-row">
+          <code>{{ setup.workflowToken }}</code>
+          <button type="button" title="Copy token" (click)="copy(setup.workflowToken, 'token')">
+            <ng-icon name="lucideCopy" aria-hidden="true" />
+          </button>
+        </div>
+      </label>
+    }
+
+    <label>
+      <span>Workflow YAML</span>
+      <textarea readonly rows="16">{{ setup.workflowYaml }}</textarea>
+    </label>
+
+    @if (copied(); as copiedLabel) {
+      <p class="copy-status" aria-live="polite">{{ copiedLabel }} copied.</p>
+    }
+
+    <div class="dialog-actions">
+      <button type="button" class="neutral" (click)="copy(setup.workflowYaml, 'workflow')">
+        <ng-icon name="lucideCopy" aria-hidden="true" />Copy YAML
+      </button>
+      <button type="button" (click)="tokenRequested.emit()">
+        <ng-icon name="lucideKeyRound" aria-hidden="true" />
+        {{ setup.enabled ? 'Rotate token' : 'Create token' }}
+      </button>
+    </div>
+  } @else {
+    <p class="empty-copy">Select an active GitHub project with an active pipeline.</p>
+  }
+</section>
