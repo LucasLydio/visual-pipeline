@@ -19,8 +19,9 @@ The repository currently includes the monorepo foundation plus the first live pr
 - API and web foundation for reusable pipeline templates and project pipeline steps
 - Manual pipeline run history with immutable step-run snapshots
 - Deploy-agent execution contract for claiming and completing queued runs
+- GitHub push webhook ingestion for queueing pipeline runs
 
-Shell command execution is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, and queue manual pipeline runs for history. The deploy-agent can claim queued runs and mark steps as completed, but real repository checkout, command execution, secret handling, and webhook ingestion should be added in later documented steps.
+Shell command execution is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, and queue manual or GitHub webhook pipeline runs for history. The deploy-agent can claim queued runs and mark steps as completed, but real repository checkout, command execution, and secret handling should be added in later documented steps.
 
 ## Requirements
 
@@ -87,6 +88,7 @@ GITHUB_CALLBACK_URL=http://localhost:3000/auth/github/callback
 FRONTEND_ORIGIN=http://localhost:4200
 FRONTEND_AUTH_CALLBACK_URL=http://localhost:4200/auth/callback
 AGENT_SHARED_TOKEN=local-dev-agent-token
+GITHUB_WEBHOOK_SECRET=local-webhook-secret
 ```
 
 After changing API environment values, restart `npm run dev:api`.
@@ -99,6 +101,14 @@ VISUAL_PIPELINE_API_URL=http://localhost:3000
 ```
 
 The deploy-agent exposes `POST /agent/jobs/process-next` locally. It claims one queued run from the API and records step completion without executing shell commands.
+
+GitHub webhooks should point to the API:
+
+```text
+POST http://localhost:3000/webhooks/github
+```
+
+For real GitHub delivery, expose the API with a tunnel and configure the same `GITHUB_WEBHOOK_SECRET` in GitHub and `apps/api/.env`.
 
 ## Workspace commands
 

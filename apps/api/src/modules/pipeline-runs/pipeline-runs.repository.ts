@@ -3,7 +3,8 @@ import { PrismaService } from '../../infra/prisma/prisma.service.js';
 
 export interface PipelineRunCreateRecord {
   pipelineId: string;
-  triggeredById: string;
+  triggeredById?: string | null;
+  trigger?: 'MANUAL' | 'GITHUB_WEBHOOK' | 'AGENT' | 'SCHEDULED';
   branch: string;
   commitSha?: string;
   steps: Array<{
@@ -34,6 +35,7 @@ export class PipelineRunsRepository {
       data: {
         pipelineId: data.pipelineId,
         triggeredById: data.triggeredById,
+        trigger: data.trigger,
         branch: data.branch,
         commitSha: data.commitSha,
         steps: {

@@ -11,6 +11,7 @@ import { PipelinesModule } from './modules/pipelines/pipelines.module.js';
 import { ProjectsModule } from './modules/projects/projects.module.js';
 import { TeamsModule } from './modules/teams/teams.module.js';
 import { UsersModule } from './modules/users/users.module.js';
+import { WebhooksModule } from './modules/webhooks/webhooks.module.js';
 import { WorkspaceModule } from './modules/workspace/workspace.module.js';
 
 @Module({
@@ -27,6 +28,7 @@ import { WorkspaceModule } from './modules/workspace/workspace.module.js';
     ProjectsModule,
     PipelinesModule,
     PipelineRunsModule,
+    WebhooksModule,
     WorkspaceModule,
   ],
   controllers: [AppController, OpenApiStaticController],

@@ -77,6 +77,13 @@ enum PipelineStepRunStatus {
   CANCELED
 }
 
+enum WebhookDeliveryStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
 enum DeploymentStatus {
   QUEUED
   RUNNING
@@ -206,22 +213,23 @@ model TeamMember {
 }
 
 model Project {
-  id            String         @id @default(uuid()) @db.Uuid
-  teamId        String         @db.Uuid
-  ownerId       String?        @db.Uuid
-  name          String         @db.VarChar(140)
-  slug          String         @db.VarChar(100)
-  provider      SourceProvider
-  repositoryUrl String         @db.Text
-  repositoryId  String?        @db.VarChar(255)
-  defaultBranch String         @default("main") @db.VarChar(120)
-  status        ProjectStatus  @default(ACTIVE)
-  createdAt     DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime       @updatedAt @db.Timestamptz(3)
-  team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  owner         User?          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
-  pipelines     Pipeline[]
-  deployments   Deployment[]
+  id                String            @id @default(uuid()) @db.Uuid
+  teamId            String            @db.Uuid
+  ownerId           String?           @db.Uuid
+  name              String            @db.VarChar(140)
+  slug              String            @db.VarChar(100)
+  provider          SourceProvider
+  repositoryUrl     String            @db.Text
+  repositoryId      String?           @db.VarChar(255)
+  defaultBranch     String            @default("main") @db.VarChar(120)
+  status            ProjectStatus     @default(ACTIVE)
+  createdAt         DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
+  team              Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  owner             User?             @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  pipelines         Pipeline[]
+  deployments       Deployment[]
+  webhookDeliveries WebhookDelivery[]
 
   @@unique([teamId, slug])
   @@unique([provider, repositoryId])
@@ -306,22 +314,23 @@ model PipelineStep {
 }
 
 model PipelineRun {
-  id            String             @id @default(uuid()) @db.Uuid
-  pipelineId    String             @db.Uuid
-  triggeredById String?            @db.Uuid
-  status        PipelineRunStatus  @default(QUEUED)
-  trigger       PipelineRunTrigger @default(MANUAL)
-  branch        String             @default("main") @db.VarChar(120)
-  commitSha     String?            @db.VarChar(64)
-  failureReason String?            @db.VarChar(240)
-  queuedAt      DateTime           @default(now()) @db.Timestamptz(3)
-  startedAt     DateTime?          @db.Timestamptz(3)
-  finishedAt    DateTime?          @db.Timestamptz(3)
-  createdAt     DateTime           @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime           @updatedAt @db.Timestamptz(3)
-  pipeline      Pipeline           @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
-  triggeredBy   User?              @relation("PipelineRunTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
-  steps         PipelineStepRun[]
+  id                String             @id @default(uuid()) @db.Uuid
+  pipelineId        String             @db.Uuid
+  triggeredById     String?            @db.Uuid
+  status            PipelineRunStatus  @default(QUEUED)
+  trigger           PipelineRunTrigger @default(MANUAL)
+  branch            String             @default("main") @db.VarChar(120)
+  commitSha         String?            @db.VarChar(64)
+  failureReason     String?            @db.VarChar(240)
+  queuedAt          DateTime           @default(now()) @db.Timestamptz(3)
+  startedAt         DateTime?          @db.Timestamptz(3)
+  finishedAt        DateTime?          @db.Timestamptz(3)
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime           @updatedAt @db.Timestamptz(3)
+  pipeline          Pipeline           @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  triggeredBy       User?              @relation("PipelineRunTriggeredBy", fields: [triggeredById], references: [id], onDelete: SetNull)
+  steps             PipelineStepRun[]
+  webhookDeliveries WebhookDelivery[]
 
   @@index([pipelineId])
   @@index([triggeredById])
@@ -351,6 +360,31 @@ model PipelineStepRun {
   @@index([pipelineRunId])
   @@index([pipelineStepId])
   @@index([status])
+}
+
+model WebhookDelivery {
+  id            String                @id @default(uuid()) @db.Uuid
+  provider      SourceProvider
+  deliveryId    String                @db.VarChar(120)
+  event         String                @db.VarChar(80)
+  status        WebhookDeliveryStatus @default(RECEIVED)
+  projectId     String?               @db.Uuid
+  pipelineRunId String?               @db.Uuid
+  message       String?               @db.VarChar(240)
+  receivedAt    DateTime              @default(now()) @db.Timestamptz(3)
+  processedAt   DateTime?             @db.Timestamptz(3)
+  createdAt     DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime              @updatedAt @db.Timestamptz(3)
+  project       Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  pipelineRun   PipelineRun?          @relation(fields: [pipelineRunId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, deliveryId])
+  @@index([provider])
+  @@index([event])
+  @@index([status])
+  @@index([projectId])
+  @@index([pipelineRunId])
+  @@index([receivedAt])
 }
 
 model Deployment {

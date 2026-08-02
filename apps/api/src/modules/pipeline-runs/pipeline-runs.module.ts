@@ -9,6 +9,6 @@ import { PipelineRunsService } from './pipeline-runs.service.js';
   imports: [AuthModule, TeamsModule],
   controllers: [PipelineRunsController],
   providers: [PipelineRunsRepository, PipelineRunsService],
-  exports: [PipelineRunsService],
+  exports: [PipelineRunsRepository, PipelineRunsService],
 })
 export class PipelineRunsModule {}

@@ -243,4 +243,13 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
       failureReason: { type: 'string', nullable: true, maxLength: 240 },
     },
   },
+  WebhookResult: {
+    type: 'object',
+    required: ['status', 'message'],
+    properties: {
+      status: { type: 'string', enum: ['processed', 'ignored'] },
+      message: { type: 'string' },
+      runId: { type: 'string', format: 'uuid' },
+    },
+  },
 };

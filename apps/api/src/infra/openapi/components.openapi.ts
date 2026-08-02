@@ -88,6 +88,27 @@ export const openApiComponents: OpenApiComponents = {
       description: 'Shared deploy-agent token.',
       schema: { type: 'string' },
     },
+    GitHubEvent: {
+      name: 'x-github-event',
+      in: 'header',
+      required: true,
+      description: 'GitHub webhook event name.',
+      schema: { type: 'string' },
+    },
+    GitHubDelivery: {
+      name: 'x-github-delivery',
+      in: 'header',
+      required: true,
+      description: 'GitHub webhook delivery id.',
+      schema: { type: 'string' },
+    },
+    GitHubSignature256: {
+      name: 'x-hub-signature-256',
+      in: 'header',
+      required: true,
+      description: 'GitHub HMAC SHA-256 signature.',
+      schema: { type: 'string' },
+    },
     Search: {
       name: 'search',
       in: 'query',
