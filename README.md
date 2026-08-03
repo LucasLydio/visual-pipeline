@@ -48,6 +48,15 @@ npm run dev:api
 npm run dev:agent
 ```
 
+Or run the compiled local stack in containers:
+
+```bash
+copy .env.container.example .env.container
+docker compose --env-file .env.container up -d --build
+```
+
+Container details are documented in [`docs/containers.md`](docs/containers.md).
+
 ## Local services
 
 | Service          | Workspace           | URL                     |
@@ -91,6 +100,7 @@ FRONTEND_AUTH_CALLBACK_URL=http://localhost:4200/auth/callback
 AGENT_SHARED_TOKEN=local-dev-agent-token
 GITHUB_WEBHOOK_SECRET=local-webhook-secret
 PUBLIC_API_BASE_URL=https://your-public-api-url
+DATABASE_CONNECTION_SOURCE=local
 ```
 
 After changing API environment values, restart `npm run dev:api`.
@@ -130,6 +140,7 @@ The generated workflow calls the API through `PUBLIC_API_BASE_URL`, starts a `GI
 | `npm run test`                                         | Test every workspace that provides a test script   |
 | `npm run lint`                                         | Lint every workspace that provides a lint script   |
 | `npm run build --workspace=@visual-pipeline/contracts` | Build only the shared contracts                    |
+| `npm run test:container`                               | Passing placeholder for future container tests     |
 
 Step 1 has no product behavior to test yet, so generated placeholder specs were removed. The NestJS test commands allow an empty suite, while the Angular `test` script should be added with the first real Angular test because its builder rejects an empty suite.
 

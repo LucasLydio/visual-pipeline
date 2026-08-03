@@ -12,6 +12,7 @@
     "dev:agent": "npm --prefix apps/deploy-agent run start:dev",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "test:container": "node tests/container-pass-through.mjs",
     "lint": "npm run lint --workspaces --if-present"
   }
 }

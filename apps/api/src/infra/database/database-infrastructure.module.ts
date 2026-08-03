@@ -33,8 +33,21 @@ import { GcpCloudSqlAdapter } from '../prod/cloud/gcp-cloud-sql.adapter.js';
         local: LocalPostgresAdapter,
         cloudFactory: CloudDatabaseAdapterFactory,
       ): DatabaseConnectionAdapter => {
+        const source = config
+          .get<string>('DATABASE_CONNECTION_SOURCE')
+          ?.trim()
+          .toLowerCase();
+
+        if (source === 'local') {
+          return local;
+        }
+
         if (config.get<string>('NODE_ENV') !== 'production') {
           return local;
+        }
+
+        if (source && source !== 'cloud') {
+          throw new Error('DATABASE_CONNECTION_SOURCE must be local or cloud.');
         }
 
         const provider = config.get<string>('CLOUD_PROVIDER')?.toLowerCase();
