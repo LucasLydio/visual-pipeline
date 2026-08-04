@@ -1,6 +1,7 @@
 export type TeamRole = 'OWNER' | 'ADMIN' | 'MAINTAINER' | 'DEVELOPER' | 'VIEWER';
 export type SourceProvider = 'GITHUB' | 'GITLAB' | 'BITBUCKET';
 export type ProjectStatus = 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+export type ProjectExecutionMode = 'GITHUB_ACTIONS' | 'LOCAL_AGENT' | 'MANUAL';
 
 export interface WorkspaceTeam {
   readonly id: string;
@@ -31,6 +32,7 @@ export interface WorkspaceProject {
   readonly repositoryUrl: string;
   readonly repositoryId: string | null;
   readonly defaultBranch: string;
+  readonly executionMode: ProjectExecutionMode;
   readonly status: ProjectStatus;
 }
 
@@ -70,6 +72,7 @@ export interface CreateProjectRequest {
   readonly repositoryUrl: string;
   readonly repositoryId?: string | null;
   readonly defaultBranch?: string;
+  readonly executionMode?: ProjectExecutionMode;
 }
 
 export interface UpdateProjectRequest {
@@ -79,5 +82,6 @@ export interface UpdateProjectRequest {
   readonly repositoryUrl?: string;
   readonly repositoryId?: string | null;
   readonly defaultBranch?: string;
+  readonly executionMode?: ProjectExecutionMode;
   readonly status?: ProjectStatus;
 }

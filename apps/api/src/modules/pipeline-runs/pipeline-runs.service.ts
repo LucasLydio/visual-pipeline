@@ -31,10 +31,17 @@ export class PipelineRunsService {
     if (!enabledSteps.length) {
       throw new BadRequestException('Pipeline has no enabled steps to run.');
     }
+    if (pipeline.project.executionMode === 'GITHUB_ACTIONS') {
+      throw new BadRequestException(
+        'GitHub Actions projects run through the generated workflow.',
+      );
+    }
 
     return this.runsRepository.createRun({
       pipelineId: pipeline.id,
       triggeredById: userId,
+      trigger:
+        pipeline.project.executionMode === 'LOCAL_AGENT' ? 'AGENT' : 'MANUAL',
       branch: this.normalizeBranch(
         dto.branch ?? pipeline.project.defaultBranch,
       ),

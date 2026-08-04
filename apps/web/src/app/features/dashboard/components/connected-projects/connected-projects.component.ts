@@ -7,15 +7,17 @@ import { simpleBitbucket, simpleDocker, simpleGithub, simpleGitlab } from '@ng-i
 @Component({
   selector: 'vp-connected-projects',
   imports: [NgIcon],
-  providers: [provideIcons({
-    lucideSearch,
-    lucideSettings,
-    lucideGithub,
-    simpleBitbucket,
-    simpleDocker,
-    simpleGithub,
-    simpleGitlab,
-  })],
+  providers: [
+    provideIcons({
+      lucideSearch,
+      lucideSettings,
+      lucideGithub,
+      simpleBitbucket,
+      simpleDocker,
+      simpleGithub,
+      simpleGitlab,
+    }),
+  ],
   templateUrl: './connected-projects.component.html',
   styleUrl: './connected-projects.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

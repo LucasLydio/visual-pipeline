@@ -65,6 +65,29 @@ CLOUD_PROVIDER=aws
 
 `CLOUD_PROVIDER` accepts `aws`, `gcp`, or `azure`.
 
+## Local Agent Projects
+
+Local-agent projects are resolved by slug under the mounted workspace folder:
+
+```bash
+LOCAL_AGENT_HOST_WORKSPACE_ROOT=./.local-projects
+LOCAL_AGENT_STEP_TIMEOUT_MS=600000
+```
+
+A project with slug `checkout-api` must exist at:
+
+```text
+.local-projects/checkout-api
+```
+
+The agent runs pipeline step commands inside that folder. If a step deploys Docker, for example:
+
+```bash
+docker compose up -d --build
+```
+
+then the target project must provide its own `Dockerfile` or Compose file. The container stack mounts the Docker socket into the agent for local development, which allows the agent to control the host Docker engine.
+
 ## Daily Commands
 
 Start the stack:
@@ -123,4 +146,5 @@ This runs `npm run test:container`, which currently exits successfully with a cl
 - Local containers use `DATABASE_CONNECTION_SOURCE=local` even though the API runs compiled production code.
 - The browser still calls `http://localhost:3000` because Angular is served to the host browser.
 - The deploy-agent calls the API through the internal Compose DNS name: `http://api:3000`.
+- The deploy-agent executes local-agent commands from `/local-projects/<project-slug>`.
 - Secrets should live in `.env.container`, never inside committed workflow files or source code.

@@ -51,6 +51,8 @@ WORKDIR /workspace
 ENV NODE_ENV=production
 ENV PORT=3001
 
+RUN apk add --no-cache docker-cli
+
 COPY --from=deploy-agent-build --chown=node:node /workspace /workspace
 
 USER node

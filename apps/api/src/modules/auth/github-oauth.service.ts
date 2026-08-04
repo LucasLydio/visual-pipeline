@@ -10,6 +10,7 @@ import { PrismaService } from '../../infra/prisma/prisma.service.js';
 import { UsersService } from '../users/users.service.js';
 import type { PublicUser } from '../users/users.types.js';
 import type { AuthResponse } from './auth.service.js';
+import { OAuthTokenVaultService } from './oauth-token-vault.service.js';
 import { GithubStrategy } from './strategies/github.strategy.js';
 import type { SessionMetadata } from './session.service.js';
 import { SessionService } from './session.service.js';
@@ -63,6 +64,7 @@ export class GithubOAuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly githubStrategy: GithubStrategy,
+    private readonly oauthTokenVault: OAuthTokenVaultService,
     private readonly prisma: PrismaService,
     private readonly sessionService: SessionService,
     private readonly usersService: UsersService,
@@ -74,7 +76,7 @@ export class GithubOAuthService {
 
     url.searchParams.set('client_id', config.clientId);
     url.searchParams.set('redirect_uri', config.callbackUrl);
-    url.searchParams.set('scope', 'read:user user:email');
+    url.searchParams.set('scope', 'repo read:user user:email');
     url.searchParams.set('state', this.createState(redirectTo));
 
     return url.toString();
@@ -112,6 +114,8 @@ export class GithubOAuthService {
       emailVerified: githubEmail.verified,
       displayName: profile.displayName,
       avatarUrl: profile.avatarUrl,
+      accessToken: githubToken.accessToken,
+      scopes: githubToken.scopes,
     });
     const session = await this.sessionService.createSession(user.id, metadata);
     await this.usersService.markLogin(user.id);
@@ -157,6 +161,8 @@ export class GithubOAuthService {
     emailVerified: boolean;
     displayName: string;
     avatarUrl?: string;
+    accessToken: string;
+    scopes: Set<string>;
   }): Promise<PublicUser> {
     const existingAccount = await this.prisma.authAccount.findUnique({
       where: {
@@ -174,6 +180,9 @@ export class GithubOAuthService {
         data: {
           username: profile.username,
           avatarUrl: profile.avatarUrl,
+          accessTokenSecret: this.oauthTokenVault.encrypt(profile.accessToken),
+          scopes: [...profile.scopes].sort().join(' '),
+          tokenUpdatedAt: new Date(),
         },
       });
 
@@ -209,6 +218,9 @@ export class GithubOAuthService {
         providerAccountId: profile.providerAccountId,
         username: profile.username,
         avatarUrl: profile.avatarUrl,
+        accessTokenSecret: this.oauthTokenVault.encrypt(profile.accessToken),
+        scopes: [...profile.scopes].sort().join(' '),
+        tokenUpdatedAt: new Date(),
       },
     });
 

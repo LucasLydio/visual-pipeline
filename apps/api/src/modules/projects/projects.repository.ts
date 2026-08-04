@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/prisma/prisma.service.js';
 import type {
+  ProjectExecutionModeValue,
   ProjectStatusValue,
   SourceProviderValue,
 } from './projects.types.js';
@@ -14,6 +15,7 @@ export interface ProjectCreateRecord {
   repositoryUrl: string;
   repositoryId?: string;
   defaultBranch: string;
+  executionMode: ProjectExecutionModeValue;
 }
 
 export interface ProjectUpdateRecord {
@@ -23,6 +25,7 @@ export interface ProjectUpdateRecord {
   repositoryUrl?: string;
   repositoryId?: string | null;
   defaultBranch?: string;
+  executionMode?: ProjectExecutionModeValue;
   status?: ProjectStatusValue;
 }
 

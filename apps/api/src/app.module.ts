@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { PipelineRunsModule } from './modules/pipeline-runs/pipeline-runs.module.js';
 import { PipelinesModule } from './modules/pipelines/pipelines.module.js';
 import { ProjectsModule } from './modules/projects/projects.module.js';
+import { SourceControlModule } from './modules/source-control/source-control.module.js';
 import { TeamsModule } from './modules/teams/teams.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { WebhooksModule } from './modules/webhooks/webhooks.module.js';
@@ -26,6 +27,7 @@ import { WorkspaceModule } from './modules/workspace/workspace.module.js';
     UsersModule,
     AuthModule,
     TeamsModule,
+    SourceControlModule,
     ProjectsModule,
     PipelinesModule,
     PipelineRunsModule,

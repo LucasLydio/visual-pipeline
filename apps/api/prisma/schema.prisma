@@ -46,6 +46,12 @@ enum ProjectStatus {
   ARCHIVED
 }
 
+enum ProjectExecutionMode {
+  GITHUB_ACTIONS
+  LOCAL_AGENT
+  MANUAL
+}
+
 enum PipelineStatus {
   ACTIVE
   PAUSED
@@ -139,6 +145,9 @@ model AuthAccount {
   providerAccountId String       @db.VarChar(255)
   username          String?      @db.VarChar(255)
   avatarUrl         String?      @db.Text
+  accessTokenSecret String?      @db.Text
+  scopes            String?      @db.VarChar(500)
+  tokenUpdatedAt    DateTime?    @db.Timestamptz(3)
   createdAt         DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt         DateTime     @updatedAt @db.Timestamptz(3)
   user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -214,23 +223,24 @@ model TeamMember {
 }
 
 model Project {
-  id                String            @id @default(uuid()) @db.Uuid
-  teamId            String            @db.Uuid
-  ownerId           String?           @db.Uuid
-  name              String            @db.VarChar(140)
-  slug              String            @db.VarChar(100)
+  id                String               @id @default(uuid()) @db.Uuid
+  teamId            String               @db.Uuid
+  ownerId           String?              @db.Uuid
+  name              String               @db.VarChar(140)
+  slug              String               @db.VarChar(100)
   provider          SourceProvider
-  repositoryUrl     String            @db.Text
-  repositoryId      String?           @db.VarChar(255)
-  defaultBranch     String            @default("main") @db.VarChar(120)
-  workflowTokenHash String?           @db.VarChar(128)
-  workflowEnabledAt DateTime?         @db.Timestamptz(3)
-  workflowRotatedAt DateTime?         @db.Timestamptz(3)
-  status            ProjectStatus     @default(ACTIVE)
-  createdAt         DateTime          @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
-  team              Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  owner             User?             @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  repositoryUrl     String               @db.Text
+  repositoryId      String?              @db.VarChar(255)
+  defaultBranch     String               @default("main") @db.VarChar(120)
+  executionMode     ProjectExecutionMode @default(MANUAL)
+  workflowTokenHash String?              @db.VarChar(128)
+  workflowEnabledAt DateTime?            @db.Timestamptz(3)
+  workflowRotatedAt DateTime?            @db.Timestamptz(3)
+  status            ProjectStatus        @default(ACTIVE)
+  createdAt         DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime             @updatedAt @db.Timestamptz(3)
+  team              Team                 @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  owner             User?                @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   pipelines         Pipeline[]
   deployments       Deployment[]
   webhookDeliveries WebhookDelivery[]

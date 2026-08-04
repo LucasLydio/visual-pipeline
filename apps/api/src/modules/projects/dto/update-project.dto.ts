@@ -1,4 +1,5 @@
 import type {
+  ProjectExecutionModeValue,
   ProjectStatusValue,
   SourceProviderValue,
 } from '../projects.types.js';
@@ -10,5 +11,6 @@ export class UpdateProjectDto {
   repositoryUrl?: string;
   repositoryId?: string | null;
   defaultBranch?: string;
+  executionMode?: ProjectExecutionModeValue;
   status?: ProjectStatusValue;
 }

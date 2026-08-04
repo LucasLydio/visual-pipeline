@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
+  ProjectExecutionMode,
   SourceProvider,
   UpdateProjectRequest,
   WorkspaceProject,
@@ -23,6 +24,11 @@ import {
 export class ProjectDetailDialogComponent {
   private readonly formBuilder = inject(FormBuilder);
   protected readonly providers: readonly SourceProvider[] = ['GITHUB', 'GITLAB', 'BITBUCKET'];
+  protected readonly executionModes: readonly ProjectExecutionMode[] = [
+    'GITHUB_ACTIONS',
+    'LOCAL_AGENT',
+    'MANUAL',
+  ];
   protected selectedProject: WorkspaceProject | null = null;
   protected readonly form = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -31,6 +37,7 @@ export class ProjectDetailDialogComponent {
     repositoryUrl: ['', Validators.required],
     repositoryId: [''],
     defaultBranch: ['main', Validators.required],
+    executionMode: ['MANUAL' as ProjectExecutionMode, Validators.required],
   });
 
   @Input() set project(project: WorkspaceProject | null) {
@@ -45,6 +52,7 @@ export class ProjectDetailDialogComponent {
       repositoryUrl: project.repositoryUrl,
       repositoryId: project.repositoryId ?? '',
       defaultBranch: project.defaultBranch,
+      executionMode: project.executionMode,
     });
   }
 
@@ -65,6 +73,7 @@ export class ProjectDetailDialogComponent {
       repositoryUrl: value.repositoryUrl,
       repositoryId: value.repositoryId || null,
       defaultBranch: value.defaultBranch,
+      executionMode: value.executionMode,
     });
   }
 }

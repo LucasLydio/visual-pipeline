@@ -25,6 +25,7 @@ export interface AgentPipelineRun {
     project: {
       id: string;
       name: string;
+      slug: string;
       repositoryUrl: string;
       defaultBranch: string;
     };

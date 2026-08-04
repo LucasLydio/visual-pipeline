@@ -8,6 +8,7 @@ import { pipelineSchemas } from './pipeline-schemas.openapi.js';
 import { pipelinePaths } from './pipelines.openapi.js';
 import { projectPaths } from './projects.openapi.js';
 import { openApiSchemas } from './schemas.openapi.js';
+import { sourceControlPaths } from './source-control.openapi.js';
 import { teamPaths } from './teams.openapi.js';
 import { usersPaths } from './users.openapi.js';
 import { webhookPaths } from './webhooks.openapi.js';
@@ -40,6 +41,10 @@ export const openApiDocument: OpenApiDocument = {
     { name: 'Team members', description: 'Team membership and roles.' },
     { name: 'Projects', description: 'Connected source repositories.' },
     {
+      name: 'Source control',
+      description: 'Provider repository discovery for project sync.',
+    },
+    {
       name: 'Pipelines',
       description: 'Reusable templates and project pipeline steps.',
     },
@@ -57,6 +62,7 @@ export const openApiDocument: OpenApiDocument = {
     ...authPaths,
     ...usersPaths,
     ...teamPaths,
+    ...sourceControlPaths,
     ...projectPaths,
     ...pipelinePaths,
     ...webhookPaths,

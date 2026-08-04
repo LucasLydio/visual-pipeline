@@ -10,6 +10,7 @@ coverage
 *.log
 *.out.log
 *.err.log
+.local-projects
 .env
 apps/api/.env
 apps/web/.env

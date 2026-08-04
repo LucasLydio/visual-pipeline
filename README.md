@@ -18,11 +18,11 @@ The repository currently includes the monorepo foundation plus the first live pr
 - Live dashboard API for teams, members, roles, titles, and connected projects
 - API and web foundation for reusable pipeline templates and project pipeline steps
 - Manual pipeline run history with immutable step-run snapshots
-- Deploy-agent execution contract for claiming and completing queued runs
+- Deploy-agent execution contract for claiming local-agent queued runs
 - GitHub push webhook ingestion for queueing pipeline runs
 - Hybrid GitHub Actions workflow setup for selected synced projects
 
-Direct shell command execution inside Visual Pipeline infrastructure is still outside the current scope. The dashboard can connect projects, organize ownership, define pipeline maps, queue manual or GitHub webhook pipeline runs, and generate a GitHub Actions workflow so a selected repository can execute its own steps and report results back. The deploy-agent can still claim queued runs and mark steps as completed, but real repository checkout and secret handling inside the deploy-agent should be added in later documented steps.
+The dashboard can connect projects, organize ownership, define pipeline maps, queue local-agent pipeline runs, and generate a GitHub Actions workflow so a selected repository can execute its own steps and report results back. Project execution is controlled by execution mode: `GITHUB_ACTIONS`, `LOCAL_AGENT`, or `MANUAL`.
 
 ## Requirements
 
@@ -101,18 +101,22 @@ AGENT_SHARED_TOKEN=local-dev-agent-token
 GITHUB_WEBHOOK_SECRET=local-webhook-secret
 PUBLIC_API_BASE_URL=https://your-public-api-url
 DATABASE_CONNECTION_SOURCE=local
+OAUTH_TOKEN_ENCRYPTION_SECRET=change-me-for-local-development
 ```
 
 After changing API environment values, restart `npm run dev:api`.
+
+Repository selection uses the connected GitHub account and requires the OAuth `repo` scope. If you logged in before this scope was added, sign out and sign in with GitHub again so the API can list the repositories available to your account.
 
 For the deploy-agent, configure:
 
 ```bash
 AGENT_SHARED_TOKEN=local-dev-agent-token
 VISUAL_PIPELINE_API_URL=http://localhost:3000
+LOCAL_AGENT_WORKSPACE_ROOT=C:\Users\Winner\Documents\Projetos
 ```
 
-The deploy-agent exposes `POST /agent/jobs/process-next` locally. It claims one queued run from the API and records step completion without executing shell commands.
+The deploy-agent exposes `POST /agent/jobs/process-next` locally. It claims queued runs for projects using `LOCAL_AGENT` execution mode, executes each step command inside `LOCAL_AGENT_WORKSPACE_ROOT/<project-slug>`, and reports the result back to the API. Docker deployment is just a pipeline command, for example `docker compose up -d --build`, when the target project has the required Docker files.
 
 GitHub webhooks should point to the API:
 

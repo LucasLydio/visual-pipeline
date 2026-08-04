@@ -10,6 +10,7 @@ import { UpdateProjectDto } from './dto/update-project.dto.js';
 import { ProjectsRepository } from './projects.repository.js';
 import type {
   ProjectStatusValue,
+  ProjectExecutionModeValue,
   PublicProject,
   SourceProviderValue,
 } from './projects.types.js';
@@ -23,6 +24,11 @@ const VALID_STATUSES = new Set<ProjectStatusValue>([
   'ACTIVE',
   'PAUSED',
   'ARCHIVED',
+]);
+const VALID_EXECUTION_MODES = new Set<ProjectExecutionModeValue>([
+  'GITHUB_ACTIONS',
+  'LOCAL_AGENT',
+  'MANUAL',
 ]);
 
 @Injectable()
@@ -54,6 +60,7 @@ export class ProjectsService {
       repositoryUrl: this.normalizeRepositoryUrl(dto.repositoryUrl),
       repositoryId,
       defaultBranch: this.normalizeBranch(dto.defaultBranch),
+      executionMode: this.normalizeExecutionMode(dto.executionMode),
     });
   }
 
@@ -87,6 +94,7 @@ export class ProjectsService {
       repositoryUrl?: string;
       repositoryId?: string | null;
       defaultBranch?: string;
+      executionMode?: ProjectExecutionModeValue;
       status?: ProjectStatusValue;
     } = {};
 
@@ -98,6 +106,9 @@ export class ProjectsService {
     }
     if (dto.defaultBranch !== undefined) {
       data.defaultBranch = this.normalizeBranch(dto.defaultBranch);
+    }
+    if (dto.executionMode !== undefined) {
+      data.executionMode = this.normalizeExecutionMode(dto.executionMode);
     }
     if (dto.status !== undefined)
       data.status = this.normalizeStatus(dto.status);
@@ -236,6 +247,16 @@ export class ProjectsService {
     }
 
     return status;
+  }
+
+  private normalizeExecutionMode(
+    executionMode: ProjectExecutionModeValue = 'MANUAL',
+  ): ProjectExecutionModeValue {
+    if (!VALID_EXECUTION_MODES.has(executionMode)) {
+      throw new BadRequestException('Invalid project execution mode.');
+    }
+
+    return executionMode;
   }
 
   private normalizeRepositoryUrl(repositoryUrl?: string): string {

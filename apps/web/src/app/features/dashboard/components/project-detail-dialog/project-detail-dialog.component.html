@@ -46,6 +46,15 @@
         <input type="text" formControlName="defaultBranch" />
       </label>
 
+      <label>
+        Execution mode
+        <select formControlName="executionMode">
+          @for (mode of executionModes; track mode) {
+            <option [value]="mode">{{ mode }}</option>
+          }
+        </select>
+      </label>
+
       <div class="actions">
         <button type="button" class="neutral" (click)="closed.emit()">Close</button>
         <button type="submit" class="primary" [disabled]="form.invalid">Save changes</button>

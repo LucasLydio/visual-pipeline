@@ -1,4 +1,7 @@
-import type { SourceProviderValue } from '../projects.types.js';
+import type {
+  ProjectExecutionModeValue,
+  SourceProviderValue,
+} from '../projects.types.js';
 
 export class CreateProjectDto {
   name!: string;
@@ -7,4 +10,5 @@ export class CreateProjectDto {
   repositoryUrl!: string;
   repositoryId?: string;
   defaultBranch?: string;
+  executionMode?: ProjectExecutionModeValue;
 }

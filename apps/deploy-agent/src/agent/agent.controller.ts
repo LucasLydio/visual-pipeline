@@ -15,6 +15,7 @@ export class AgentController {
       status: 'ok',
       apiBaseUrl: this.config.apiBaseUrl,
       configured: this.config.isConfigured,
+      localExecutionConfigured: this.config.canExecuteLocalProjects,
     };
   }
 

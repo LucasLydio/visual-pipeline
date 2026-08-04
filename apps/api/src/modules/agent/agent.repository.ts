@@ -12,7 +12,10 @@ export class AgentRepository {
   async claimNextQueuedRun() {
     return this.prisma.$transaction(async (prisma) => {
       const candidate = await prisma.pipelineRun.findFirst({
-        where: { status: 'QUEUED' },
+        where: {
+          status: 'QUEUED',
+          pipeline: { project: { executionMode: 'LOCAL_AGENT' } },
+        },
         orderBy: { queuedAt: 'asc' },
       });
 

@@ -49,6 +49,7 @@ services:
       GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-local-webhook-secret}
       PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://localhost:3000}
       AUTH_OAUTH_STATE_SECRET: ${AUTH_OAUTH_STATE_SECRET:-change-me-for-container-development}
+      OAUTH_TOKEN_ENCRYPTION_SECRET: ${OAUTH_TOKEN_ENCRYPTION_SECRET:-change-me-for-container-development}
       AGENT_SHARED_TOKEN: ${AGENT_SHARED_TOKEN:-local-dev-agent-token}
       CLOUD_PROVIDER: ${CLOUD_PROVIDER:-}
     ports:
@@ -97,6 +98,11 @@ services:
       PORT: 3001
       VISUAL_PIPELINE_API_URL: http://api:3000
       AGENT_SHARED_TOKEN: ${AGENT_SHARED_TOKEN:-local-dev-agent-token}
+      LOCAL_AGENT_WORKSPACE_ROOT: /local-projects
+      LOCAL_AGENT_STEP_TIMEOUT_MS: ${LOCAL_AGENT_STEP_TIMEOUT_MS:-600000}
+    volumes:
+      - ${LOCAL_AGENT_HOST_WORKSPACE_ROOT:-./.local-projects}:/local-projects
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "${AGENT_PORT:-3001}:3001"
     healthcheck:
