@@ -74,6 +74,7 @@
         (archiveTemplate)="templateToArchive.set($event)"
         (addTemplateStep)="addTemplateStep($event)"
         (editTemplateStep)="editTemplateStep($event)"
+        (inspectTemplateStep)="inspectTemplateStep($event)"
         (deleteTemplateStep)="
           stepToDelete.set({ type: 'template', templateId: $event.templateId, step: $event })
         "
@@ -82,6 +83,7 @@
         (archivePipeline)="pipelineToArchive.set($event)"
         (addPipelineStep)="addPipelineStep($event)"
         (editPipelineStep)="editPipelineStep($event)"
+        (inspectPipelineStep)="inspectPipelineStep($event)"
         (runPipeline)="queuePipelineRun($event)"
         (viewRuns)="openRunHistory($event)"
         (setupWorkflow)="openWorkflowSetup($event)"
@@ -166,6 +168,17 @@
     [includeDescription]="target.type === 'template'"
     (saved)="saveStep($event)"
     (closed)="stepTarget.set(null)"
+  />
+}
+
+@if (inspectingStep(); as target) {
+  <vp-pipeline-step-status-dialog
+    [target]="target"
+    [latestRun]="pipelineFacade.latestRun()"
+    [statusChanges]="pipelineFacade.statusChanges()"
+    (editStep)="editInspectedStep($event)"
+    (deleteStep)="deleteInspectedStep($event)"
+    (closed)="inspectingStep.set(null)"
   />
 }
 

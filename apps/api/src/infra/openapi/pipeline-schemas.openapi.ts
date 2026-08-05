@@ -283,6 +283,12 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
       logsSummary: { type: 'string', nullable: true },
     },
   },
+  UpdateAgentStepLogsRequest: {
+    type: 'object',
+    properties: {
+      logsSummary: { type: 'string', nullable: true },
+    },
+  },
   CompleteAgentJobRequest: {
     type: 'object',
     required: ['status'],

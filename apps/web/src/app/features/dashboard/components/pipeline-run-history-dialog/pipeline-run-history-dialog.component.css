@@ -91,7 +91,7 @@ article.is-live-change {
 
 .failure-reason {
   padding: 0.55rem 0.65rem;
-  color: #fed7d7;
+  color: var(--color-text-danger);
   background: rgba(180, 35, 24, 0.14);
   border: 1px solid rgba(180, 35, 24, 0.28);
   border-radius: 0.4rem;
@@ -235,7 +235,7 @@ article.is-live-change {
 
 .error-message {
   padding: 0.75rem 0.85rem;
-  color: #fed7d7;
+  color: var(--color-text-danger);
   background: rgba(180, 35, 24, 0.14);
   border: 1px solid rgba(180, 35, 24, 0.32);
   border-radius: 0.45rem;

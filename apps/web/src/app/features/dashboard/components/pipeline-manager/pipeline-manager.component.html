@@ -26,160 +26,150 @@
   } @else if (error) {
     <p class="panel-error" role="alert">{{ error }}</p>
   } @else {
-    <div class="pipeline-grid">
-      <section>
-        <div class="section-heading">
-          <h5>Reusable templates</h5>
-          <span>{{ templates.length }}</span>
+    <div class="pipeline-builder">
+      <aside class="node-palette">
+        <div class="palette-tabs">
+          <span>Assets</span>
+          <strong>Nodes</strong>
+          <span>Objective</span>
         </div>
-        <div class="stack">
-          @for (template of templates; track template.id) {
-            <article [class.is-muted]="!template.isActive">
-              <button type="button" class="item-main" (click)="templateSelected.emit(template)">
-                <strong>{{ template.name }}</strong>
-                <small>
-                  {{ template.steps.length }} steps -
-                  {{ template.isActive ? 'ACTIVE' : 'ARCHIVED' }}
-
-                  <span
-                    class="status-dot {{
-                      statusClassMap[template.isActive ? 'ACTIVE' : 'ARCHIVED'] || 'dot-gray'
-                    }}"
+        <label class="search-box">
+          <span>Search connectors</span>
+          <input placeholder="Search connectors..." />
+        </label>
+        <section>
+          <div class="section-heading">
+            <h5>Action blocks</h5>
+            <span>{{ activeTemplateSteps().length }}</span>
+          </div>
+          <div class="block-grid">
+            @for (step of activeTemplateSteps(); track step.id) {
+              <button type="button" (click)="inspectTemplateStep.emit(step)">
+                <ng-icon [name]="nodeIcon(step)" aria-hidden="true" />
+                <span>{{ step.name }}</span>
+              </button>
+            } @empty {
+              <button type="button" (click)="createTemplate.emit()">
+                <ng-icon name="lucideFilePlus2" aria-hidden="true" />
+                <span>Template</span>
+              </button>
+            }
+          </div>
+        </section>
+        <section>
+          <div class="section-heading">
+            <h5>Templates</h5>
+            <span>{{ templates.length }}</span>
+          </div>
+          <div class="compact-list">
+            @for (template of templates; track template.id) {
+              <article [class.is-muted]="!template.isActive">
+                <button type="button" (click)="templateSelected.emit(template)">
+                  <strong>{{ template.name }}</strong>
+                  <small>{{ template.steps.length }} nodes</small>
+                </button>
+                <div class="item-actions">
+                  <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
+                    <ng-icon name="lucidePencil" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Add template step"
+                    (click)="addTemplateStep.emit(template)"
                   >
-                  </span>
-                </small>
+                    <ng-icon name="lucideListPlus" aria-hidden="true" />
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      </aside>
+
+      <section class="pipeline-canvas">
+        <div class="canvas-toolbar">
+          <div class="pipeline-tabs">
+            @for (pipeline of pipelines; track pipeline.id) {
+              <button
+                type="button"
+                [class.is-selected]="selectedPipeline?.id === pipeline.id"
+                (click)="pipelineSelected.emit(pipeline)"
+              >
+                {{ pipeline.name }}
               </button>
-              <div class="item-actions">
-                <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
-                  <ng-icon name="lucidePencil" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  title="Add template step"
-                  (click)="addTemplateStep.emit(template)"
-                >
-                  <ng-icon name="lucideListPlus" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  title="Archive template"
-                  (click)="archiveTemplate.emit(template)"
-                >
-                  <ng-icon name="lucideArchive" aria-hidden="true" />
-                </button>
-              </div>
-              @if (selectedTemplate?.id === template.id) {
-                <ol class="step-flow" aria-label="Template steps">
-                  @for (step of orderedTemplateSteps(template); track step.id) {
-                    <li [class.is-disabled]="!step.isEnabled">
-                      <button
-                        type="button"
-                        class="step-node"
-                        [title]="'Edit ' + step.name"
-                        (click)="editTemplateStep.emit(step)"
-                      >
-                        <span class="step-index">{{ step.order }}</span>
-                        <strong>{{ step.name }}</strong>
-                        <small>{{ step.isRequired ? 'Required' : 'Optional' }}</small>
-                      </button>
-                      <button
-                        type="button"
-                        class="step-delete"
-                        title="Delete step"
-                        (click)="deleteTemplateStep.emit(step)"
-                      >
-                        <ng-icon name="lucideTrash2" aria-hidden="true" />
-                      </button>
-                    </li>
-                  }
-                </ol>
-              }
-            </article>
-          } @empty {
-            <p class="empty-copy">Create a reusable template for this team.</p>
+            } @empty {
+              <button type="button" (click)="createPipeline.emit()">New pipeline</button>
+            }
+          </div>
+          @if (selectedPipeline; as pipeline) {
+            <div class="canvas-actions">
+              <button type="button" title="Edit pipeline" (click)="editPipeline.emit(pipeline)">
+                <ng-icon name="lucidePencil" aria-hidden="true" />
+              </button>
+              <button type="button" title="Run pipeline" (click)="runPipeline.emit(pipeline)">
+                <ng-icon name="lucidePlay" aria-hidden="true" />
+              </button>
+              <button type="button" title="Run history" (click)="viewRuns.emit(pipeline)">
+                <ng-icon name="lucideHistory" aria-hidden="true" />
+              </button>
+              <button type="button" title="Add node" (click)="addPipelineStep.emit(pipeline)">
+                <ng-icon name="lucidePlus" aria-hidden="true" />
+              </button>
+            </div>
           }
         </div>
-      </section>
 
-      <section>
-        <div class="section-heading">
-          <h5>Project pipelines</h5>
-          <span>{{ pipelines.length }}</span>
-        </div>
-        <div class="stack">
-          @for (pipeline of pipelines; track pipeline.id) {
-            <article
-              [class.is-muted]="pipeline.status === 'ARCHIVED'"
-              [class.is-live-change]="selectedPipeline?.id === pipeline.id && isLatestRunChanged()"
-            >
-              <button type="button" class="item-main" (click)="pipelineSelected.emit(pipeline)">
-                <strong>{{ pipeline.name }}</strong>
-                <small>
-                  {{ pipeline.steps.length }} steps - {{ pipeline.status }}
-
-                  <span class="status-dot {{ statusClassMap[pipeline.status] || 'dot-gray' }}">
-                  </span>
-                </small>
-              </button>
-              <div class="item-actions">
-                <button type="button" title="Edit pipeline" (click)="editPipeline.emit(pipeline)">
-                  <ng-icon name="lucidePencil" aria-hidden="true" />
-                </button>
-                <button type="button" title="Queue manual run" (click)="runPipeline.emit(pipeline)">
-                  <ng-icon name="lucidePlay" aria-hidden="true" />
-                </button>
-                <button type="button" title="View run history" (click)="viewRuns.emit(pipeline)">
-                  <ng-icon name="lucideHistory" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  title="Add pipeline step"
-                  (click)="addPipelineStep.emit(pipeline)"
-                >
-                  <ng-icon name="lucideListPlus" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  title="Archive pipeline"
-                  (click)="archivePipeline.emit(pipeline)"
-                >
-                  <ng-icon name="lucideArchive" aria-hidden="true" />
-                </button>
+        @if (selectedPipeline; as pipeline) {
+          <div class="canvas-board" [class.is-live-change]="isLatestRunChanged()">
+            <article class="source-node">
+              <span class="node-icon repo"
+                ><ng-icon name="lucideGitBranch" aria-hidden="true"
+              /></span>
+              <div class="source-node-text">
+                <strong>GitHub repository</strong>
+                <small>{{ project.name }}</small>
               </div>
-              @if (selectedPipeline?.id === pipeline.id) {
-                <ol class="step-flow" aria-label="Pipeline steps">
-                  @for (step of orderedPipelineSteps(pipeline); track step.id) {
-                    <li [class.is-disabled]="!step.isEnabled">
-                      <button
-                        type="button"
-                        class="step-node {{ stepRunClass(step) }}"
-                        [class.is-live-change]="isStepStatusChanged(step)"
-                        [title]="'Edit ' + step.name"
-                        (click)="editPipelineStep.emit(step)"
-                      >
-                        <span class="step-index">{{ step.order }}</span>
-                        <strong>{{ step.name }}</strong>
-                        <small>{{
-                          stepRunStatus(step) ?? (step.isRequired ? 'Required' : 'Optional')
-                        }}</small>
-                      </button>
-                      <button
-                        type="button"
-                        class="step-delete"
-                        title="Delete step"
-                        (click)="deletePipelineStep.emit(step)"
-                      >
-                        <ng-icon name="lucideTrash2" aria-hidden="true" />
-                      </button>
-                    </li>
-                  }
-                </ol>
-              }
             </article>
-          } @empty {
-            <p class="empty-copy">Create a pipeline from a template or from scratch.</p>
-          }
-        </div>
+            <ol class="step-flow" aria-label="Pipeline nodes">
+              @for (step of selectedPipelineSteps(); track step.id) {
+                <li [class.is-disabled]="!step.isEnabled">
+                  <button
+                    type="button"
+                    class="step-node {{ stepRunClass(step) }}"
+                    [class.is-live-change]="isStepStatusChanged(step)"
+                    [title]="'Inspect ' + step.name"
+                    (click)="inspectPipelineStep.emit(step)"
+                  >
+                    <span class="node-icon"
+                      ><ng-icon [name]="nodeIcon(step)" aria-hidden="true"
+                    /></span>
+                    <span class="node-body">
+                      <strong>{{ step.name }}</strong>
+                      <small>{{
+                        stepRunStatus(step) ?? (step.isRequired ? 'Required' : 'Optional')
+                      }}</small>
+                    </span>
+                    <span class="node-port"></span>
+                  </button>
+                </li>
+              } @empty {
+                <li>
+                  <button type="button" class="empty-node" (click)="addPipelineStep.emit(pipeline)">
+                    <ng-icon name="lucideWorkflow" aria-hidden="true" />
+                    <span>Add first node</span>
+                  </button>
+                </li>
+              }
+            </ol>
+          </div>
+        } @else {
+          <div class="canvas-board empty-canvas">
+            <button type="button" (click)="createPipeline.emit()">
+              <ng-icon name="lucidePlus" aria-hidden="true" />
+              Create pipeline
+            </button>
+          </div>
+        }
       </section>
     </div>
   }

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArchive,
+  lucideCode2,
   lucideFilePlus2,
   lucideGitBranch,
   lucideHistory,
@@ -9,7 +10,9 @@ import {
   lucidePencil,
   lucidePlay,
   lucidePlus,
+  lucideTerminal,
   lucideTrash2,
+  lucideWorkflow,
 } from '@ng-icons/lucide';
 
 import {
@@ -28,6 +31,7 @@ import { WorkspaceProject } from '../../../../core/models/team.models';
   providers: [
     provideIcons({
       lucideArchive,
+      lucideCode2,
       lucideFilePlus2,
       lucideGitBranch,
       lucideHistory,
@@ -35,7 +39,9 @@ import { WorkspaceProject } from '../../../../core/models/team.models';
       lucidePencil,
       lucidePlay,
       lucidePlus,
+      lucideTerminal,
       lucideTrash2,
+      lucideWorkflow,
     }),
   ],
   templateUrl: './pipeline-manager.component.html',
@@ -58,12 +64,14 @@ export class PipelineManagerComponent {
   @Output() archiveTemplate = new EventEmitter<PipelineTemplate>();
   @Output() addTemplateStep = new EventEmitter<PipelineTemplate>();
   @Output() editTemplateStep = new EventEmitter<PipelineTemplateStep>();
+  @Output() inspectTemplateStep = new EventEmitter<PipelineTemplateStep>();
   @Output() deleteTemplateStep = new EventEmitter<PipelineTemplateStep>();
   @Output() createPipeline = new EventEmitter<void>();
   @Output() editPipeline = new EventEmitter<ProjectPipeline>();
   @Output() archivePipeline = new EventEmitter<ProjectPipeline>();
   @Output() addPipelineStep = new EventEmitter<ProjectPipeline>();
   @Output() editPipelineStep = new EventEmitter<PipelineStep>();
+  @Output() inspectPipelineStep = new EventEmitter<PipelineStep>();
   @Output() deletePipelineStep = new EventEmitter<PipelineStep>();
   @Output() pipelineSelected = new EventEmitter<ProjectPipeline>();
   @Output() templateSelected = new EventEmitter<PipelineTemplate>();
@@ -95,6 +103,20 @@ export class PipelineManagerComponent {
     const status = this.stepRunStatus(step);
 
     return status ? `run-${status.toLowerCase()}` : '';
+  }
+
+  protected selectedPipelineSteps(): readonly PipelineStep[] {
+    return this.selectedPipeline ? this.orderedPipelineSteps(this.selectedPipeline) : [];
+  }
+
+  protected activeTemplateSteps(): readonly PipelineTemplateStep[] {
+    const template =
+      this.selectedTemplate ?? this.templates.find((candidate) => candidate.isActive);
+    return template ? this.orderedTemplateSteps(template) : [];
+  }
+
+  protected nodeIcon(step: PipelineStep | PipelineTemplateStep): string {
+    return step.command ? 'lucideTerminal' : 'lucideCode2';
   }
 
   protected isLatestRunChanged(): boolean {

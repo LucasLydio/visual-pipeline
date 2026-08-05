@@ -28,6 +28,8 @@
   --color-surface: var(--white);
   --color-surface-soft: #f3f3f3;
   --color-text: var(--graphite);
+  --color-text-danger: rgb(168, 4, 4);
+  --color-node: rgb(242, 243, 243);
   --color-text-muted: #6f6870;
   --color-primary: var(--seagrass);
   --color-primary-hover: #527f77;
@@ -102,6 +104,8 @@
   --color-surface: #302c31;
   --color-surface-soft: #39343a;
   --color-text: #f7f0f0;
+  --color-text-danger: #f9f9f9ee;
+  --color-node: rgb(21, 31, 29);
   --color-text-muted: #c9c1c3;
   --color-primary: #5ea687;
   --color-primary-hover: #98c9c0;
@@ -239,6 +243,7 @@ header {
 
 footer {
   border-top: var(--border-width-light) solid var(--color-border);
+  padding-top: var(--padding-md);
 }
 
 nav {
@@ -314,6 +319,7 @@ p {
 
 span {
   color: inherit;
+  font-size: var(--font-size-sm);
 }
 
 strong {
@@ -516,6 +522,7 @@ button {
   min-height: var(--control-height);
   padding: var(--padding-sm);
   background: var(--color-primary);
+  font-size: var(--font-size-sm);
   color: var(--white);
   border: var(--border-width-light) solid transparent;
   border-radius: var(--border-sm);
@@ -544,6 +551,10 @@ button:active:not(:disabled) {
 button:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
+}
+
+small {
+  font-size: var(--font-size-sm);
 }
 
 /* =========================================================

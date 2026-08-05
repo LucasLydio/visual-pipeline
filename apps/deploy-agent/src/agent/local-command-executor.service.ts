@@ -8,11 +8,17 @@ export interface LocalCommandResult {
   readonly logsSummary: string;
 }
 
+export type LocalCommandOutputHandler = (logsSummary: string) => void;
+
 @Injectable()
 export class LocalCommandExecutorService {
   constructor(private readonly config: AgentConfigService) {}
 
-  execute(command: string, projectSlug: string): Promise<LocalCommandResult> {
+  execute(
+    command: string,
+    projectSlug: string,
+    onOutput?: LocalCommandOutputHandler,
+  ): Promise<LocalCommandResult> {
     const cwd = this.projectDirectory(projectSlug);
 
     return new Promise((resolveResult) => {
@@ -29,9 +35,15 @@ export class LocalCommandExecutorService {
         child.kill('SIGTERM');
       }, this.config.stepTimeoutMs);
       let output = '';
+      let lastUpdate = 0;
 
       const append = (chunk: Buffer): void => {
         output = `${output}${chunk.toString('utf8')}`.slice(-6000);
+        const now = Date.now();
+        if (onOutput && now - lastUpdate > 1000) {
+          lastUpdate = now;
+          onOutput(output.trim());
+        }
       };
 
       child.stdout.on('data', append);
@@ -43,10 +55,13 @@ export class LocalCommandExecutorService {
         const suffix = timedOut
           ? `\nCommand timed out after ${this.config.stepTimeoutMs}ms.`
           : `\nCommand exited with code ${code ?? 'unknown'}.`;
+        const logsSummary = `${output}${suffix}`.trim();
+
+        onOutput?.(logsSummary);
 
         resolveResult({
           status,
-          logsSummary: `${output}${suffix}`.trim(),
+          logsSummary,
         });
       });
       child.on('error', (error) => {

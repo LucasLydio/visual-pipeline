@@ -10,6 +10,7 @@ import { AgentTokenGuard } from './guards/agent-token.guard.js';
 import { AgentService } from './agent.service.js';
 import { CompleteAgentJobDto } from './dto/complete-agent-job.dto.js';
 import { CompleteAgentStepDto } from './dto/complete-agent-step.dto.js';
+import { UpdateAgentStepLogsDto } from './dto/update-agent-step-logs.dto.js';
 
 @UseGuards(AgentTokenGuard)
 @Controller('agent/jobs')
@@ -36,6 +37,15 @@ export class AgentController {
     @Body() dto: CompleteAgentStepDto,
   ) {
     return this.agentService.completeStep(runId, stepRunId, dto);
+  }
+
+  @Patch(':runId/steps/:stepRunId/logs')
+  updateStepLogs(
+    @Param('runId') runId: string,
+    @Param('stepRunId') stepRunId: string,
+    @Body() dto: UpdateAgentStepLogsDto,
+  ) {
+    return this.agentService.updateStepLogs(runId, stepRunId, dto);
   }
 
   @Patch(':runId/complete')

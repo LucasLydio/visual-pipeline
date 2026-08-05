@@ -57,6 +57,11 @@ export class AgentRunnerService {
       const result = await this.commandExecutor.execute(
         step.command,
         job.pipeline.project.slug,
+        (logsSummary) => {
+          void this.apiClient
+            .updateStepLogs(job.id, step.id, logsSummary)
+            .catch(() => undefined);
+        },
       );
       await this.apiClient.completeStep(job.id, step.id, {
         status: result.status,

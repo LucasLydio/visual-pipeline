@@ -64,6 +64,13 @@ export class AgentRepository {
     });
   }
 
+  async updateStepLogs(stepRunId: string, logsSummary?: string | null) {
+    return this.prisma.pipelineStepRun.update({
+      where: { id: stepRunId },
+      data: { logsSummary },
+    });
+  }
+
   async skipQueuedSteps(runId: string) {
     return this.prisma.pipelineStepRun.updateMany({
       where: { pipelineRunId: runId, status: 'QUEUED' },

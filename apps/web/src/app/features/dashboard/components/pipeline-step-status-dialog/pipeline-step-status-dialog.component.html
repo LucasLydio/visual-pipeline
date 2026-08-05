@@ -1,0 +1,74 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="step-status-title">
+  <header>
+    <div>
+      <span class="section-label">Node status</span>
+      <h2 id="step-status-title">{{ target?.step?.name ?? 'Pipeline step' }}</h2>
+    </div>
+    <button type="button" class="icon-button" aria-label="Close" (click)="closed.emit()">
+      <ng-icon name="lucideX" aria-hidden="true" />
+    </button>
+  </header>
+
+  <div class="status-card" [class.is-live-change]="isLiveChange()">
+    <span class="status-orb {{ statusClass() }}">
+      <ng-icon name="lucideActivity" aria-hidden="true" />
+    </span>
+    <div class="status-card-text">
+      <strong>{{ statusLabel() }}</strong>
+      <small>{{
+        target?.type === 'template' ? 'Reusable template node' : 'Project pipeline node'
+      }}</small>
+    </div>
+    @if (isRunning()) {
+      <span class="live-pill">Live</span>
+    }
+  </div>
+
+  <dl class="node-meta">
+    <div>
+      <dt>Order</dt>
+      <dd>{{ target?.step?.order }}</dd>
+    </div>
+    <div>
+      <dt>Required</dt>
+      <dd>{{ target?.step?.isRequired ? 'Yes' : 'No' }}</dd>
+    </div>
+    <div>
+      <dt>Enabled</dt>
+      <dd>{{ target?.step?.isEnabled ? 'Yes' : 'No' }}</dd>
+    </div>
+  </dl>
+
+  <section class="command-block">
+    <span>
+      <ng-icon name="lucideTerminal" aria-hidden="true" />
+      Command
+    </span>
+    <code>{{ target?.step?.command || 'Checklist step' }}</code>
+  </section>
+
+  <section class="logs-panel" [class.is-live-change]="isLiveChange()">
+    <div>
+      <span>
+        <ng-icon name="lucideTerminal" aria-hidden="true" />
+        Logs
+      </span>
+      @if (isRunning()) {
+        <small>Updating while the agent reports output</small>
+      }
+    </div>
+    <pre>{{ logs() }}</pre>
+  </section>
+
+  <footer>
+    <button type="button" class="danger" (click)="remove()">
+      <ng-icon name="lucideTrash2" aria-hidden="true" />
+      Delete
+    </button>
+    <button type="button" (click)="edit()">
+      <ng-icon name="lucidePencil" aria-hidden="true" />
+      Edit
+    </button>
+  </footer>
+</section>

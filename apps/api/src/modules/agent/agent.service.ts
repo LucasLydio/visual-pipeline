@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { CompleteAgentJobDto } from './dto/complete-agent-job.dto.js';
 import { CompleteAgentStepDto } from './dto/complete-agent-step.dto.js';
+import { UpdateAgentStepLogsDto } from './dto/update-agent-step-logs.dto.js';
 import { AgentRepository } from './agent.repository.js';
 import {
   AGENT_JOB_FINAL_STATUSES,
@@ -64,6 +65,27 @@ export class AgentService {
     }
 
     return completed;
+  }
+
+  async updateStepLogs(
+    runId: string,
+    stepRunId: string,
+    dto: UpdateAgentStepLogsDto,
+  ) {
+    const run = await this.getRunningRunOrThrow(runId);
+    const step = run.steps.find((candidate) => candidate.id === stepRunId);
+
+    if (!step) throw new NotFoundException('Pipeline step run not found.');
+    if (step.status !== 'RUNNING') {
+      throw new BadRequestException(
+        'Only running steps can receive live logs.',
+      );
+    }
+
+    return this.agentRepository.updateStepLogs(
+      stepRunId,
+      this.normalizeLogsSummary(dto.logsSummary),
+    );
   }
 
   async completeJob(runId: string, dto: CompleteAgentJobDto) {

@@ -20,6 +20,17 @@ export class AgentApiClientService {
     });
   }
 
+  updateStepLogs(
+    runId: string,
+    stepRunId: string,
+    logsSummary: string,
+  ): Promise<unknown> {
+    return this.request(`/agent/jobs/${runId}/steps/${stepRunId}/logs`, {
+      method: 'PATCH',
+      body: { logsSummary },
+    });
+  }
+
   completeStep(
     runId: string,
     stepRunId: string,

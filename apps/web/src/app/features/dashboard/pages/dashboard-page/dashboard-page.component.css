@@ -1,6 +1,6 @@
 main.workspace-content {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1380px;
   margin-inline: auto;
   padding: 1.5rem clamp(1rem, 2.5vw, 2rem) 3rem;
 }
@@ -52,7 +52,7 @@ main.workspace-content {
 .action-error {
   margin: 0 0 1rem;
   padding: 0.7rem 0.85rem;
-  color: #fed7d7;
+  color: var(--color-text-danger);
   background: rgba(180, 35, 24, 0.14);
   border: 1px solid rgba(180, 35, 24, 0.32);
   border-radius: 0.45rem;

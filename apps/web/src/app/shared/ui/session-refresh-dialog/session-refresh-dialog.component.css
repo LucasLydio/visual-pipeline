@@ -48,7 +48,7 @@ p {
 
 .error-message {
   padding: 0.7rem 0.8rem;
-  color: #fed7d7;
+  color: var(--color-text-danger);
   background: rgba(180, 35, 24, 0.14);
   border: 1px solid rgba(180, 35, 24, 0.32);
   border-radius: 0.45rem;

@@ -30,6 +30,7 @@ import { PipelineDialogComponent } from '../../components/pipeline-dialog/pipeli
 import { PipelineManagerComponent } from '../../components/pipeline-manager/pipeline-manager.component';
 import { PipelineRunHistoryDialogComponent } from '../../components/pipeline-run-history-dialog/pipeline-run-history-dialog.component';
 import { PipelineStepDialogComponent } from '../../components/pipeline-step-dialog/pipeline-step-dialog.component';
+import { PipelineStepStatusDialogComponent } from '../../components/pipeline-step-status-dialog/pipeline-step-status-dialog.component';
 import { PipelineTemplateDialogComponent } from '../../components/pipeline-template-dialog/pipeline-template-dialog.component';
 import { ProjectDetailDialogComponent } from '../../components/project-detail-dialog/project-detail-dialog.component';
 import { ProjectDialogComponent } from '../../components/project-dialog/project-dialog.component';
@@ -52,6 +53,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
     PipelineManagerComponent,
     PipelineRunHistoryDialogComponent,
     PipelineStepDialogComponent,
+    PipelineStepStatusDialogComponent,
     PipelineTemplateDialogComponent,
     ProjectDetailDialogComponent,
     ProjectDialogComponent,
@@ -85,6 +87,7 @@ export class DashboardPageComponent {
   protected readonly templateToArchive = signal<PipelineTemplate | null>(null);
   protected readonly pipelineToArchive = signal<ProjectPipeline | null>(null);
   protected readonly stepToDelete = signal<PipelineStepTarget | null>(null);
+  protected readonly inspectingStep = signal<PipelineStepTarget | null>(null);
 
   protected createTeam(dto: CreateTeamRequest): void {
     this.facade.createTeam(dto).subscribe(() => this.showTeamDialog.set(false));
@@ -202,12 +205,37 @@ export class DashboardPageComponent {
     this.stepTarget.set({ type: 'template', templateId: step.templateId, step });
   }
 
+  protected inspectTemplateStep(step: PipelineTemplateStep): void {
+    this.inspectingStep.set({ type: 'template', templateId: step.templateId, step });
+  }
+
   protected addPipelineStep(pipeline: ProjectPipeline): void {
     this.stepTarget.set({ type: 'pipeline', pipelineId: pipeline.id });
   }
 
   protected editPipelineStep(step: PipelineStep): void {
     this.stepTarget.set({ type: 'pipeline', pipelineId: step.pipelineId, step });
+  }
+
+  protected inspectPipelineStep(step: PipelineStep): void {
+    this.inspectingStep.set({ type: 'pipeline', pipelineId: step.pipelineId, step });
+  }
+
+  protected editInspectedStep(target: PipelineStepTarget): void {
+    this.inspectingStep.set(null);
+    if (!target.step) return;
+
+    if (target.type === 'template') {
+      this.editTemplateStep(target.step as PipelineTemplateStep);
+      return;
+    }
+
+    this.editPipelineStep(target.step as PipelineStep);
+  }
+
+  protected deleteInspectedStep(target: PipelineStepTarget): void {
+    this.inspectingStep.set(null);
+    this.stepToDelete.set(target);
   }
 
   protected saveStep(dto: PipelineStepRequest | PipelineTemplateStepRequest): void {
