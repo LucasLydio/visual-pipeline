@@ -89,6 +89,15 @@ article.is-live-change {
   gap: 0.25rem;
 }
 
+.failure-reason {
+  padding: 0.55rem 0.65rem;
+  color: #fed7d7;
+  background: rgba(180, 35, 24, 0.14);
+  border: 1px solid rgba(180, 35, 24, 0.28);
+  border-radius: 0.4rem;
+  font-size: var(--font-size-xs);
+}
+
 .cancel-run {
   display: inline-flex;
   min-height: 2rem;
@@ -175,6 +184,53 @@ article.is-live-change {
 .status-canceled span {
   background: var(--color-surface);
   color: var(--color-text);
+}
+
+.step-logs {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.step-logs:empty {
+  display: none;
+}
+
+.step-logs details {
+  background: rgba(15, 23, 42, 0.42);
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+}
+
+.step-logs summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.65rem;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+}
+
+.step-logs summary span {
+  display: grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  background: var(--color-surface);
+  border-radius: 50%;
+}
+
+.step-logs pre {
+  max-height: 14rem;
+  margin: 0;
+  padding: 0.65rem;
+  overflow: auto;
+  color: #dbeafe;
+  background: #020617;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.76rem;
+  white-space: pre-wrap;
 }
 
 .error-message {

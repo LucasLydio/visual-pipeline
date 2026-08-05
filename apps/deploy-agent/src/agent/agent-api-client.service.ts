@@ -58,22 +58,33 @@ export class AgentApiClientService {
     });
 
     if (!response.ok) {
-      throw new ServiceUnavailableException(await this.errorMessage(response));
+      const body = await this.responseBody(response);
+      throw new ServiceUnavailableException(this.errorMessage(response, body));
     }
 
-    return (await response.json()) as T;
+    return (await this.responseBody(response)) as T;
   }
 
-  private async errorMessage(response: Response): Promise<string> {
-    try {
-      const body = (await response.json()) as { message?: string | string[] };
-      const message = body.message;
+  private async responseBody(response: Response): Promise<unknown> {
+    const text = await response.text();
+    if (!text.trim()) return null;
 
-      return Array.isArray(message)
-        ? message.join(', ')
-        : (message ?? response.statusText);
+    try {
+      return JSON.parse(text) as unknown;
     } catch {
-      return response.statusText;
+      throw new ServiceUnavailableException(
+        `Visual Pipeline API returned invalid JSON for ${response.url}.`,
+      );
     }
+  }
+
+  private errorMessage(response: Response, body: unknown): string {
+    if (typeof body === 'object' && body && 'message' in body) {
+      const message = (body as { message?: string | string[] }).message;
+      if (Array.isArray(message)) return message.join(', ');
+      if (message) return message;
+    }
+
+    return response.statusText || `HTTP ${response.status}`;
   }
 }

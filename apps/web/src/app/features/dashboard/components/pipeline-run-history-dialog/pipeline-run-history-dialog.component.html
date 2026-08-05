@@ -40,6 +40,9 @@
             <span>{{ run.steps.length }} steps</span>
             <span>{{ run.triggeredBy?.displayName ?? 'System' }}</span>
           </div>
+          @if (run.failureReason) {
+            <p class="failure-reason">{{ run.failureReason }}</p>
+          }
           <ol class="step-snapshots">
             @for (step of run.steps; track step.id) {
               <li
@@ -52,6 +55,19 @@
               </li>
             }
           </ol>
+          <div class="step-logs">
+            @for (step of run.steps; track step.id) {
+              @if (step.logsSummary) {
+                <details>
+                  <summary>
+                    <span>{{ step.order }}</span>
+                    {{ step.name }} logs
+                  </summary>
+                  <pre>{{ step.logsSummary }}</pre>
+                </details>
+              }
+            }
+          </div>
         </article>
       } @empty {
         <p class="empty-copy">No runs have been queued for this pipeline yet.</p>
