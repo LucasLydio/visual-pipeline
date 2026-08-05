@@ -51,6 +51,7 @@ export class PipelineManagerComponent {
   @Input() selectedPipeline: ProjectPipeline | null = null;
   @Input() selectedTemplate: PipelineTemplate | null = null;
   @Input() latestRun: PipelineRun | null = null;
+  @Input() statusChanges: ReadonlySet<string> = new Set();
 
   @Output() createTemplate = new EventEmitter<void>();
   @Output() editTemplate = new EventEmitter<PipelineTemplate>();
@@ -94,5 +95,15 @@ export class PipelineManagerComponent {
     const status = this.stepRunStatus(step);
 
     return status ? `run-${status.toLowerCase()}` : '';
+  }
+
+  protected isLatestRunChanged(): boolean {
+    return Boolean(this.latestRun && this.statusChanges.has(this.latestRun.id));
+  }
+
+  protected isStepStatusChanged(step: PipelineStep): boolean {
+    const runStep = this.latestRun?.steps.find((candidate) => candidate.pipelineStepId === step.id);
+
+    return Boolean(runStep && this.statusChanges.has(runStep.id));
   }
 }

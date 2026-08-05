@@ -89,6 +89,26 @@ export interface PipelineRun {
   readonly steps: readonly PipelineStepRun[];
 }
 
+export interface PipelineRunStepStatusSnapshot {
+  readonly id: string;
+  readonly status: PipelineStepRunStatus;
+  readonly logsSummary: string | null;
+  readonly startedAt: string | null;
+  readonly finishedAt: string | null;
+  readonly updatedAt: string;
+}
+
+export interface PipelineRunStatusSnapshot {
+  readonly id: string;
+  readonly pipelineId: string;
+  readonly status: PipelineRunStatus;
+  readonly failureReason: string | null;
+  readonly startedAt: string | null;
+  readonly finishedAt: string | null;
+  readonly updatedAt: string;
+  readonly steps: readonly PipelineRunStepStatusSnapshot[];
+}
+
 export interface CreatePipelineRunRequest {
   readonly branch?: string;
   readonly commitSha?: string;

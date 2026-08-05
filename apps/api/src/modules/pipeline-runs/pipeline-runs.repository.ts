@@ -72,6 +72,37 @@ export class PipelineRunsRepository {
     });
   }
 
+  async findRunStatusById(runId: string) {
+    return this.prisma.pipelineRun.findUnique({
+      where: { id: runId },
+      select: {
+        id: true,
+        pipelineId: true,
+        status: true,
+        failureReason: true,
+        startedAt: true,
+        finishedAt: true,
+        updatedAt: true,
+        pipeline: {
+          select: {
+            project: { select: { teamId: true } },
+          },
+        },
+        steps: {
+          orderBy: { order: 'asc' },
+          select: {
+            id: true,
+            status: true,
+            logsSummary: true,
+            startedAt: true,
+            finishedAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+  }
+
   async cancelRun(runId: string) {
     const finishedAt = new Date();
 

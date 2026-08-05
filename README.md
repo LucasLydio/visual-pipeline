@@ -18,7 +18,7 @@ The repository currently includes the monorepo foundation plus the first live pr
 - Live dashboard API for teams, members, roles, titles, and connected projects
 - API and web foundation for reusable pipeline templates and project pipeline steps
 - Manual pipeline run history with immutable step-run snapshots
-- Deploy-agent execution contract for claiming local-agent queued runs
+- Deploy-agent polling worker for claiming local-agent queued runs
 - GitHub push webhook ingestion for queueing pipeline runs
 - Hybrid GitHub Actions workflow setup for selected synced projects
 
@@ -85,7 +85,7 @@ Set the frontend API base URL in `apps/web/src/environments/environment.ts`. The
 
 The API exposes a frontend-optimized `GET /workspace/dashboard` endpoint so the dashboard can load the current user, active team, members, and projects with one request instead of reaching repeatedly into team and project routes.
 
-Pipeline runs are available from the dashboard after selecting a pipeline. `POST /pipelines/:pipelineId/runs` queues a manual run and snapshots enabled steps. Run history is read from `GET /pipelines/:pipelineId/runs`.
+Pipeline runs are available from the dashboard after selecting a pipeline. `POST /pipelines/:pipelineId/runs` queues a run and snapshots enabled steps. Run history is read from `GET /pipelines/:pipelineId/runs`, while the dashboard polls `GET /pipeline-runs/:runId/status` for the active run so status changes can update with motion.
 
 ## Local Auth Setup
 
@@ -114,9 +114,11 @@ For the deploy-agent, configure:
 AGENT_SHARED_TOKEN=local-dev-agent-token
 VISUAL_PIPELINE_API_URL=http://localhost:3000
 LOCAL_AGENT_WORKSPACE_ROOT=C:\Users\Winner\Documents\Projetos
+AGENT_POLL_ENABLED=true
+AGENT_POLL_INTERVAL_MS=5000
 ```
 
-The deploy-agent exposes `POST /agent/jobs/process-next` locally. It claims queued runs for projects using `LOCAL_AGENT` execution mode, executes each step command inside `LOCAL_AGENT_WORKSPACE_ROOT/<project-slug>`, and reports the result back to the API. Docker deployment is just a pipeline command, for example `docker compose up -d --build`, when the target project has the required Docker files.
+The deploy-agent can poll automatically or expose `POST /agent/jobs/process-next` locally for manual processing. It claims queued runs for projects using `LOCAL_AGENT` execution mode, executes each step command inside `LOCAL_AGENT_WORKSPACE_ROOT/<project-slug>`, and reports the result back to the API. Docker deployment is just a pipeline command, for example `docker compose up -d --build`, when the target project has the required Docker files.
 
 GitHub webhooks should point to the API:
 

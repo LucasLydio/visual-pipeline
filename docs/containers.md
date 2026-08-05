@@ -72,6 +72,8 @@ Local-agent projects are resolved by slug under the mounted workspace folder:
 ```bash
 LOCAL_AGENT_HOST_WORKSPACE_ROOT=./.local-projects
 LOCAL_AGENT_STEP_TIMEOUT_MS=600000
+AGENT_POLL_ENABLED=true
+AGENT_POLL_INTERVAL_MS=5000
 ```
 
 A project with slug `checkout-api` must exist at:
@@ -87,6 +89,8 @@ docker compose up -d --build
 ```
 
 then the target project must provide its own `Dockerfile` or Compose file. The container stack mounts the Docker socket into the agent for local development, which allows the agent to control the host Docker engine.
+
+When `AGENT_POLL_ENABLED=true`, the deploy-agent automatically asks the API for the next queued `LOCAL_AGENT` run every `AGENT_POLL_INTERVAL_MS`. Manual `POST /agent/jobs/process-next` calls still work, but they are no longer required in the container stack.
 
 ## Daily Commands
 

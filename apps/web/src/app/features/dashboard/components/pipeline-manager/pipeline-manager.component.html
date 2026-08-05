@@ -108,7 +108,10 @@
         </div>
         <div class="stack">
           @for (pipeline of pipelines; track pipeline.id) {
-            <article [class.is-muted]="pipeline.status === 'ARCHIVED'">
+            <article
+              [class.is-muted]="pipeline.status === 'ARCHIVED'"
+              [class.is-live-change]="selectedPipeline?.id === pipeline.id && isLatestRunChanged()"
+            >
               <button type="button" class="item-main" (click)="pipelineSelected.emit(pipeline)">
                 <strong>{{ pipeline.name }}</strong>
                 <small>
@@ -150,6 +153,7 @@
                       <button
                         type="button"
                         class="step-node {{ stepRunClass(step) }}"
+                        [class.is-live-change]="isStepStatusChanged(step)"
                         [title]="'Edit ' + step.name"
                         (click)="editPipelineStep.emit(step)"
                       >

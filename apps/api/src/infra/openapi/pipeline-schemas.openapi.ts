@@ -220,6 +220,51 @@ export const pipelineSchemas: Record<string, OpenApiSchema> = {
     type: 'array',
     items: { $ref: '#/components/schemas/PipelineRun' },
   },
+  PipelineRunStepStatusSnapshot: {
+    type: 'object',
+    required: [
+      'id',
+      'status',
+      'logsSummary',
+      'startedAt',
+      'finishedAt',
+      'updatedAt',
+    ],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      status: { $ref: '#/components/schemas/PipelineStepRunStatus' },
+      logsSummary: { type: 'string', nullable: true },
+      startedAt: { type: 'string', format: 'date-time', nullable: true },
+      finishedAt: { type: 'string', format: 'date-time', nullable: true },
+      updatedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  PipelineRunStatusSnapshot: {
+    type: 'object',
+    required: [
+      'id',
+      'pipelineId',
+      'status',
+      'failureReason',
+      'startedAt',
+      'finishedAt',
+      'updatedAt',
+      'steps',
+    ],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      pipelineId: { type: 'string', format: 'uuid' },
+      status: { $ref: '#/components/schemas/PipelineRunStatus' },
+      failureReason: { type: 'string', nullable: true },
+      startedAt: { type: 'string', format: 'date-time', nullable: true },
+      finishedAt: { type: 'string', format: 'date-time', nullable: true },
+      updatedAt: { type: 'string', format: 'date-time' },
+      steps: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/PipelineRunStepStatusSnapshot' },
+      },
+    },
+  },
   CreatePipelineRunRequest: {
     type: 'object',
     properties: {

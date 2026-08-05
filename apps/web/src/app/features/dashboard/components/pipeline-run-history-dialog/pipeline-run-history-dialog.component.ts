@@ -17,6 +17,7 @@ export class PipelineRunHistoryDialogComponent {
   @Input() runs: readonly PipelineRun[] = [];
   @Input() loading = false;
   @Input() error: string | null = null;
+  @Input() statusChanges: ReadonlySet<string> = new Set();
   @Output() closed = new EventEmitter<void>();
   @Output() cancelRun = new EventEmitter<PipelineRun>();
 
@@ -33,5 +34,13 @@ export class PipelineRunHistoryDialogComponent {
 
   protected canCancel(run: PipelineRun): boolean {
     return run.status === 'QUEUED' || run.status === 'RUNNING';
+  }
+
+  protected isRunChanged(run: PipelineRun): boolean {
+    return this.statusChanges.has(run.id);
+  }
+
+  protected isStepChanged(stepId: string): boolean {
+    return this.statusChanges.has(stepId);
   }
 }

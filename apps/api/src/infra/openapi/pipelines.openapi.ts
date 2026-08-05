@@ -257,6 +257,21 @@ export const pipelinePaths: OpenApiPaths = {
       responses: { '200': response('PipelineRun', 'Pipeline run found.') },
     },
   },
+  '/pipeline-runs/{runId}/status': {
+    get: {
+      tags: ['Pipelines'],
+      summary: 'Get lightweight status for a pipeline run.',
+      operationId: 'getPipelineRunStatus',
+      security: [{ bearerAuth: [] }],
+      parameters: [{ $ref: '#/components/parameters/PipelineRunId' }],
+      responses: {
+        '200': response(
+          'PipelineRunStatusSnapshot',
+          'Pipeline run status found.',
+        ),
+      },
+    },
+  },
   '/pipeline-runs/{runId}/cancel': {
     patch: {
       tags: ['Pipelines'],

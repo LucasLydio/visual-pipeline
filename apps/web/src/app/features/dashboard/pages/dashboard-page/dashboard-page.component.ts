@@ -36,10 +36,8 @@ import { ProjectDialogComponent } from '../../components/project-dialog/project-
 import { TeamDialogComponent } from '../../components/team-dialog/team-dialog.component';
 import { WorkspaceToolbarComponent } from '../../components/workspace-toolbar/workspace-toolbar.component';
 import { WorkflowSetupDialogComponent } from '../../components/workflow-setup-dialog/workflow-setup-dialog.component';
-import {
-  DashboardPipelineFacade,
-  PipelineStepTarget,
-} from '../../data-access/dashboard-pipeline.facade';
+import { DashboardPipelineFacade } from '../../data-access/dashboard-pipeline.facade';
+import { PipelineStepTarget } from '../../data-access/dashboard-pipeline.types';
 import { DashboardFacade } from '../../data-access/dashboard.facade';
 
 @Component({

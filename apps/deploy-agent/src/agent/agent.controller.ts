@@ -16,6 +16,8 @@ export class AgentController {
       apiBaseUrl: this.config.apiBaseUrl,
       configured: this.config.isConfigured,
       localExecutionConfigured: this.config.canExecuteLocalProjects,
+      pollEnabled: this.config.pollEnabled,
+      pollIntervalMs: this.config.pollIntervalMs,
     };
   }
 

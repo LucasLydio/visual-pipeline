@@ -40,6 +40,14 @@ export class PipelineRunsController {
     return this.runsService.findRunById(runId, request.user!.id);
   }
 
+  @Get('pipeline-runs/:runId/status')
+  findRunStatusById(
+    @Param('runId') runId: string,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.runsService.findRunStatusById(runId, request.user!.id);
+  }
+
   @Patch('pipeline-runs/:runId/cancel')
   cancelRun(@Param('runId') runId: string, @Req() request: RequestWithUser) {
     return this.runsService.cancelRun(runId, request.user!.id);

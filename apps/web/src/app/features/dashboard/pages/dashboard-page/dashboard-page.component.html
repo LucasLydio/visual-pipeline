@@ -68,6 +68,7 @@
         [selectedPipeline]="pipelineFacade.selectedPipeline()"
         [selectedTemplate]="pipelineFacade.selectedTemplate()"
         [latestRun]="pipelineFacade.latestRun()"
+        [statusChanges]="pipelineFacade.statusChanges()"
         (createTemplate)="openTemplateDialog()"
         (editTemplate)="openTemplateDialog($event)"
         (archiveTemplate)="templateToArchive.set($event)"
@@ -142,6 +143,7 @@
     [runs]="pipelineFacade.runsState().runs"
     [loading]="pipelineFacade.runsState().loading"
     [error]="pipelineFacade.runsState().error"
+    [statusChanges]="pipelineFacade.statusChanges()"
     (cancelRun)="cancelPipelineRun($event)"
     (closed)="showRunHistoryDialog.set(false)"
   />

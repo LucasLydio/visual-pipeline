@@ -8,6 +8,7 @@ import {
   CreatePipelineRunRequest,
   CreatePipelineTemplateRequest,
   PipelineRun,
+  PipelineRunStatusSnapshot,
   PipelineStep,
   PipelineStepRequest,
   PipelineTemplate,
@@ -147,6 +148,13 @@ export class HttpPipelineApiService implements PipelineApi {
     return this.http.get<PipelineRun>(`${this.baseUrl}/pipeline-runs/${runId}`, {
       headers: this.authHeaders(),
     });
+  }
+
+  getPipelineRunStatus(runId: string): Observable<PipelineRunStatusSnapshot> {
+    return this.http.get<PipelineRunStatusSnapshot>(
+      `${this.baseUrl}/pipeline-runs/${runId}/status`,
+      { headers: this.authHeaders() },
+    );
   }
 
   cancelPipelineRun(runId: string): Observable<PipelineRun> {

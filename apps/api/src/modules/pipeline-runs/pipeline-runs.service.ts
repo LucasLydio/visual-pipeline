@@ -74,6 +74,27 @@ export class PipelineRunsService {
     return run;
   }
 
+  async findRunStatusById(runId: string, userId: string) {
+    const run = await this.runsRepository.findRunStatusById(runId);
+    if (!run) throw new NotFoundException('Pipeline run not found.');
+
+    await this.teamsService.assertTeamMember(
+      run.pipeline.project.teamId,
+      userId,
+    );
+
+    return {
+      id: run.id,
+      pipelineId: run.pipelineId,
+      status: run.status,
+      failureReason: run.failureReason,
+      startedAt: run.startedAt,
+      finishedAt: run.finishedAt,
+      updatedAt: run.updatedAt,
+      steps: run.steps,
+    };
+  }
+
   async cancelRun(runId: string, userId: string) {
     const run = await this.runsRepository.findRunById(runId);
     if (!run) throw new NotFoundException('Pipeline run not found.');

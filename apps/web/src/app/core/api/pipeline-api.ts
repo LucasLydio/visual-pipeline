@@ -5,6 +5,7 @@ import {
   CreatePipelineRunRequest,
   CreatePipelineTemplateRequest,
   PipelineRun,
+  PipelineRunStatusSnapshot,
   PipelineStep,
   PipelineStepRequest,
   PipelineTemplate,
@@ -64,6 +65,7 @@ export abstract class PipelineApi {
     dto: CreatePipelineRunRequest,
   ): Observable<PipelineRun>;
   abstract getPipelineRun(runId: string): Observable<PipelineRun>;
+  abstract getPipelineRunStatus(runId: string): Observable<PipelineRunStatusSnapshot>;
   abstract cancelPipelineRun(runId: string): Observable<PipelineRun>;
   abstract getWorkflowSetup(projectId: string): Observable<WorkflowSetup>;
   abstract rotateWorkflowToken(projectId: string): Observable<WorkflowSetup>;

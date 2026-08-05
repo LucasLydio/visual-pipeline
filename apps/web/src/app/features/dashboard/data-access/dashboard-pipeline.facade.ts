@@ -1,7 +1,8 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
+  EMPTY,
   Observable,
   catchError,
   forkJoin,
@@ -9,7 +10,9 @@ import {
   of,
   startWith,
   switchMap,
+  takeWhile,
   tap,
+  timer,
 } from 'rxjs';
 
 import { PipelineApi } from '../../../core/api/pipeline-api';
@@ -19,46 +22,27 @@ import {
   CreatePipelineRunRequest,
   CreatePipelineTemplateRequest,
   PipelineRun,
-  PipelineStep,
+  PipelineRunStatusSnapshot,
   PipelineStepRequest,
   PipelineTemplate,
-  PipelineTemplateStep,
   PipelineTemplateStepRequest,
   ProjectPipeline,
   UpdatePipelineRequest,
   UpdatePipelineTemplateRequest,
-  WorkflowSetup,
 } from '../../../core/models/pipeline-api.models';
 import { WorkspaceProject } from '../../../core/models/team.models';
 import { ToastNotificationService } from '../../../core/services/toast-notification.service';
-
-interface PipelineContext {
-  readonly project: WorkspaceProject | null;
-  readonly teamId: string | null;
-}
-
-interface PipelineState {
-  readonly loading: boolean;
-  readonly templates: readonly PipelineTemplate[];
-  readonly pipelines: readonly ProjectPipeline[];
-  readonly error: string | null;
-}
-
-interface PipelineRunsState {
-  readonly loading: boolean;
-  readonly runs: readonly PipelineRun[];
-  readonly error: string | null;
-}
-
-interface WorkflowSetupState {
-  readonly loading: boolean;
-  readonly setup: WorkflowSetup | null;
-  readonly error: string | null;
-}
+import {
+  PipelineContext,
+  PipelineRunsState,
+  PipelineState,
+  WorkflowSetupState,
+} from './dashboard-pipeline.types';
 
 @Injectable()
 export class DashboardPipelineFacade {
   private readonly api = inject(PipelineApi);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly toast = inject(ToastNotificationService);
   private readonly context$ = new BehaviorSubject<PipelineContext>({
     project: null,
@@ -69,6 +53,8 @@ export class DashboardPipelineFacade {
   readonly selectedPipeline = signal<ProjectPipeline | null>(null);
   readonly selectedTemplate = signal<PipelineTemplate | null>(null);
   readonly focusedProject = signal<WorkspaceProject | null>(null);
+  readonly runsState = signal<PipelineRunsState>(this.emptyRunsState(false));
+  readonly statusChanges = signal<ReadonlySet<string>>(new Set());
   readonly workflowSetupState = signal<WorkflowSetupState>({
     loading: false,
     setup: null,
@@ -111,33 +97,14 @@ export class DashboardPipelineFacade {
     { initialValue: this.emptyState(false) },
   );
 
-  readonly runsState = toSignal(
-    this.selectedPipelineId$.pipe(
-      switchMap((pipelineId) => {
-        if (!pipelineId) return of(this.emptyRunsState(false));
-
-        return this.api.listPipelineRuns(pipelineId).pipe(
-          map((runs): PipelineRunsState => ({ loading: false, runs, error: null })),
-          startWith(this.emptyRunsState(true)),
-          catchError((error: unknown) => {
-            if (error instanceof SessionRefreshRequiredError) {
-              return of(this.emptyRunsState(false));
-            }
-
-            const message = this.errorMessage(error, 'Unable to load pipeline runs.');
-            this.toast.error(message);
-            return of({ ...this.emptyRunsState(false), error: message });
-          }),
-        );
-      }),
-    ),
-    { initialValue: this.emptyRunsState(false) },
-  );
-
   readonly activeTemplates = computed(() =>
     this.state().templates.filter((template) => template.isActive),
   );
   readonly latestRun = computed(() => this.runsState().runs[0] ?? null);
+
+  constructor() {
+    this.bindRunPolling();
+  }
 
   focusProject(project: WorkspaceProject | null, teamId: string | null): void {
     this.focusedProject.set(project);
@@ -317,6 +284,91 @@ export class DashboardPipelineFacade {
     this.selectedPipelineId$.next(this.selectedPipelineId$.value);
   }
 
+  private bindRunPolling(): void {
+    this.selectedPipelineId$
+      .pipe(
+        switchMap((pipelineId) => {
+          if (!pipelineId) {
+            this.runsState.set(this.emptyRunsState(false));
+            return EMPTY;
+          }
+
+          this.runsState.set(this.emptyRunsState(true));
+          return this.api.listPipelineRuns(pipelineId).pipe(
+            tap((runs) => {
+              this.runsState.set({ loading: false, runs, error: null });
+            }),
+            switchMap((runs) => this.pollActiveRun(runs)),
+            catchError((error: unknown) => {
+              if (error instanceof SessionRefreshRequiredError) {
+                this.runsState.set(this.emptyRunsState(false));
+                return EMPTY;
+              }
+
+              const message = this.errorMessage(error, 'Unable to load pipeline runs.');
+              this.toast.error(message);
+              this.runsState.set({ ...this.emptyRunsState(false), error: message });
+              return EMPTY;
+            }),
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+
+  private pollActiveRun(runs: readonly PipelineRun[]): Observable<PipelineRunStatusSnapshot> {
+    const activeRun = runs.find((run) => this.isRunActive(run));
+    if (!activeRun) return EMPTY;
+
+    return timer(1500, 3000).pipe(
+      switchMap(() => this.api.getPipelineRunStatus(activeRun.id)),
+      tap((snapshot) => this.applyRunStatusSnapshot(snapshot)),
+      takeWhile((snapshot) => this.isStatusActive(snapshot.status), true),
+    );
+  }
+
+  private applyRunStatusSnapshot(snapshot: PipelineRunStatusSnapshot): void {
+    const previous = this.runsState().runs.find((run) => run.id === snapshot.id);
+    const changedIds = new Set<string>();
+    const runs = this.runsState().runs.map((run) => {
+      if (run.id !== snapshot.id) return run;
+      if (run.status !== snapshot.status) changedIds.add(run.id);
+
+      return {
+        ...run,
+        status: snapshot.status,
+        failureReason: snapshot.failureReason,
+        startedAt: snapshot.startedAt,
+        finishedAt: snapshot.finishedAt,
+        updatedAt: snapshot.updatedAt,
+        steps: run.steps.map((step) => {
+          const updatedStep = snapshot.steps.find((candidate) => candidate.id === step.id);
+          if (!updatedStep) return step;
+          if (step.status !== updatedStep.status) changedIds.add(step.id);
+
+          return { ...step, ...updatedStep };
+        }),
+      };
+    });
+
+    this.runsState.set({ loading: false, runs, error: null });
+    if (previous && changedIds.size > 0) this.flashStatusChanges(changedIds);
+  }
+
+  private flashStatusChanges(ids: ReadonlySet<string>): void {
+    this.statusChanges.set(ids);
+    window.setTimeout(() => this.statusChanges.set(new Set()), 1400);
+  }
+
+  private isRunActive(run: PipelineRun): boolean {
+    return this.isStatusActive(run.status);
+  }
+
+  private isStatusActive(status: string): boolean {
+    return status === 'QUEUED' || status === 'RUNNING';
+  }
+
   private emptyRunsState(loading: boolean): PipelineRunsState {
     return { loading, runs: [], error: null };
   }
@@ -332,11 +384,3 @@ export class DashboardPipelineFacade {
     return fallback;
   }
 }
-
-export type PipelineStepTarget =
-  | { readonly type: 'pipeline'; readonly pipelineId: string; readonly step?: PipelineStep }
-  | {
-      readonly type: 'template';
-      readonly templateId: string;
-      readonly step?: PipelineTemplateStep;
-    };
