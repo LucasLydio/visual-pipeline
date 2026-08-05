@@ -72,6 +72,7 @@ Local-agent projects are resolved by slug under the mounted workspace folder:
 ```bash
 LOCAL_AGENT_HOST_WORKSPACE_ROOT=./.local-projects
 LOCAL_AGENT_STEP_TIMEOUT_MS=600000
+LOCAL_AGENT_PROJECT_NODE_ENV=development
 AGENT_POLL_ENABLED=true
 AGENT_POLL_INTERVAL_MS=5000
 ```
@@ -89,8 +90,11 @@ docker compose up -d --build
 ```
 
 then the target project must provide its own `Dockerfile` or Compose file. The container stack mounts the Docker socket into the agent for local development, which allows the agent to control the host Docker engine.
+The deploy-agent image includes both the Docker CLI and the Docker Compose plugin, so target project steps can use the modern `docker compose ...` command.
 
 When `AGENT_POLL_ENABLED=true`, the deploy-agent automatically asks the API for the next queued `LOCAL_AGENT` run every `AGENT_POLL_INTERVAL_MS`. Manual `POST /agent/jobs/process-next` calls still work, but they are no longer required in the container stack.
+
+`LOCAL_AGENT_PROJECT_NODE_ENV` controls the environment passed to target project commands. The default is `development` so commands like `npm ci` install build tools from `devDependencies`; the deploy-agent service itself still runs with `NODE_ENV=production`.
 
 ## Daily Commands
 

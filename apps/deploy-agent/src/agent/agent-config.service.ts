@@ -12,6 +12,10 @@ export class AgentConfigService {
     'LOCAL_AGENT_STEP_TIMEOUT_MS',
     10 * 60 * 1000,
   );
+  readonly projectNodeEnv = this.read(
+    'LOCAL_AGENT_PROJECT_NODE_ENV',
+    'development',
+  );
   readonly pollEnabled = this.readBoolean('AGENT_POLL_ENABLED', false);
   readonly pollIntervalMs = this.readPositiveInteger(
     'AGENT_POLL_INTERVAL_MS',

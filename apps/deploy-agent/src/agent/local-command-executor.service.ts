@@ -20,7 +20,10 @@ export class LocalCommandExecutorService {
         cwd,
         shell: true,
         windowsHide: true,
-        env: process.env,
+        env: {
+          ...process.env,
+          NODE_ENV: this.config.projectNodeEnv,
+        },
       });
       const timeout = setTimeout(() => {
         child.kill('SIGTERM');

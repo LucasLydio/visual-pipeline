@@ -102,6 +102,7 @@ services:
       AGENT_POLL_INTERVAL_MS: ${AGENT_POLL_INTERVAL_MS:-5000}
       LOCAL_AGENT_WORKSPACE_ROOT: /local-projects
       LOCAL_AGENT_STEP_TIMEOUT_MS: ${LOCAL_AGENT_STEP_TIMEOUT_MS:-600000}
+      LOCAL_AGENT_PROJECT_NODE_ENV: ${LOCAL_AGENT_PROJECT_NODE_ENV:-development}
     volumes:
       - ${LOCAL_AGENT_HOST_WORKSPACE_ROOT:-./.local-projects}:/local-projects
       - /var/run/docker.sock:/var/run/docker.sock
