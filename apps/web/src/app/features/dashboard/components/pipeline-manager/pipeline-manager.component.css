@@ -69,6 +69,8 @@ button {
   justify-content: space-between;
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--padding-md);
   text-transform: uppercase;
 }
 
@@ -108,6 +110,7 @@ button {
 
 .block-grid {
   display: grid;
+  padding-top: var(--padding-sm);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--color-border);
   border-left: 1px solid var(--color-border);
@@ -151,6 +154,11 @@ article.is-muted,
   opacity: 0.55;
 }
 
+.is-selected {
+  border-left: 2px solid var(--color-primary) !important;
+  padding-left: .5rem !important;
+}
+
 .compact-list article > button {
   display: grid;
   gap: 0.1rem;
@@ -188,6 +196,7 @@ article.is-muted,
   display: flex;
   gap: 0.4rem;
   overflow-x: auto;
+  padding-top: var(--padding-sm);
 }
 
 .pipeline-tabs button {

@@ -33,10 +33,41 @@
           <strong>Nodes</strong>
           <span>Objective</span>
         </div>
-        <label class="search-box">
+        <!-- <label class="search-box">
           <span>Search connectors</span>
           <input placeholder="Search connectors..." />
-        </label>
+        </label> -->
+        <section>
+          <div class="section-heading">
+            <h5>Templates</h5>
+            <span>{{ templates.length }}</span>
+          </div>
+          <div class="compact-list">
+            @for (template of templates; track template.id) {
+              <article [class.is-muted]="!template.isActive">
+              <button
+                type="button"
+                [class.is-selected]="templateButton === template"
+                (click)="selectTemplate(template)">
+                <strong>{{ template.name }}</strong>
+                <small>{{ template.steps.length }} nodes</small>
+              </button>
+                <div class="item-actions">
+                  <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
+                    <ng-icon name="lucidePencil" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Add template step"
+                    (click)="addTemplateStep.emit(template)"
+                  >
+                    <ng-icon name="lucideListPlus" aria-hidden="true" />
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
         <section>
           <div class="section-heading">
             <h5>Action blocks</h5>
@@ -53,34 +84,6 @@
                 <ng-icon name="lucideFilePlus2" aria-hidden="true" />
                 <span>Template</span>
               </button>
-            }
-          </div>
-        </section>
-        <section>
-          <div class="section-heading">
-            <h5>Templates</h5>
-            <span>{{ templates.length }}</span>
-          </div>
-          <div class="compact-list">
-            @for (template of templates; track template.id) {
-              <article [class.is-muted]="!template.isActive">
-                <button type="button" (click)="templateSelected.emit(template)">
-                  <strong>{{ template.name }}</strong>
-                  <small>{{ template.steps.length }} nodes</small>
-                </button>
-                <div class="item-actions">
-                  <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
-                    <ng-icon name="lucidePencil" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    title="Add template step"
-                    (click)="addTemplateStep.emit(template)"
-                  >
-                    <ng-icon name="lucideListPlus" aria-hidden="true" />
-                  </button>
-                </div>
-              </article>
             }
           </div>
         </section>

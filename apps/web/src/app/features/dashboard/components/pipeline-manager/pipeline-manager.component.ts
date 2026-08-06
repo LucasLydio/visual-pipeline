@@ -78,12 +78,20 @@ export class PipelineManagerComponent {
   @Output() runPipeline = new EventEmitter<ProjectPipeline>();
   @Output() viewRuns = new EventEmitter<ProjectPipeline>();
   @Output() setupWorkflow = new EventEmitter<WorkspaceProject>();
+
+  templateButton: PipelineTemplate | null = null;
+
   readonly statusClassMap: Record<string, string> = {
     ACTIVE: 'dot-green',
     PAUSED: 'dot-red',
     ARCHIVED: 'dot-gray',
     ARCHIEVED: 'dot-gray',
   };
+
+  protected selectTemplate(template: PipelineTemplate) {
+    this.templateButton = template;
+    this.templateSelected.emit(template);
+  }
 
   protected orderedTemplateSteps(template: PipelineTemplate): readonly PipelineTemplateStep[] {
     return [...template.steps].sort((left, right) => left.order - right.order);
