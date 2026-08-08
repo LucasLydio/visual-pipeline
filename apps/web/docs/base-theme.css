@@ -28,6 +28,7 @@
   --color-surface: var(--white);
   --color-surface-soft: #f3f3f3;
   --color-text: var(--graphite);
+  --color-text-white: var(--white);
   --color-text-danger: rgb(168, 4, 4);
   --color-node: rgb(242, 243, 243);
   --color-text-muted: #6f6870;
@@ -138,6 +139,23 @@ html {
   scroll-behavior: smooth;
   background: var(--color-background);
   font-size: 100%;
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 head,
@@ -162,9 +180,25 @@ body {
   transition:
     background-color var(--transition-base),
     color var(--transition-base);
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
-/* Base circle styling */
 .status-dot {
   display: inline-block;
   width: 8px;
@@ -527,7 +561,7 @@ button {
   border: var(--border-width-light) solid transparent;
   border-radius: var(--border-sm);
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 500;
   transition:
     transform var(--transition-fast),
     background-color var(--transition-fast),

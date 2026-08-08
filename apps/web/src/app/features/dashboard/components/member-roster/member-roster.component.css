@@ -42,6 +42,8 @@ small,
 .member-list {
   display: grid;
   gap: 0.55rem;
+  max-height: 100px;
+  overflow-y: auto;
 }
 
 article {

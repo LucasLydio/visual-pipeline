@@ -2,7 +2,7 @@
   padding: 1rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
+  border-radius: var(--border-sm);
 }
 
 header {
@@ -45,6 +45,9 @@ input {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 0.65rem;
+  max-height: 90px;
+  overflow-y: auto;
+  padding-block: var(--padding-sm);
 }
 
 article {

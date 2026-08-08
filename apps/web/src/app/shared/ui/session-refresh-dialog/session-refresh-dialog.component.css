@@ -8,7 +8,7 @@
 .dialog {
   position: fixed;
   z-index: 61;
-  top: 50%;
+  top: 45%;
   left: 50%;
   display: grid;
   width: min(calc(100vw - 2rem), 27rem);

@@ -76,7 +76,7 @@ button {
 
 .palette-tabs strong {
   color: var(--color-text);
-  border-bottom: 2px solid #2563eb;
+  border-bottom: 2px solid var(--color-node);
 }
 
 .search-box {
@@ -93,6 +93,11 @@ button {
   font-size: var(--font-size-xs);
 }
 
+.compact-list strong {
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+}
+
 .search-box input {
   min-height: 2.25rem;
   padding-inline: 0.65rem;
@@ -105,7 +110,6 @@ button {
 .section-heading {
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.55rem;
 }
 
 .block-grid {
@@ -143,10 +147,9 @@ button {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.5rem;
   align-items: center;
-  padding: 0.55rem;
   background: var(--color-background);
   border: 1px solid var(--color-border);
-  border-radius: 0.45rem;
+  border-radius: var(--border-sm);
 }
 
 article.is-muted,
@@ -204,12 +207,13 @@ article.is-muted,
   color: var(--color-text-muted);
   background: var(--color-background);
   border: 1px solid var(--color-border);
+  opacity: 0.8;
 }
 
-.pipeline-tabs button.is-selected {
+.pipeline-tabs button.is-selected-pipe {
   color: var(--color-text);
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.14);
+  opacity: 1;
+  border: 1px solid var(--color-primary);
 }
 
 .canvas-board {

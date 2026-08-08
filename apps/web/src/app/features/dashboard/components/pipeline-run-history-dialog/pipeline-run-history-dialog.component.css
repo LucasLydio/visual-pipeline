@@ -8,7 +8,7 @@
 .dialog {
   position: fixed;
   z-index: 46;
-  top: 50%;
+  top: 45%;
   left: 50%;
   display: grid;
   width: min(calc(100vw - 1rem), 46rem);
@@ -148,8 +148,7 @@ article.is-live-change {
   width: 1.8rem;
   height: 1.8rem;
   place-items: center;
-  color: var(--color-text);
-  background: var(--color-surface);
+  color: var(--color-text-white);
   border-radius: 50%;
   font-weight: 800;
 }
@@ -158,6 +157,7 @@ article.is-live-change {
 .step-snapshots small {
   max-width: 5rem;
   overflow: hidden;
+  color: var(--color-text-white);
   font-size: var(--font-size-xs);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -165,12 +165,13 @@ article.is-live-change {
 
 .status-passed,
 .status-passed span {
-  background: #16a34a;
+  background: var(--color-primary);
 }
 
 .status-running,
 .status-running span {
   background: #2563eb;
+  color: var(--color-text);
 }
 
 .status-failed,
@@ -181,7 +182,11 @@ article.is-live-change {
 .status-skipped,
 .status-canceled,
 .status-skipped span,
-.status-canceled span {
+.status-canceled span,
+.status-skipped small,
+.status-canceled small,
+.status-skipped strong,
+.status-canceled strong {
   background: var(--color-surface);
   color: var(--color-text);
 }
@@ -196,7 +201,7 @@ article.is-live-change {
 }
 
 .step-logs details {
-  background: rgba(15, 23, 42, 0.42);
+  background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
   border-radius: 0.4rem;
 }

@@ -14,7 +14,7 @@
         <div class="text">
           <strong>{{ member.name }}</strong>
           <small>{{ member.title || 'No title assigned' }} - {{ member.role }}</small>
-          <small>{{ member.email }}</small>
+          <!-- <small>{{ member.email }}</small> -->
         </div>
         <div class="member-actions">
           <button type="button" title="Edit member" (click)="editMember.emit(member)">
@@ -23,7 +23,7 @@
           <button
             type="button"
             title="Remove member"
-            [disabled]="member.role === 'OWNER'"
+            [disabled]="member.role === 'OWNER' || 'ADMIN'"
             (click)="removeMember.emit(member)"
           >
             <ng-icon name="lucideTrash2" aria-hidden="true" />

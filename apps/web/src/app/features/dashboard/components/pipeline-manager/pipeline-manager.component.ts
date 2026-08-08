@@ -13,6 +13,7 @@ import {
   lucideTerminal,
   lucideTrash2,
   lucideWorkflow,
+  lucideSettings2
 } from '@ng-icons/lucide';
 
 import {
@@ -42,6 +43,7 @@ import { WorkspaceProject } from '../../../../core/models/team.models';
       lucideTerminal,
       lucideTrash2,
       lucideWorkflow,
+      lucideSettings2
     }),
   ],
   templateUrl: './pipeline-manager.component.html',

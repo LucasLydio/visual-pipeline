@@ -29,9 +29,9 @@
     <div class="pipeline-builder">
       <aside class="node-palette">
         <div class="palette-tabs">
-          <span>Assets</span>
-          <strong>Nodes</strong>
-          <span>Objective</span>
+          <ng-icon name="lucideSettings2" aria-hidden="true" size="20" />
+          <strong>Pipeline Templates</strong>
+          <ng-icon name="lucideSettings2" aria-hidden="true" size="20" />
         </div>
         <!-- <label class="search-box">
           <span>Search connectors</span>
@@ -95,7 +95,7 @@
             @for (pipeline of pipelines; track pipeline.id) {
               <button
                 type="button"
-                [class.is-selected]="selectedPipeline?.id === pipeline.id"
+                [class.is-selected-pipe]="selectedPipeline?.id === pipeline.id"
                 (click)="pipelineSelected.emit(pipeline)"
               >
                 {{ pipeline.name }}
