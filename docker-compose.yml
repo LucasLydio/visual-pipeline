@@ -90,6 +90,7 @@ services:
       target: deploy-agent
     restart: unless-stopped
     init: true
+    user: root
     depends_on:
       api:
         condition: service_healthy

@@ -92,6 +92,8 @@ docker compose up -d --build
 then the target project must provide its own `Dockerfile` or Compose file. The container stack mounts the Docker socket into the agent for local development, which allows the agent to control the host Docker engine.
 The deploy-agent image includes both the Docker CLI and the Docker Compose plugin, so target project steps can use the modern `docker compose ...` command.
 
+For local Docker control, the Compose service runs `deploy-agent` as `root` because the mounted Docker socket is commonly owned by root inside Linux containers. Treat this as a local development convenience, not a hardened production pattern. A production agent should use a dedicated runner host, a restricted socket proxy, or provider-native deployment credentials.
+
 When `AGENT_POLL_ENABLED=true`, the deploy-agent automatically asks the API for the next queued `LOCAL_AGENT` run every `AGENT_POLL_INTERVAL_MS`. Manual `POST /agent/jobs/process-next` calls still work, but they are no longer required in the container stack.
 
 `LOCAL_AGENT_PROJECT_NODE_ENV` controls the environment passed to target project commands. The default is `development` so commands like `npm ci` install build tools from `devDependencies`; the deploy-agent service itself still runs with `NODE_ENV=production`.

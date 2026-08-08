@@ -121,6 +121,7 @@ LOCAL_AGENT_PROJECT_NODE_ENV=development
 
 The deploy-agent can poll automatically or expose `POST /agent/jobs/process-next` locally for manual processing. It claims queued runs for projects using `LOCAL_AGENT` execution mode, executes each step command inside `LOCAL_AGENT_WORKSPACE_ROOT/<project-slug>`, and reports the result back to the API. Docker deployment is just a pipeline command, for example `docker compose up -d --build`, when the target project has the required Docker files.
 The deploy-agent container includes the Docker Compose plugin for that modern `docker compose` syntax.
+In the local container stack, the deploy-agent service runs as `root` so it can access the mounted Docker socket. Do not treat that socket-mounted setup as the production security model.
 
 GitHub webhooks should point to the API:
 
