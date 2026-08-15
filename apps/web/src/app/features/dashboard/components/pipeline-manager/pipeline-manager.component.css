@@ -84,6 +84,10 @@ button {
   gap: 0.3rem;
 }
 
+.empty-copy {
+  padding-inline: var(--padding-md);
+}
+
 .search-box span,
 .section-heading span,
 .empty-copy,

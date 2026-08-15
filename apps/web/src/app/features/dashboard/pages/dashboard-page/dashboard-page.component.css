@@ -2,12 +2,11 @@ main.workspace-content {
   width: 100%;
   max-width: 1380px;
   margin-inline: auto;
-  padding: 1.5rem clamp(1rem, 2.5vw, 2rem) 3rem;
 }
 
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -95,10 +94,6 @@ main.workspace-content {
   main.workspace-content {
     padding-inline: 0;
     padding-top: 1rem;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
   }
 
   .setup-steps,
