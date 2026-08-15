@@ -1,4 +1,143 @@
+:host {
+  --dashboard-bg: color-mix(in srgb, var(--color-background) 90%, #1f1c21);
+  --dashboard-grid-line: color-mix(in srgb, var(--color-text-muted) 13%, transparent);
+  --dashboard-icon-bg: color-mix(in srgb, var(--color-surface) 74%, transparent);
+  --dashboard-icon-border: color-mix(in srgb, var(--color-text-muted) 22%, transparent);
+  --dashboard-icon-color: color-mix(in srgb, var(--color-text-muted) 58%, transparent);
+  --dashboard-icon-glow: color-mix(in srgb, var(--color-primary) 14%, transparent);
+
+  position: relative;
+  display: block;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(var(--dashboard-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--dashboard-grid-line) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, var(--dashboard-icon-glow), transparent 24rem),
+    radial-gradient(
+      circle at 88% 12%,
+      color-mix(in srgb, #60a5fa 12%, transparent),
+      transparent 22rem
+    ),
+    var(--dashboard-bg);
+  background-size:
+    3rem 3rem,
+    3rem 3rem,
+    auto,
+    auto,
+    auto;
+}
+
+.dashboard-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dashboard-backdrop::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 12rem;
+  content: '';
+  background: linear-gradient(transparent, var(--dashboard-bg));
+}
+
+.tech-mark {
+  position: absolute;
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  place-items: center;
+  color: var(--dashboard-icon-color);
+  background: var(--dashboard-icon-bg);
+  border: 1px solid var(--dashboard-icon-border);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 0.45rem color-mix(in srgb, var(--color-surface) 16%, transparent),
+    0 1rem 2rem rgba(2, 6, 23, 0.14);
+  font-size: 1.4rem;
+  opacity: 0.72;
+  animation: dashboard-drift 7s ease-in-out infinite alternate;
+}
+
+.mark-github {
+  top: 8%;
+  right: 18%;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  animation-delay: -4s;
+}
+
+.mark-gitlab {
+  top: 38%;
+  right: 6%;
+  color: color-mix(in srgb, #fc6d26 75%, var(--dashboard-icon-color));
+}
+
+.mark-angular {
+  bottom: 13%;
+  left: 14%;
+  color: color-mix(in srgb, #f06292 72%, var(--dashboard-icon-color));
+  animation-delay: -1s;
+}
+
+.mark-typescript {
+  top: 42%;
+  left: 4%;
+  color: color-mix(in srgb, #6ca8dc 75%, var(--dashboard-icon-color));
+  animation-delay: -3s;
+}
+
+.mark-docker {
+  right: 28%;
+  bottom: 8%;
+  color: color-mix(in srgb, #55a8e8 75%, var(--dashboard-icon-color));
+  animation-delay: -5s;
+}
+
+.mark-node {
+  top: 68%;
+  right: 10%;
+  color: color-mix(in srgb, #68a063 75%, var(--dashboard-icon-color));
+  animation-delay: -2s;
+}
+
+.mark-monitor {
+  right: 8%;
+  bottom: 27%;
+  width: 5rem;
+  height: 5rem;
+  color: var(--color-primary);
+  font-size: 2rem;
+  animation-delay: -2.4s;
+}
+
+.mark-workflow {
+  top: 18%;
+  left: 9%;
+  color: var(--color-primary);
+  animation-delay: -1.7s;
+}
+
+.mark-braces {
+  top: 9%;
+  left: 30%;
+  color: color-mix(in srgb, var(--color-primary) 78%, var(--dashboard-icon-color));
+  animation-delay: -2.5s;
+}
+
+.mark-gamepad {
+  bottom: 28%;
+  left: 5%;
+  width: 4.7rem;
+  height: 4.7rem;
+  color: color-mix(in srgb, var(--color-primary) 70%, var(--dashboard-icon-color));
+  font-size: 1.9rem;
+}
+
 main.workspace-content {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 1380px;
   margin-inline: auto;
@@ -90,6 +229,16 @@ main.workspace-content {
   }
 }
 
+@keyframes dashboard-drift {
+  from {
+    transform: translateY(-0.35rem) rotate(-2deg);
+  }
+
+  to {
+    transform: translateY(0.45rem) rotate(3deg);
+  }
+}
+
 @media (max-width: 56rem) {
   main.workspace-content {
     padding-inline: 0;
@@ -105,5 +254,27 @@ main.workspace-content {
 
   .action-error {
     margin-inline: 1rem;
+  }
+}
+
+@media (max-width: 42rem) {
+  .tech-mark {
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.1rem;
+    opacity: 0.48;
+  }
+
+  .mark-gitlab,
+  .mark-braces,
+  .mark-docker,
+  .mark-node {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tech-mark {
+    animation: none;
   }
 }

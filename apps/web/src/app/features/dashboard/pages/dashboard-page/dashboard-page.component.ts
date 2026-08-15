@@ -1,4 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideBraces, lucideGamepad2, lucideMonitor, lucideWorkflow } from '@ng-icons/lucide';
+import {
+  simpleAngular,
+  simpleDocker,
+  simpleGithub,
+  simpleGitlab,
+  simpleNodedotjs,
+  simpleTypescript,
+} from '@ng-icons/simple-icons';
 import {
   CreatePipelineRequest,
   PipelineRun,
@@ -60,8 +70,24 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
     TeamDialogComponent,
     WorkspaceToolbarComponent,
     WorkflowSetupDialogComponent,
+    NgIcon,
   ],
-  providers: [DashboardFacade, DashboardPipelineFacade],
+  providers: [
+    DashboardFacade,
+    DashboardPipelineFacade,
+    provideIcons({
+      lucideBraces,
+      lucideGamepad2,
+      lucideMonitor,
+      lucideWorkflow,
+      simpleAngular,
+      simpleDocker,
+      simpleGithub,
+      simpleGitlab,
+      simpleNodedotjs,
+      simpleTypescript,
+    }),
+  ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
