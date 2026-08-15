@@ -1,9 +1,31 @@
-<section class="panel">
-  <header>
-    <div>
-      <span class="section-label">Projects</span>
-      <h2>Synced repositories</h2>
-    </div>
+<section class="compact-panel">
+  <button type="button" class="summary-button" (click)="dialogOpen.set(true)">
+    <span class="summary-icon">
+      <ng-icon name="lucideFolderGit2" aria-hidden="true" />
+    </span>
+    <span>
+      <small>Repositories</small>
+      <strong>{{ projects.length }} synced</strong>
+    </span>
+    @if (selectedProject) {
+      <span class="selected-label">{{ selectedProject.name }}</span>
+    }
+  </button>
+</section>
+
+@if (dialogOpen()) {
+  <div class="dialog-backdrop" (click)="dialogOpen.set(false)"></div>
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="projects-title">
+    <header>
+      <div>
+        <span class="section-label">Projects</span>
+        <h2 id="projects-title">Synced repositories</h2>
+      </div>
+      <button type="button" class="icon-button" aria-label="Close" (click)="dialogOpen.set(false)">
+        <ng-icon name="lucideX" aria-hidden="true" />
+      </button>
+    </header>
+
     <label>
       <ng-icon name="lucideSearch" aria-hidden="true" />
       <input
@@ -13,39 +35,35 @@
         (input)="queryChange.emit($any($event.target).value)"
       />
     </label>
-  </header>
 
-  <div class="project-grid">
-    @for (project of projects; track project.id) {
-      <article
-        [class.is-selected]="selectedProject?.id === project.id"
-        [class.is-archived]="project.status === 'ARCHIVED'"
-      >
-        <button type="button" class="project-main" (click)="projectFocused.emit(project)">
-          <div>
-            <span>{{ project.provider }}</span>
-            @if (providerIconMap[project.provider]; as iconName) {
-              <ng-icon [name]="iconName" aria-hidden="true" style="margin-inline: 0.4rem" />
-            }
-          </div>
-
-          <strong>{{ project.name }}</strong>
-          <small>
-            branch: {{ project.defaultBranch }} - {{ project.executionMode }} -
-            <span class="status-dot" [class]="statusClassMap[project.status] || 'dot-gray'"> </span>
-          </small>
-        </button>
-        <button
-          type="button"
-          class="manage"
-          title="Manage repository"
-          (click)="projectManaged.emit(project)"
+    <div class="project-grid">
+      @for (project of projects; track project.id) {
+        <article
+          [class.is-selected]="selectedProject?.id === project.id"
+          [class.is-archived]="project.status === 'ARCHIVED'"
         >
-          <ng-icon name="lucideSettings" aria-hidden="true" />
-        </button>
-      </article>
-    } @empty {
-      <p class="empty-copy">Sync a project to start building your queue.</p>
-    }
-  </div>
-</section>
+          <button type="button" class="project-main" (click)="focus(project)">
+            <div>
+              <span>{{ project.provider }}</span>
+              @if (providerIconMap[project.provider]; as iconName) {
+                <ng-icon [name]="iconName" aria-hidden="true" />
+              }
+            </div>
+
+            <strong>{{ project.name }}</strong>
+            <small>
+              branch: {{ project.defaultBranch }} - {{ project.executionMode }} -
+              <span class="status-dot" [class]="statusClassMap[project.status] || 'dot-gray'">
+              </span>
+            </small>
+          </button>
+          <button type="button" class="manage" title="Manage repository" (click)="manage(project)">
+            <ng-icon name="lucideSettings" aria-hidden="true" />
+          </button>
+        </article>
+      } @empty {
+        <p class="empty-copy">Sync a project to start building your queue.</p>
+      }
+    </div>
+  </section>
+}

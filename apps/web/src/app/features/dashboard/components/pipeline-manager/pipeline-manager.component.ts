@@ -13,7 +13,8 @@ import {
   lucideTerminal,
   lucideTrash2,
   lucideWorkflow,
-  lucideSettings2
+  lucideSettings2,
+  lucideGitlab
 } from '@ng-icons/lucide';
 
 import {
@@ -25,6 +26,7 @@ import {
   ProjectPipeline,
 } from '../../../../core/models/pipeline-api.models';
 import { WorkspaceProject } from '../../../../core/models/team.models';
+import { simpleBitbucket, simpleDocker, simpleGithub, simpleGitlab } from '@ng-icons/simple-icons';
 
 @Component({
   selector: 'vp-pipeline-manager',
@@ -43,7 +45,12 @@ import { WorkspaceProject } from '../../../../core/models/team.models';
       lucideTerminal,
       lucideTrash2,
       lucideWorkflow,
-      lucideSettings2
+      lucideSettings2,
+      lucideGitlab,
+      simpleBitbucket,
+      simpleDocker,
+      simpleGithub,
+      simpleGitlab,
     }),
   ],
   templateUrl: './pipeline-manager.component.html',
@@ -88,6 +95,13 @@ export class PipelineManagerComponent {
     PAUSED: 'dot-red',
     ARCHIVED: 'dot-gray',
     ARCHIEVED: 'dot-gray',
+  };
+
+  readonly providerIconMap: Record<string, string> = {
+    GITHUB: 'simpleGithub',
+    GITLAB: 'simpleGitlab',
+    BITBUCKET: 'simpleBitbucket',
+    DOCKER: 'simpleDocker',
   };
 
   protected selectTemplate(template: PipelineTemplate) {

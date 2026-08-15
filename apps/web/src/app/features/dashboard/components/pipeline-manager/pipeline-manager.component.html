@@ -125,11 +125,13 @@
         @if (selectedPipeline; as pipeline) {
           <div class="canvas-board" [class.is-live-change]="isLatestRunChanged()">
             <article class="source-node">
-              <span class="node-icon repo"
-                ><ng-icon name="lucideGitBranch" aria-hidden="true"
-              /></span>
               <div class="source-node-text">
-                <strong>GitHub repository</strong>
+                <div>
+                  <span>{{ project.provider }}</span>
+                  @if (providerIconMap[project.provider]; as iconName) {
+                    <ng-icon [name]="iconName" aria-hidden="true" style="margin-inline: 0.4rem" />
+                  }
+                </div>
                 <small>{{ project.name }}</small>
               </div>
             </article>
