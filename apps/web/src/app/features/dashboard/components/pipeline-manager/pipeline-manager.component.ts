@@ -20,6 +20,7 @@ import {
   lucideTimer,
   lucideMessageCircleWarning,
   lucideHourglass,
+  lucidePackagePlus,
 } from '@ng-icons/lucide';
 
 import {
@@ -60,7 +61,8 @@ import { simpleBitbucket, simpleDocker, simpleGithub, simpleGitlab } from '@ng-i
       lucideStopCircle,
       lucideTimer,
       lucideMessageCircleWarning,
-      lucideHourglass
+      lucideHourglass,
+      lucidePackagePlus,
     }),
   ],
   templateUrl: './pipeline-manager.component.html',
@@ -82,6 +84,7 @@ export class PipelineManagerComponent {
   @Output() editTemplate = new EventEmitter<PipelineTemplate>();
   @Output() archiveTemplate = new EventEmitter<PipelineTemplate>();
   @Output() addTemplateStep = new EventEmitter<PipelineTemplate>();
+  @Output() importTemplateSteps = new EventEmitter<PipelineTemplate>();
   @Output() editTemplateStep = new EventEmitter<PipelineTemplateStep>();
   @Output() inspectTemplateStep = new EventEmitter<PipelineTemplateStep>();
   @Output() deleteTemplateStep = new EventEmitter<PipelineTemplateStep>();
@@ -89,6 +92,7 @@ export class PipelineManagerComponent {
   @Output() editPipeline = new EventEmitter<ProjectPipeline>();
   @Output() archivePipeline = new EventEmitter<ProjectPipeline>();
   @Output() addPipelineStep = new EventEmitter<ProjectPipeline>();
+  @Output() importPipelineSteps = new EventEmitter<ProjectPipeline>();
   @Output() editPipelineStep = new EventEmitter<PipelineStep>();
   @Output() inspectPipelineStep = new EventEmitter<PipelineStep>();
   @Output() deletePipelineStep = new EventEmitter<PipelineStep>();

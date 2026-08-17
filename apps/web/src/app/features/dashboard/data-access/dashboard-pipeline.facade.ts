@@ -38,12 +38,15 @@ import {
   PipelineState,
   WorkflowSetupState,
 } from './dashboard-pipeline.types';
+import { dashboardErrorMessage } from './dashboard-error-message';
+import { PipelineStepImportService } from './pipeline-step-import.service';
 
 @Injectable()
 export class DashboardPipelineFacade {
   private readonly api = inject(PipelineApi);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toast = inject(ToastNotificationService);
+  private readonly stepImport = inject(PipelineStepImportService);
   private readonly context$ = new BehaviorSubject<PipelineContext>({
     project: null,
     teamId: null,
@@ -84,7 +87,7 @@ export class DashboardPipelineFacade {
               return of(this.emptyState(false));
             }
 
-            const message = this.errorMessage(error, 'Unable to load pipelines.');
+            const message = dashboardErrorMessage(error, 'Unable to load pipelines.');
             this.toast.error(message);
             return of({
               ...this.emptyState(false),
@@ -140,6 +143,15 @@ export class DashboardPipelineFacade {
     return this.run(this.api.createTemplateStep(templateId, dto), 'Template step added.');
   }
 
+  createTemplateSteps(
+    templateId: string,
+    steps: readonly PipelineTemplateStepRequest[],
+  ): Observable<boolean> {
+    return this.stepImport
+      .createTemplateSteps(templateId, steps)
+      .pipe(tap((ok) => ok && this.refresh()));
+  }
+
   updateTemplateStep(
     stepId: string,
     dto: Partial<PipelineTemplateStepRequest>,
@@ -167,6 +179,15 @@ export class DashboardPipelineFacade {
     return this.run(this.api.createPipelineStep(pipelineId, dto), 'Pipeline step added.');
   }
 
+  createPipelineSteps(
+    pipelineId: string,
+    steps: readonly PipelineStepRequest[],
+  ): Observable<boolean> {
+    return this.stepImport
+      .createPipelineSteps(pipelineId, steps)
+      .pipe(tap((ok) => ok && this.refresh()));
+  }
+
   updatePipelineStep(stepId: string, dto: Partial<PipelineStepRequest>): Observable<boolean> {
     return this.run(this.api.updatePipelineStep(stepId, dto), 'Pipeline step updated.');
   }
@@ -188,7 +209,7 @@ export class DashboardPipelineFacade {
       catchError((error: unknown) => {
         if (error instanceof SessionRefreshRequiredError) return of(false);
 
-        this.toast.error(this.errorMessage(error, 'Could not queue pipeline run.'));
+        this.toast.error(dashboardErrorMessage(error, 'Could not queue pipeline run.'));
         return of(false);
       }),
     );
@@ -204,7 +225,7 @@ export class DashboardPipelineFacade {
       catchError((error: unknown) => {
         if (error instanceof SessionRefreshRequiredError) return of(false);
 
-        this.toast.error(this.errorMessage(error, 'Could not cancel pipeline run.'));
+        this.toast.error(dashboardErrorMessage(error, 'Could not cancel pipeline run.'));
         return of(false);
       }),
     );
@@ -220,7 +241,7 @@ export class DashboardPipelineFacade {
             return of(null);
           }
 
-          const message = this.errorMessage(error, 'Could not load workflow setup.');
+          const message = dashboardErrorMessage(error, 'Could not load workflow setup.');
           this.toast.error(message);
           this.workflowSetupState.set({ loading: false, setup: null, error: message });
           return of(null);
@@ -241,7 +262,7 @@ export class DashboardPipelineFacade {
             return of(null);
           }
 
-          const message = this.errorMessage(error, 'Could not create workflow token.');
+          const message = dashboardErrorMessage(error, 'Could not create workflow token.');
           this.toast.error(message);
           this.workflowSetupState.update((state) => ({
             ...state,
@@ -270,7 +291,7 @@ export class DashboardPipelineFacade {
           return of(false);
         }
 
-        this.toast.error(this.errorMessage(error, 'Action failed.'));
+        this.toast.error(dashboardErrorMessage(error, 'Action failed.'));
         return of(false);
       }),
     );
@@ -305,7 +326,7 @@ export class DashboardPipelineFacade {
                 return EMPTY;
               }
 
-              const message = this.errorMessage(error, 'Unable to load pipeline runs.');
+              const message = dashboardErrorMessage(error, 'Unable to load pipeline runs.');
               this.toast.error(message);
               this.runsState.set({ ...this.emptyRunsState(false), error: message });
               return EMPTY;
@@ -371,16 +392,5 @@ export class DashboardPipelineFacade {
 
   private emptyRunsState(loading: boolean): PipelineRunsState {
     return { loading, runs: [], error: null };
-  }
-
-  private errorMessage(error: unknown, fallback: string): string {
-    if (error instanceof Error) return error.message;
-    if (typeof error === 'object' && error && 'error' in error) {
-      const apiError = error as { error?: { message?: string | string[] } };
-      const message = apiError.error?.message;
-      return Array.isArray(message) ? message.join(', ') : (message ?? fallback);
-    }
-
-    return fallback;
   }
 }

@@ -1,0 +1,79 @@
+<div class="dialog-backdrop" (click)="closed.emit()"></div>
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="package-import-title">
+  <header>
+    <div>
+      <span class="section-label">package.json</span>
+      <h2 id="package-import-title">Import scripts</h2>
+      <p>{{ targetLabel }}</p>
+    </div>
+    <button type="button" class="icon-button" aria-label="Close" (click)="closed.emit()">
+      <ng-icon name="lucideX" aria-hidden="true" />
+    </button>
+  </header>
+
+  <label class="file-drop">
+    <input type="file" accept=".json,application/json" (change)="loadPackage($event)" />
+    <ng-icon name="lucideUpload" aria-hidden="true" />
+    <span>{{ fileName() ?? 'Choose package.json' }}</span>
+  </label>
+
+  @if (error(); as message) {
+    <p class="dialog-error" role="alert">{{ message }}</p>
+  }
+
+  @if (previewSteps().length > 0) {
+    <ol class="script-list" aria-label="Package scripts">
+      @for (script of previewSteps(); track script.id; let index = $index) {
+        <li
+          draggable="true"
+          (dragstart)="startDrag(index)"
+          (dragover)="allowDrop($event)"
+          (drop)="drop(index)"
+        >
+          <span class="drag-handle"><ng-icon name="lucideGripVertical" aria-hidden="true" /></span>
+          <span class="order-pill">{{ script.order }}</span>
+          <span class="script-copy">
+            <strong>{{ script.name }}</strong>
+            <code>{{ script.command }}</code>
+          </span>
+          <span class="move-actions">
+            <button
+              type="button"
+              title="Move up"
+              [disabled]="index === 0"
+              (click)="move(index, -1)"
+            >
+              <ng-icon name="lucideArrowUp" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              title="Move down"
+              [disabled]="index === previewSteps().length - 1"
+              (click)="move(index, 1)"
+            >
+              <ng-icon name="lucideArrowDown" aria-hidden="true" />
+            </button>
+          </span>
+        </li>
+      }
+    </ol>
+  }
+
+  @if (confirming()) {
+    <p class="confirm-note">
+      Create {{ previewSteps().length }} ordered steps in {{ targetLabel }}?
+    </p>
+  }
+
+  <div class="dialog-actions">
+    <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
+    @if (confirming()) {
+      <button type="button" class="neutral" (click)="confirming.set(false)">Back</button>
+      <button type="button" (click)="confirmImport()">Confirm import</button>
+    } @else {
+      <button type="button" [disabled]="scripts().length === 0" (click)="requestConfirmation()">
+        Review import
+      </button>
+    }
+  </div>
+</section>

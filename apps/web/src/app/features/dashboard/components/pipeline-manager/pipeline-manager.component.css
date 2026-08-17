@@ -115,8 +115,15 @@ button {
 }
 
 .section-heading {
+  width: 100%;
+  flex-direction: column;
   justify-content: space-between;
-  gap: 1rem;
+  padding-bottom: var(--padding-sm);
+  .title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--gap-md);
+  }
 }
 
 .template-toolbar {
@@ -174,7 +181,6 @@ button {
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  /* background: var(--color-background); */
   border: 1px solid var(--color-border);
   border-radius: var(--border-sm);
 }

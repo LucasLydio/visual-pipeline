@@ -36,6 +36,7 @@ import { ConnectedProjectsComponent } from '../../components/connected-projects/
 import { LoginGuideComponent } from '../../components/login-guide/login-guide.component';
 import { MemberDialogComponent } from '../../components/member-dialog/member-dialog.component';
 import { MemberRosterComponent } from '../../components/member-roster/member-roster.component';
+import { PackageJsonImportDialogComponent } from '../../components/package-json-import-dialog/package-json-import-dialog.component';
 import { PipelineDialogComponent } from '../../components/pipeline-dialog/pipeline-dialog.component';
 import { PipelineManagerComponent } from '../../components/pipeline-manager/pipeline-manager.component';
 import { PipelineRunHistoryDialogComponent } from '../../components/pipeline-run-history-dialog/pipeline-run-history-dialog.component';
@@ -47,6 +48,7 @@ import { ProjectDialogComponent } from '../../components/project-dialog/project-
 import { TeamDialogComponent } from '../../components/team-dialog/team-dialog.component';
 import { WorkspaceToolbarComponent } from '../../components/workspace-toolbar/workspace-toolbar.component';
 import { WorkflowSetupDialogComponent } from '../../components/workflow-setup-dialog/workflow-setup-dialog.component';
+import { DashboardPackageImportFacade } from '../../data-access/dashboard-package-import.facade';
 import { DashboardPipelineFacade } from '../../data-access/dashboard-pipeline.facade';
 import { PipelineStepTarget } from '../../data-access/dashboard-pipeline.types';
 import { DashboardFacade } from '../../data-access/dashboard.facade';
@@ -59,6 +61,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
     LoginGuideComponent,
     MemberDialogComponent,
     MemberRosterComponent,
+    PackageJsonImportDialogComponent,
     PipelineDialogComponent,
     PipelineManagerComponent,
     PipelineRunHistoryDialogComponent,
@@ -75,6 +78,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
   providers: [
     DashboardFacade,
     DashboardPipelineFacade,
+    DashboardPackageImportFacade,
     provideIcons({
       lucideBraces,
       lucideGamepad2,
@@ -95,6 +99,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
 export class DashboardPageComponent {
   protected readonly facade = inject(DashboardFacade);
   protected readonly pipelineFacade = inject(DashboardPipelineFacade);
+  protected readonly packageImport = inject(DashboardPackageImportFacade);
   protected readonly showTeamDialog = signal(false);
   protected readonly showProjectDialog = signal(false);
   protected readonly showTemplateDialog = signal(false);

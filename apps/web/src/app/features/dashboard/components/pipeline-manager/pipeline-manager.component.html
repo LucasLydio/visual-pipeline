@@ -30,8 +30,10 @@
       <aside class="node-palette">
         <section>
           <div class="section-heading">
-            <h5>Templates</h5>
-            <span>{{ templates.length }}</span>
+            <div class="title">
+              <h5>Templates</h5>
+              <small>{{ templates.length }}</small>
+            </div>
             <div class="template-toolbar">
               <button type="button" title="Create template" (click)="createTemplate.emit()">
                 <ng-icon name="lucideFilePlus2" aria-hidden="true" />
@@ -51,6 +53,14 @@
                 (click)="selectedTemplate && addTemplateStep.emit(selectedTemplate)"
               >
                 <ng-icon name="lucideListPlus" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                title="Import package scripts"
+                [disabled]="!selectedTemplate"
+                (click)="selectedTemplate && importTemplateSteps.emit(selectedTemplate)"
+              >
+                <ng-icon name="lucidePackagePlus" aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -126,6 +136,13 @@
               </button>
               <button type="button" title="Add node" (click)="addPipelineStep.emit(pipeline)">
                 <ng-icon name="lucidePlus" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                title="Import package scripts"
+                (click)="importPipelineSteps.emit(pipeline)"
+              >
+                <ng-icon name="lucidePackagePlus" aria-hidden="true" />
               </button>
             </div>
           }

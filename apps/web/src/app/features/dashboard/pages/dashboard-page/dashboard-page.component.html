@@ -86,6 +86,7 @@
         (editTemplate)="openTemplateDialog($event)"
         (archiveTemplate)="templateToArchive.set($event)"
         (addTemplateStep)="addTemplateStep($event)"
+        (importTemplateSteps)="packageImport.openTemplate($event)"
         (editTemplateStep)="editTemplateStep($event)"
         (inspectTemplateStep)="inspectTemplateStep($event)"
         (deleteTemplateStep)="
@@ -95,6 +96,7 @@
         (editPipeline)="openPipelineDialog($event)"
         (archivePipeline)="pipelineToArchive.set($event)"
         (addPipelineStep)="addPipelineStep($event)"
+        (importPipelineSteps)="packageImport.openPipeline($event)"
         (editPipelineStep)="editPipelineStep($event)"
         (inspectPipelineStep)="inspectPipelineStep($event)"
         (runPipeline)="queuePipelineRun($event)"
@@ -183,6 +185,15 @@
     [suggestedOrder]="nextStepOrder(target)"
     (saved)="saveStep($event)"
     (closed)="stepTarget.set(null)"
+  />
+}
+
+@if (packageImport.target(); as target) {
+  <vp-package-json-import-dialog
+    [targetLabel]="target.label"
+    [existingOrders]="packageImport.existingOrders(target)"
+    (imported)="packageImport.importScripts($event)"
+    (closed)="packageImport.close()"
   />
 }
 
