@@ -45,7 +45,7 @@ export class PipelinesRepository {
   async findTemplateStepById(stepId: string) {
     return this.prisma.pipelineTemplateStep.findUnique({
       where: { id: stepId },
-      include: { template: true },
+      include: { template: { include: { steps: true } } },
     });
   }
 
@@ -114,7 +114,7 @@ export class PipelinesRepository {
   async findPipelineStepById(stepId: string) {
     return this.prisma.pipelineStep.findUnique({
       where: { id: stepId },
-      include: { pipeline: { include: { project: true } } },
+      include: { pipeline: { include: { project: true, steps: true } } },
     });
   }
 

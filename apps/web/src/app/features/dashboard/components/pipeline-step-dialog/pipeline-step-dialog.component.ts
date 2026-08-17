@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 
 import {
   PipelineStep,
@@ -22,27 +28,55 @@ export class PipelineStepDialogComponent {
   @Output() saved = new EventEmitter<StepFormValue>();
   @Output() closed = new EventEmitter<void>();
   protected editing = false;
+  private currentStep: PipelineStep | PipelineTemplateStep | null = null;
+  private existingOrderValues: readonly number[] = [];
+  private suggestedOrderValue = 1;
+
+  private readonly uniqueOrderValidator = (
+    control: AbstractControl<number>,
+  ): ValidationErrors | null => {
+    const order = Number(control.value);
+    if (!Number.isInteger(order)) return null;
+    if (this.currentStep?.order === order) return null;
+
+    return this.existingOrderValues.includes(order) ? { orderTaken: true } : null;
+  };
 
   protected readonly form = new FormBuilder().nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
-    order: [1, [Validators.required, Validators.min(1)]],
+    order: [1, [Validators.required, Validators.min(1), this.uniqueOrderValidator]],
     command: [''],
     isRequired: [true],
     isEnabled: [true],
   });
 
+  @Input() set existingOrders(orders: readonly number[] | null) {
+    this.existingOrderValues = orders ?? [];
+    this.form.controls.order.updateValueAndValidity({ emitEvent: false });
+  }
+
+  @Input() set suggestedOrder(order: number | null) {
+    this.suggestedOrderValue = order && order > 0 ? order : 1;
+    if (!this.editing) {
+      this.form.controls.order.setValue(this.suggestedOrderValue);
+      this.form.controls.order.updateValueAndValidity({ emitEvent: false });
+    }
+  }
+
   @Input() set step(step: PipelineStep | PipelineTemplateStep | null) {
+    this.currentStep = step;
     this.editing = Boolean(step);
     this.form.reset({
       name: step?.name ?? '',
       description:
         'description' in (step ?? {}) ? ((step as PipelineTemplateStep).description ?? '') : '',
-      order: step?.order ?? 1,
+      order: step?.order ?? this.suggestedOrderValue,
       command: step?.command ?? '',
       isRequired: step?.isRequired ?? true,
       isEnabled: step?.isEnabled ?? true,
     });
+    this.form.controls.order.updateValueAndValidity({ emitEvent: false });
   }
 
   protected submit(): void {

@@ -264,6 +264,18 @@ export class DashboardPageComponent {
     this.stepToDelete.set(target);
   }
 
+  protected stepOrders(target: PipelineStepTarget): readonly number[] {
+    return this.targetSteps(target).map((step) => step.order);
+  }
+
+  protected nextStepOrder(target: PipelineStepTarget): number {
+    const usedOrders = new Set(this.stepOrders(target));
+    let nextOrder = 1;
+
+    while (usedOrders.has(nextOrder)) nextOrder += 1;
+    return nextOrder;
+  }
+
   protected saveStep(dto: PipelineStepRequest | PipelineTemplateStepRequest): void {
     const target = this.stepTarget();
     if (!target) return;
@@ -353,5 +365,21 @@ export class DashboardPageComponent {
     request$.subscribe((ok) => {
       if (ok) this.stepToDelete.set(null);
     });
+  }
+
+  private targetSteps(
+    target: PipelineStepTarget,
+  ): readonly (PipelineStep | PipelineTemplateStep)[] {
+    if (target.type === 'template') {
+      return (
+        this.pipelineFacade.state().templates.find((template) => template.id === target.templateId)
+          ?.steps ?? []
+      );
+    }
+
+    return (
+      this.pipelineFacade.state().pipelines.find((pipeline) => pipeline.id === target.pipelineId)
+        ?.steps ?? []
+    );
   }
 }

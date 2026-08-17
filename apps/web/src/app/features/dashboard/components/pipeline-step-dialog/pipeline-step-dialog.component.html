@@ -15,6 +15,9 @@
     <label>
       <span>Order</span>
       <input type="number" min="1" formControlName="order" />
+      @if (form.controls.order.hasError('orderTaken')) {
+        <small class="field-error">This order is already used in this pipeline.</small>
+      }
     </label>
     <label>
       <span>Command</span>

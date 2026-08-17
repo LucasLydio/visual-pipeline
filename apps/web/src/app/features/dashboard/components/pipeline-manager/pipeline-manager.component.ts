@@ -14,7 +14,12 @@ import {
   lucideTrash2,
   lucideWorkflow,
   lucideSettings2,
-  lucideGitlab
+  lucideGitlab,
+  lucideCircleCheck,
+  lucideStopCircle,
+  lucideTimer,
+  lucideMessageCircleWarning,
+  lucideHourglass,
 } from '@ng-icons/lucide';
 
 import {
@@ -51,10 +56,15 @@ import { simpleBitbucket, simpleDocker, simpleGithub, simpleGitlab } from '@ng-i
       simpleDocker,
       simpleGithub,
       simpleGitlab,
+      lucideCircleCheck,
+      lucideStopCircle,
+      lucideTimer,
+      lucideMessageCircleWarning,
+      lucideHourglass
     }),
   ],
   templateUrl: './pipeline-manager.component.html',
-  styleUrl: './pipeline-manager.component.css',
+  styleUrls: ['./pipeline-manager.component.css', './pipeline-manager-canvas.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PipelineManagerComponent {
@@ -88,8 +98,6 @@ export class PipelineManagerComponent {
   @Output() viewRuns = new EventEmitter<ProjectPipeline>();
   @Output() setupWorkflow = new EventEmitter<WorkspaceProject>();
 
-  templateButton: PipelineTemplate | null = null;
-
   readonly statusClassMap: Record<string, string> = {
     ACTIVE: 'dot-green',
     PAUSED: 'dot-red',
@@ -104,8 +112,15 @@ export class PipelineManagerComponent {
     DOCKER: 'simpleDocker',
   };
 
-  protected selectTemplate(template: PipelineTemplate) {
-    this.templateButton = template;
+  readonly pipelineStatus: Record<string, string> = {
+    PASSED: 'lucideCircleCheck',
+    FAILED: 'lucideMessageCircleWarning',
+    CANCELLED: 'lucideStopCircle',
+    RUNNING: 'lucideTimer',
+    QUEUED: 'lucideHourglass',
+  };
+
+  protected selectTemplate(template: PipelineTemplate): void {
     this.templateSelected.emit(template);
   }
 

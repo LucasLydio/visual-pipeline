@@ -27,39 +27,52 @@
     <p class="panel-error" role="alert">{{ error }}</p>
   } @else {
     <div class="pipeline-builder">
-      <!-- <aside class="node-palette">
-        <div class="palette-tabs">
-          <ng-icon name="lucideSettings2" aria-hidden="true" size="20" />
-          <strong>Pipeline Templates</strong>
-          <ng-icon name="lucideSettings2" aria-hidden="true" size="20" />
-        </div>
+      <aside class="node-palette">
         <section>
           <div class="section-heading">
             <h5>Templates</h5>
             <span>{{ templates.length }}</span>
+            <div class="template-toolbar">
+              <button type="button" title="Create template" (click)="createTemplate.emit()">
+                <ng-icon name="lucideFilePlus2" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                title="Edit selected template"
+                [disabled]="!selectedTemplate"
+                (click)="selectedTemplate && editTemplate.emit(selectedTemplate)"
+              >
+                <ng-icon name="lucidePencil" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                title="Add template step"
+                [disabled]="!selectedTemplate"
+                (click)="selectedTemplate && addTemplateStep.emit(selectedTemplate)"
+              >
+                <ng-icon name="lucideListPlus" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                title="Archive selected template"
+                [disabled]="!selectedTemplate"
+                (click)="selectedTemplate && archiveTemplate.emit(selectedTemplate)"
+              >
+                <ng-icon name="lucideArchive" aria-hidden="true" />
+              </button>
+            </div>
           </div>
           <div class="compact-list">
             @for (template of templates; track template.id) {
               <article [class.is-muted]="!template.isActive">
-              <button
-                type="button"
-                [class.is-selected]="templateButton === template"
-                (click)="selectTemplate(template)">
-                <strong>{{ template.name }}</strong>
-                <small>{{ template.steps.length }} nodes</small>
-              </button>
-                <div class="item-actions">
-                  <button type="button" title="Edit template" (click)="editTemplate.emit(template)">
-                    <ng-icon name="lucidePencil" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    title="Add template step"
-                    (click)="addTemplateStep.emit(template)"
-                  >
-                    <ng-icon name="lucideListPlus" aria-hidden="true" />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  [class.is-selected]="selectedTemplate?.id === template.id"
+                  (click)="selectTemplate(template)"
+                >
+                  <strong>{{ template.name }}</strong>
+                  <small>{{ template.steps.length }} nodes</small>
+                </button>
               </article>
             }
           </div>
@@ -83,7 +96,7 @@
             }
           </div>
         </section>
-      </aside> -->
+      </aside>
 
       <section class="pipeline-canvas">
         <div class="canvas-toolbar">
@@ -141,9 +154,20 @@
                     [title]="'Inspect ' + step.name"
                     (click)="inspectPipelineStep.emit(step)"
                   >
-                    <span class="node-icon"
-                      ><ng-icon [name]="nodeIcon(step)" aria-hidden="true"
-                    /></span>
+                    <span class="node-icon">
+                      @if (
+                        pipelineStatus[
+                          stepRunStatus(step) ?? (step.isRequired ? 'Required' : 'Optional')
+                        ];
+                        as iconName
+                      ) {
+                        <ng-icon
+                          [name]="iconName"
+                          aria-hidden="true"
+                          style="margin-inline: 0.4rem"
+                        />
+                      }
+                    </span>
                     <span class="node-body">
                       <strong>{{ step.name }}</strong>
                       <small>{{

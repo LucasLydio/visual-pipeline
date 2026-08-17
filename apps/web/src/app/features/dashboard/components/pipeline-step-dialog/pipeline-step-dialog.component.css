@@ -34,6 +34,11 @@ label span {
   font-weight: 700;
 }
 
+.field-error {
+  color: var(--color-text-danger);
+  font-size: var(--font-size-xs);
+}
+
 input,
 textarea {
   width: 100%;

@@ -179,6 +179,8 @@
   <vp-pipeline-step-dialog
     [step]="target.step ?? null"
     [includeDescription]="target.type === 'template'"
+    [existingOrders]="stepOrders(target)"
+    [suggestedOrder]="nextStepOrder(target)"
     (saved)="saveStep($event)"
     (closed)="stepTarget.set(null)"
   />

@@ -7,18 +7,15 @@ import {
 } from '@nestjs/common';
 import { TeamsService } from '../teams/teams.service.js';
 import { CreatePipelineDto } from './dto/create-pipeline.dto.js';
-import { CreatePipelineStepDto } from './dto/create-pipeline-step.dto.js';
+import type { CreatePipelineStepDto } from './dto/create-pipeline-step.dto.js';
 import { CreatePipelineTemplateDto } from './dto/create-pipeline-template.dto.js';
-import { CreatePipelineTemplateStepDto } from './dto/create-pipeline-template-step.dto.js';
+import type { CreatePipelineTemplateStepDto } from './dto/create-pipeline-template-step.dto.js';
 import { UpdatePipelineDto } from './dto/update-pipeline.dto.js';
-import { UpdatePipelineStepDto } from './dto/update-pipeline-step.dto.js';
+import type { UpdatePipelineStepDto } from './dto/update-pipeline-step.dto.js';
 import { UpdatePipelineTemplateDto } from './dto/update-pipeline-template.dto.js';
-import { UpdatePipelineTemplateStepDto } from './dto/update-pipeline-template-step.dto.js';
-import {
-  PipelineStepRecord,
-  PipelinesRepository,
-  TemplateStepRecord,
-} from './pipelines.repository.js';
+import type { UpdatePipelineTemplateStepDto } from './dto/update-pipeline-template-step.dto.js';
+import { PipelineStepsPolicy } from './pipeline-steps.policy.js';
+import { PipelinesRepository } from './pipelines.repository.js';
 import type { PipelineStatusValue } from './pipelines.types.js';
 
 const VALID_STATUSES = new Set<PipelineStatusValue>([
@@ -32,6 +29,7 @@ export class PipelinesService {
   constructor(
     private readonly pipelinesRepository: PipelinesRepository,
     private readonly teamsService: TeamsService,
+    private readonly pipelineStepsPolicy: PipelineStepsPolicy,
   ) {}
 
   async findTemplates(teamId: string, userId: string, includeInactive = false) {
@@ -62,7 +60,7 @@ export class PipelinesService {
       createdById: userId,
       name,
       description: this.normalizeDescription(dto.description),
-      steps: this.normalizeTemplateSteps(dto.steps ?? []),
+      steps: this.pipelineStepsPolicy.normalizeTemplateSteps(dto.steps),
     });
   }
 
@@ -102,11 +100,16 @@ export class PipelinesService {
   ) {
     const template = await this.getTemplateOrThrow(templateId);
     await this.teamsService.assertTeamManager(template.teamId, userId);
-
-    return this.pipelinesRepository.createTemplateStep(
-      templateId,
-      this.normalizeTemplateStep(dto, template.steps.length + 1),
+    const data = this.pipelineStepsPolicy.normalizeTemplateStep(
+      dto,
+      template.steps.length + 1,
     );
+    this.pipelineStepsPolicy.ensureStepOrderAvailable(
+      template.steps,
+      data.order,
+    );
+
+    return this.pipelinesRepository.createTemplateStep(templateId, data);
   }
 
   async updateTemplateStep(
@@ -116,11 +119,16 @@ export class PipelinesService {
   ) {
     const step = await this.getTemplateStepOrThrow(stepId);
     await this.teamsService.assertTeamManager(step.template.teamId, userId);
+    const data = this.pipelineStepsPolicy.normalizeTemplateStepUpdate(dto);
+    if (data.order !== undefined) {
+      this.pipelineStepsPolicy.ensureStepOrderAvailable(
+        step.template.steps,
+        data.order,
+        step.id,
+      );
+    }
 
-    return this.pipelinesRepository.updateTemplateStep(
-      stepId,
-      this.normalizeTemplateStepUpdate(dto),
-    );
+    return this.pipelinesRepository.updateTemplateStep(stepId, data);
   }
 
   async deleteTemplateStep(stepId: string, userId: string) {
@@ -158,8 +166,10 @@ export class PipelinesService {
     }
 
     const steps = template
-      ? template.steps.map((step) => this.templateStepToPipelineStep(step))
-      : this.normalizePipelineSteps(dto.steps ?? []);
+      ? template.steps.map((step) =>
+          this.pipelineStepsPolicy.templateStepToPipelineStep(step),
+        )
+      : this.pipelineStepsPolicy.normalizePipelineSteps(dto.steps);
 
     return this.pipelinesRepository.createPipeline({
       projectId,
@@ -207,11 +217,16 @@ export class PipelinesService {
   ) {
     const pipeline = await this.getPipelineOrThrow(pipelineId);
     await this.assertProjectOwner(pipeline.projectId, userId);
-
-    return this.pipelinesRepository.createPipelineStep(
-      pipelineId,
-      this.normalizePipelineStep(dto, pipeline.steps.length + 1),
+    const data = this.pipelineStepsPolicy.normalizePipelineStep(
+      dto,
+      pipeline.steps.length + 1,
     );
+    this.pipelineStepsPolicy.ensureStepOrderAvailable(
+      pipeline.steps,
+      data.order,
+    );
+
+    return this.pipelinesRepository.createPipelineStep(pipelineId, data);
   }
 
   async updatePipelineStep(
@@ -221,11 +236,16 @@ export class PipelinesService {
   ) {
     const step = await this.getPipelineStepOrThrow(stepId);
     await this.assertProjectOwner(step.pipeline.projectId, userId);
+    const data = this.pipelineStepsPolicy.normalizePipelineStepUpdate(dto);
+    if (data.order !== undefined) {
+      this.pipelineStepsPolicy.ensureStepOrderAvailable(
+        step.pipeline.steps,
+        data.order,
+        step.id,
+      );
+    }
 
-    return this.pipelinesRepository.updatePipelineStep(
-      stepId,
-      this.normalizePipelineStepUpdate(dto),
-    );
+    return this.pipelinesRepository.updatePipelineStep(stepId, data);
   }
 
   async deletePipelineStep(stepId: string, userId: string) {
@@ -302,103 +322,6 @@ export class PipelinesService {
     }
   }
 
-  private normalizeTemplateSteps(
-    steps: CreatePipelineTemplateStepDto[],
-  ): TemplateStepRecord[] {
-    return steps.map((step, index) =>
-      this.normalizeTemplateStep(step, index + 1),
-    );
-  }
-
-  private normalizePipelineSteps(
-    steps: CreatePipelineStepDto[],
-  ): PipelineStepRecord[] {
-    return steps.map((step, index) =>
-      this.normalizePipelineStep(step, index + 1),
-    );
-  }
-
-  private normalizeTemplateStep(
-    step: CreatePipelineTemplateStepDto,
-    fallbackOrder: number,
-  ): TemplateStepRecord {
-    return {
-      name: this.normalizeName(step.name, 'Step name', 120),
-      description: this.normalizeDescription(step.description),
-      order: this.normalizeOrder(step.order ?? fallbackOrder),
-      command: this.normalizeNullableCommand(step.command),
-      isRequired: step.isRequired ?? true,
-      isEnabled: step.isEnabled ?? true,
-    };
-  }
-
-  private normalizeTemplateStepUpdate(
-    step: UpdatePipelineTemplateStepDto,
-  ): Partial<TemplateStepRecord> {
-    return this.cleanUndefined({
-      name:
-        step.name === undefined
-          ? undefined
-          : this.normalizeName(step.name, 'Step name', 120),
-      description:
-        step.description === undefined
-          ? undefined
-          : this.normalizeNullableDescription(step.description),
-      order:
-        step.order === undefined ? undefined : this.normalizeOrder(step.order),
-      command:
-        step.command === undefined
-          ? undefined
-          : this.normalizeNullableCommand(step.command),
-      isRequired: step.isRequired,
-      isEnabled: step.isEnabled,
-    });
-  }
-
-  private normalizePipelineStep(
-    step: CreatePipelineStepDto,
-    fallbackOrder: number,
-  ): PipelineStepRecord {
-    return {
-      name: this.normalizeName(step.name, 'Step name', 120),
-      order: this.normalizeOrder(step.order ?? fallbackOrder),
-      command: this.normalizeNullableCommand(step.command),
-      isRequired: step.isRequired ?? true,
-      isEnabled: step.isEnabled ?? true,
-    };
-  }
-
-  private normalizePipelineStepUpdate(
-    step: UpdatePipelineStepDto,
-  ): Partial<PipelineStepRecord> {
-    return this.cleanUndefined({
-      name:
-        step.name === undefined
-          ? undefined
-          : this.normalizeName(step.name, 'Step name', 120),
-      order:
-        step.order === undefined ? undefined : this.normalizeOrder(step.order),
-      command:
-        step.command === undefined
-          ? undefined
-          : this.normalizeNullableCommand(step.command),
-      isRequired: step.isRequired,
-      isEnabled: step.isEnabled,
-    });
-  }
-
-  private templateStepToPipelineStep(
-    step: TemplateStepRecord,
-  ): PipelineStepRecord {
-    return {
-      name: step.name,
-      order: step.order,
-      command: step.command,
-      isRequired: step.isRequired,
-      isEnabled: step.isEnabled,
-    };
-  }
-
   private normalizeName(
     value: string | undefined,
     label: string,
@@ -426,18 +349,6 @@ export class PipelinesService {
       );
     }
     return normalized;
-  }
-
-  private normalizeNullableCommand(value?: string | null): string | null {
-    const normalized = value?.trim();
-    return normalized || null;
-  }
-
-  private normalizeOrder(order: number): number {
-    if (!Number.isInteger(order) || order < 1) {
-      throw new BadRequestException('Step order must be a positive integer.');
-    }
-    return order;
   }
 
   private normalizeStatus(status: PipelineStatusValue): PipelineStatusValue {
