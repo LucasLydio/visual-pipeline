@@ -105,6 +105,7 @@ export class PipelineManagerComponent {
   private canvasDragStartX = 0;
   private canvasDragScrollLeft = 0;
   private canvasMovedDuringDrag = false;
+  private suppressCanvasClickUntil = 0;
 
   readonly statusClassMap: Record<string, string> = {
     ACTIVE: 'dot-green',
@@ -178,6 +179,7 @@ export class PipelineManagerComponent {
 
   protected startCanvasDrag(event: PointerEvent, board: HTMLElement): void {
     if (event.button !== 0) return;
+    if (this.isInteractiveCanvasTarget(event.target)) return;
 
     this.isCanvasDragging = true;
     this.canvasMovedDuringDrag = false;
@@ -192,12 +194,14 @@ export class PipelineManagerComponent {
     const distance = event.clientX - this.canvasDragStartX;
     if (Math.abs(distance) > 3) this.canvasMovedDuringDrag = true;
     board.scrollLeft = this.canvasDragScrollLeft - distance;
+    if (this.canvasMovedDuringDrag) event.preventDefault();
   }
 
   protected stopCanvasDrag(event: PointerEvent, board: HTMLElement): void {
     if (!this.isCanvasDragging) return;
 
     this.isCanvasDragging = false;
+    if (this.canvasMovedDuringDrag) this.suppressCanvasClickUntil = Date.now() + 250;
     if (board.hasPointerCapture(event.pointerId)) board.releasePointerCapture(event.pointerId);
   }
 
@@ -217,9 +221,20 @@ export class PipelineManagerComponent {
   }
 
   private consumeCanvasDragClick(): boolean {
-    if (!this.canvasMovedDuringDrag) return false;
+    if (Date.now() > this.suppressCanvasClickUntil) {
+      this.canvasMovedDuringDrag = false;
+      return false;
+    }
 
     this.canvasMovedDuringDrag = false;
+    this.suppressCanvasClickUntil = 0;
     return true;
+  }
+
+  private isInteractiveCanvasTarget(target: EventTarget | null): boolean {
+    return (
+      target instanceof Element &&
+      Boolean(target.closest('button, a, input, select, textarea, label'))
+    );
   }
 }

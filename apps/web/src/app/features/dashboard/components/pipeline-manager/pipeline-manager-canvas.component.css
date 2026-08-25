@@ -115,6 +115,7 @@
 .step-node,
 .empty-node {
   width: 100%;
+  cursor: pointer;
   text-align: left;
 }
 
