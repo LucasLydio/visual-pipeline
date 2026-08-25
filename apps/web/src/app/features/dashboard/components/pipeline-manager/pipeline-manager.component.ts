@@ -101,6 +101,10 @@ export class PipelineManagerComponent {
   @Output() runPipeline = new EventEmitter<ProjectPipeline>();
   @Output() viewRuns = new EventEmitter<ProjectPipeline>();
   @Output() setupWorkflow = new EventEmitter<WorkspaceProject>();
+  protected isCanvasDragging = false;
+  private canvasDragStartX = 0;
+  private canvasDragScrollLeft = 0;
+  private canvasMovedDuringDrag = false;
 
   readonly statusClassMap: Record<string, string> = {
     ACTIVE: 'dot-green',
@@ -170,5 +174,52 @@ export class PipelineManagerComponent {
     const runStep = this.latestRun?.steps.find((candidate) => candidate.pipelineStepId === step.id);
 
     return Boolean(runStep && this.statusChanges.has(runStep.id));
+  }
+
+  protected startCanvasDrag(event: PointerEvent, board: HTMLElement): void {
+    if (event.button !== 0) return;
+
+    this.isCanvasDragging = true;
+    this.canvasMovedDuringDrag = false;
+    this.canvasDragStartX = event.clientX;
+    this.canvasDragScrollLeft = board.scrollLeft;
+    board.setPointerCapture(event.pointerId);
+  }
+
+  protected dragCanvas(event: PointerEvent, board: HTMLElement): void {
+    if (!this.isCanvasDragging) return;
+
+    const distance = event.clientX - this.canvasDragStartX;
+    if (Math.abs(distance) > 3) this.canvasMovedDuringDrag = true;
+    board.scrollLeft = this.canvasDragScrollLeft - distance;
+  }
+
+  protected stopCanvasDrag(event: PointerEvent, board: HTMLElement): void {
+    if (!this.isCanvasDragging) return;
+
+    this.isCanvasDragging = false;
+    if (board.hasPointerCapture(event.pointerId)) board.releasePointerCapture(event.pointerId);
+  }
+
+  protected inspectPipelineStepFromCanvas(step: PipelineStep): void {
+    if (this.consumeCanvasDragClick()) return;
+    this.inspectPipelineStep.emit(step);
+  }
+
+  protected createPipelineStepFromCanvas(pipeline: ProjectPipeline): void {
+    if (this.consumeCanvasDragClick()) return;
+    this.addPipelineStep.emit(pipeline);
+  }
+
+  protected createPipelineFromCanvas(): void {
+    if (this.consumeCanvasDragClick()) return;
+    this.createPipeline.emit();
+  }
+
+  private consumeCanvasDragClick(): boolean {
+    if (!this.canvasMovedDuringDrag) return false;
+
+    this.canvasMovedDuringDrag = false;
+    return true;
   }
 }

@@ -42,12 +42,22 @@
   padding-inline: var(--padding-md);
   overflow-x: auto;
   cursor: move;
+  scrollbar-width: none;
+  user-select: none;
   background-image: radial-gradient(var(--color-primary) 1px, transparent 1px);
   background-size: 18px 18px;
   border-radius: var(--border-sm);
   background-color: var(--color-node);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+.canvas-board::-webkit-scrollbar {
+  display: none;
+}
+
+.canvas-board.is-dragging {
+  cursor: grabbing;
 }
 
 .source-node,

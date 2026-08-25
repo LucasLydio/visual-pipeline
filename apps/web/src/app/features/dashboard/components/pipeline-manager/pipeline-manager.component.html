@@ -149,7 +149,17 @@
         </div>
 
         @if (selectedPipeline; as pipeline) {
-          <div class="canvas-board" [class.is-live-change]="isLatestRunChanged()">
+          <div
+            #canvasBoard
+            class="canvas-board"
+            [class.is-dragging]="isCanvasDragging"
+            [class.is-live-change]="isLatestRunChanged()"
+            (pointerdown)="startCanvasDrag($event, canvasBoard)"
+            (pointermove)="dragCanvas($event, canvasBoard)"
+            (pointerup)="stopCanvasDrag($event, canvasBoard)"
+            (pointercancel)="stopCanvasDrag($event, canvasBoard)"
+            (pointerleave)="stopCanvasDrag($event, canvasBoard)"
+          >
             <article class="source-node">
               <div class="source-node-text">
                 <div>
@@ -169,7 +179,7 @@
                     class="step-node {{ stepRunClass(step) }}"
                     [class.is-live-change]="isStepStatusChanged(step)"
                     [title]="'Inspect ' + step.name"
-                    (click)="inspectPipelineStep.emit(step)"
+                    (click)="inspectPipelineStepFromCanvas(step)"
                   >
                     <span class="node-icon">
                       @if (
@@ -196,7 +206,11 @@
                 </li>
               } @empty {
                 <li>
-                  <button type="button" class="empty-node" (click)="addPipelineStep.emit(pipeline)">
+                  <button
+                    type="button"
+                    class="empty-node"
+                    (click)="createPipelineStepFromCanvas(pipeline)"
+                  >
                     <ng-icon name="lucideWorkflow" aria-hidden="true" />
                     <span>Add first node</span>
                   </button>
@@ -205,8 +219,17 @@
             </ol>
           </div>
         } @else {
-          <div class="canvas-board empty-canvas">
-            <button type="button" (click)="createPipeline.emit()">
+          <div
+            #emptyCanvasBoard
+            class="canvas-board empty-canvas"
+            [class.is-dragging]="isCanvasDragging"
+            (pointerdown)="startCanvasDrag($event, emptyCanvasBoard)"
+            (pointermove)="dragCanvas($event, emptyCanvasBoard)"
+            (pointerup)="stopCanvasDrag($event, emptyCanvasBoard)"
+            (pointercancel)="stopCanvasDrag($event, emptyCanvasBoard)"
+            (pointerleave)="stopCanvasDrag($event, emptyCanvasBoard)"
+          >
+            <button type="button" (click)="createPipelineFromCanvas()">
               <ng-icon name="lucidePlus" aria-hidden="true" />
               Create pipeline
             </button>
