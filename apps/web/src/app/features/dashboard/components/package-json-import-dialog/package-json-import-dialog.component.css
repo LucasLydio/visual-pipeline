@@ -60,6 +60,12 @@ header p,
   border-radius: 0.4rem;
 }
 
+.include-check input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-primary);
+}
+
 .file-drop {
   min-height: 4.5rem;
   justify-content: center;
@@ -98,6 +104,10 @@ header p,
   border-radius: 0.5rem;
 }
 
+.script-list li.is-excluded {
+  opacity: 0.55;
+}
+
 .drag-handle,
 .order-pill {
   display: grid;
@@ -127,16 +137,25 @@ header p,
   gap: 0.25rem;
 }
 
-.script-copy strong,
-.script-copy code {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.script-copy input {
+  width: 100%;
+  min-height: 2rem;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.35rem;
+  font-size: var(--font-size-xs);
 }
 
-.script-copy code {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
+.script-copy input:first-child {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.script-copy input:disabled {
+  cursor: not-allowed;
 }
 
 .move-actions,
@@ -166,6 +185,10 @@ button:disabled {
 @media (max-width: 40rem) {
   .script-list li {
     align-items: flex-start;
+  }
+
+  .script-copy {
+    width: 100%;
   }
 
   .move-actions {

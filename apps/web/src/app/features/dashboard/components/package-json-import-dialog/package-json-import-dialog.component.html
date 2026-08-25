@@ -21,20 +21,40 @@
     <p class="dialog-error" role="alert">{{ message }}</p>
   }
 
-  @if (previewSteps().length > 0) {
+  @if (reviewRows().length > 0) {
     <ol class="script-list" aria-label="Package scripts">
-      @for (script of previewSteps(); track script.id; let index = $index) {
+      @for (script of reviewRows(); track script.id; let index = $index; let count = $count) {
         <li
+          [class.is-excluded]="!script.included"
           draggable="true"
           (dragstart)="startDrag(index)"
           (dragover)="allowDrop($event)"
           (drop)="drop(index)"
         >
+          <label class="include-check" title="Include script">
+            <input
+              type="checkbox"
+              [checked]="script.included"
+              (change)="toggleIncluded(script.id, $event)"
+            />
+          </label>
           <span class="drag-handle"><ng-icon name="lucideGripVertical" aria-hidden="true" /></span>
-          <span class="order-pill">{{ script.order }}</span>
+          <span class="order-pill">{{ script.order ?? '-' }}</span>
           <span class="script-copy">
-            <strong>{{ script.name }}</strong>
-            <code>{{ script.command }}</code>
+            <input
+              type="text"
+              aria-label="Script name"
+              [value]="script.name"
+              [disabled]="!script.included"
+              (input)="updateName(script.id, $event)"
+            />
+            <input
+              type="text"
+              aria-label="Script command"
+              [value]="script.command"
+              [disabled]="!script.included"
+              (input)="updateCommand(script.id, $event)"
+            />
           </span>
           <span class="move-actions">
             <button
@@ -48,10 +68,13 @@
             <button
               type="button"
               title="Move down"
-              [disabled]="index === previewSteps().length - 1"
+              [disabled]="index === count - 1"
               (click)="move(index, 1)"
             >
               <ng-icon name="lucideArrowDown" aria-hidden="true" />
+            </button>
+            <button type="button" title="Remove script" (click)="removeScript(script.id)">
+              <ng-icon name="lucideTrash2" aria-hidden="true" />
             </button>
           </span>
         </li>
@@ -71,7 +94,11 @@
       <button type="button" class="neutral" (click)="confirming.set(false)">Back</button>
       <button type="button" (click)="confirmImport()">Confirm import</button>
     } @else {
-      <button type="button" [disabled]="scripts().length === 0" (click)="requestConfirmation()">
+      <button
+        type="button"
+        [disabled]="previewSteps().length === 0"
+        (click)="requestConfirmation()"
+      >
         Review import
       </button>
     }

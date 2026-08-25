@@ -11,6 +11,7 @@ import {
   lucideArrowDown,
   lucideArrowUp,
   lucideGripVertical,
+  lucideTrash2,
   lucideUpload,
   lucideX,
 } from '@ng-icons/lucide';
@@ -21,6 +22,11 @@ interface ScriptDraft {
   readonly id: string;
   readonly name: string;
   readonly command: string;
+  readonly included: boolean;
+}
+
+interface ScriptReviewRow extends ScriptDraft {
+  readonly order: number | null;
 }
 
 @Component({
@@ -31,6 +37,7 @@ interface ScriptDraft {
       lucideArrowDown,
       lucideArrowUp,
       lucideGripVertical,
+      lucideTrash2,
       lucideUpload,
       lucideX,
     }),
@@ -79,11 +86,45 @@ export class PackageJsonImportDialogComponent {
   }
 
   protected previewSteps(): readonly PackageScriptImportStep[] {
-    const orders = this.availableOrders(this.scripts().length);
-    return this.scripts().map((script, index) => ({
+    const includedScripts = this.scripts().filter((script) => script.included);
+    const orders = this.availableOrders(includedScripts.length);
+
+    return includedScripts.map((script, index) => ({
       ...script,
+      name: script.name.trim(),
+      command: script.command.trim(),
       order: orders[index],
     }));
+  }
+
+  protected reviewRows(): readonly ScriptReviewRow[] {
+    const orderedScripts = this.previewSteps();
+    const orderById = new Map(orderedScripts.map((script) => [script.id, script.order]));
+
+    return this.scripts().map((script) => ({
+      ...script,
+      order: orderById.get(script.id) ?? null,
+    }));
+  }
+
+  protected toggleIncluded(scriptId: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.updateScript(scriptId, { included: checked });
+  }
+
+  protected updateName(scriptId: string, event: Event): void {
+    const name = (event.target as HTMLInputElement).value;
+    this.updateScript(scriptId, { name });
+  }
+
+  protected updateCommand(scriptId: string, event: Event): void {
+    const command = (event.target as HTMLInputElement).value;
+    this.updateScript(scriptId, { command });
+  }
+
+  protected removeScript(scriptId: string): void {
+    this.scripts.update((scripts) => scripts.filter((script) => script.id !== scriptId));
+    this.confirming.set(false);
   }
 
   protected startDrag(index: number): void {
@@ -96,7 +137,12 @@ export class PackageJsonImportDialogComponent {
   }
 
   protected drop(index: number): void {
-    if (this.draggedIndex === null || this.draggedIndex === index) return;
+    if (this.draggedIndex === null) return;
+    if (this.draggedIndex === index) {
+      this.draggedIndex = null;
+      return;
+    }
+
     this.reorder(this.draggedIndex, index);
     this.draggedIndex = null;
   }
@@ -106,11 +152,21 @@ export class PackageJsonImportDialogComponent {
   }
 
   protected requestConfirmation(): void {
+    const steps = this.previewSteps();
     if (this.scripts().length === 0) {
       this.error.set('Import a package.json with scripts before continuing.');
       return;
     }
+    if (steps.length === 0) {
+      this.error.set('Select at least one script before importing.');
+      return;
+    }
+    if (steps.some((step) => step.name.length < 2 || step.command.length === 0)) {
+      this.error.set('Selected scripts need a name and command before importing.');
+      return;
+    }
 
+    this.error.set(null);
     this.confirming.set(true);
   }
 
@@ -139,6 +195,7 @@ export class PackageJsonImportDialogComponent {
         id: `${index}-${name}`,
         name,
         command: command.trim(),
+        included: true,
       };
     });
 
@@ -153,6 +210,14 @@ export class PackageJsonImportDialogComponent {
     const [item] = current.splice(from, 1);
     current.splice(to, 0, item);
     this.scripts.set(current);
+    this.confirming.set(false);
+  }
+
+  private updateScript(scriptId: string, patch: Partial<ScriptDraft>): void {
+    this.scripts.update((scripts) =>
+      scripts.map((script) => (script.id === scriptId ? { ...script, ...patch } : script)),
+    );
+    this.error.set(null);
     this.confirming.set(false);
   }
 
