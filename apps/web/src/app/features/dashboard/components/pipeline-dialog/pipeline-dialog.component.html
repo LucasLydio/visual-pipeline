@@ -30,10 +30,17 @@
           }
         </select>
       </label>
+
+      <vp-pipeline-step-editor [drafts]="stepDrafts()" (draftsChange)="updateStepDrafts($event)" />
+      @if (hasInvalidStepDrafts()) {
+        <p class="dialog-error" role="alert">Step names must have at least 2 characters.</p>
+      }
     }
     <div class="dialog-actions">
       <button type="button" class="neutral" (click)="closed.emit()">Cancel</button>
-      <button type="submit" [disabled]="form.invalid">{{ editing ? 'Save' : 'Create' }}</button>
+      <button type="submit" [disabled]="form.invalid || hasInvalidStepDrafts()">
+        {{ editing ? 'Save' : 'Create' }}
+      </button>
     </div>
   </form>
 </section>

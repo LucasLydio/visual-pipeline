@@ -1,0 +1,78 @@
+<section class="step-editor" aria-label="Pipeline steps">
+  <header>
+    <div>
+      <h3>Steps</h3>
+      <p>Edit commands and reorder execution before saving.</p>
+    </div>
+    <button type="button" class="neutral" (click)="addStep()">
+      <ng-icon name="lucidePlus" aria-hidden="true" />
+      Step
+    </button>
+  </header>
+
+  <ol class="step-list">
+    @for (draft of drafts; track draft.clientId; let index = $index; let count = $count) {
+      <li
+        draggable="true"
+        (dragstart)="startDrag(index)"
+        (dragover)="allowDrop($event)"
+        (drop)="drop(index)"
+      >
+        <span class="drag-handle"><ng-icon name="lucideGripVertical" aria-hidden="true" /></span>
+        <span class="order-pill">{{ index + 1 }}</span>
+        <span class="step-copy">
+          <input
+            type="text"
+            aria-label="Step name"
+            [value]="draft.name"
+            (input)="updateName(draft.clientId, $event)"
+          />
+          <input
+            type="text"
+            aria-label="Step command"
+            [value]="draft.command"
+            (input)="updateCommand(draft.clientId, $event)"
+          />
+        </span>
+        <span class="step-flags">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="draft.isRequired"
+              (change)="updateFlag(draft.clientId, 'isRequired', $event)"
+            />
+            Required
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              [checked]="draft.isEnabled"
+              (change)="updateFlag(draft.clientId, 'isEnabled', $event)"
+            />
+            Enabled
+          </label>
+        </span>
+        <span class="row-actions">
+          <button type="button" title="Move up" [disabled]="index === 0" (click)="move(index, -1)">
+            <ng-icon name="lucideArrowUp" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            title="Move down"
+            [disabled]="index === count - 1"
+            (click)="move(index, 1)"
+          >
+            <ng-icon name="lucideArrowDown" aria-hidden="true" />
+          </button>
+          <button type="button" title="Delete step" (click)="removeStep(draft.clientId)">
+            <ng-icon name="lucideTrash2" aria-hidden="true" />
+          </button>
+        </span>
+      </li>
+    } @empty {
+      <li class="empty-step">
+        <span>No steps yet.</span>
+      </li>
+    }
+  </ol>
+</section>

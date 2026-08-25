@@ -10,7 +10,6 @@ import {
   simpleTypescript,
 } from '@ng-icons/simple-icons';
 import {
-  CreatePipelineRequest,
   PipelineRun,
   CreatePipelineTemplateRequest,
   PipelineStep,
@@ -19,7 +18,6 @@ import {
   PipelineTemplateStep,
   PipelineTemplateStepRequest,
   ProjectPipeline,
-  UpdatePipelineRequest,
   UpdatePipelineTemplateRequest,
 } from '../../../../core/models/pipeline-api.models';
 import {
@@ -49,9 +47,11 @@ import { TeamDialogComponent } from '../../components/team-dialog/team-dialog.co
 import { WorkspaceToolbarComponent } from '../../components/workspace-toolbar/workspace-toolbar.component';
 import { WorkflowSetupDialogComponent } from '../../components/workflow-setup-dialog/workflow-setup-dialog.component';
 import { DashboardPackageImportFacade } from '../../data-access/dashboard-package-import.facade';
+import { DashboardPipelineEditorFacade } from '../../data-access/dashboard-pipeline-editor.facade';
 import { DashboardPipelineFacade } from '../../data-access/dashboard-pipeline.facade';
 import { PipelineStepTarget } from '../../data-access/dashboard-pipeline.types';
 import { DashboardFacade } from '../../data-access/dashboard.facade';
+import { PipelineDialogSave } from '../../models/pipeline-step-draft.models';
 
 @Component({
   selector: 'vp-dashboard-page',
@@ -79,6 +79,7 @@ import { DashboardFacade } from '../../data-access/dashboard.facade';
     DashboardFacade,
     DashboardPipelineFacade,
     DashboardPackageImportFacade,
+    DashboardPipelineEditorFacade,
     provideIcons({
       lucideBraces,
       lucideGamepad2,
@@ -100,6 +101,7 @@ export class DashboardPageComponent {
   protected readonly facade = inject(DashboardFacade);
   protected readonly pipelineFacade = inject(DashboardPipelineFacade);
   protected readonly packageImport = inject(DashboardPackageImportFacade);
+  protected readonly pipelineEditor = inject(DashboardPipelineEditorFacade);
   protected readonly showTeamDialog = signal(false);
   protected readonly showProjectDialog = signal(false);
   protected readonly showTemplateDialog = signal(false);
@@ -212,20 +214,14 @@ export class DashboardPageComponent {
     this.pipelineFacade.cancelPipelineRun(run).subscribe();
   }
 
-  protected savePipeline(dto: CreatePipelineRequest | UpdatePipelineRequest): void {
-    const pipeline = this.editingPipeline();
-    const project = this.pipelineFacade.focusedProject();
-    const request$ = pipeline
-      ? this.pipelineFacade.updatePipeline(pipeline.id, dto as UpdatePipelineRequest)
-      : project
-        ? this.pipelineFacade.createPipeline(project.id, dto as CreatePipelineRequest)
-        : null;
-
-    request$?.subscribe((ok) => {
-      if (!ok) return;
-      this.editingPipeline.set(null);
-      this.showPipelineDialog.set(false);
-    });
+  protected savePipeline(payload: PipelineDialogSave): void {
+    this.pipelineEditor
+      .save(this.editingPipeline(), this.pipelineFacade.focusedProject(), payload)
+      .subscribe((ok) => {
+        if (!ok) return;
+        this.editingPipeline.set(null);
+        this.showPipelineDialog.set(false);
+      });
   }
 
   protected addTemplateStep(template: PipelineTemplate): void {
